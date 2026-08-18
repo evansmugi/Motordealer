@@ -34,12 +34,12 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database 
     postgres: {
       client: 'postgres',
       connection: {
-        connectionString: env('DATABASE_URL'),
-        host: env('DATABASE_HOST', 'localhost'),
+        ...(env('DATABASE_URL') ? { connectionString: env('DATABASE_URL') } : {}),
+        host: env('DATABASE_HOST', '127.0.0.1'),
         port: env.int('DATABASE_PORT', 5432),
         database: env('DATABASE_NAME', 'strapi'),
-        user: env('DATABASE_USERNAME', 'strapi'),
-        password: env('DATABASE_PASSWORD', 'strapi'),
+        user: env('DATABASE_USERNAME', 'postgres'),
+        password: env('DATABASE_PASSWORD', 'password'),
         ssl: env.bool('DATABASE_SSL', false) && {
           key: env('DATABASE_SSL_KEY', undefined),
           cert: env('DATABASE_SSL_CERT', undefined),
@@ -50,8 +50,19 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database 
         },
         schema: env('DATABASE_SCHEMA', 'public'),
       },
-      pool: { min: env.int('DATABASE_POOL_MIN', 2), max: env.int('DATABASE_POOL_MAX', 10) },
+      pool: {
+        min: 0,
+        max: 20,
+        acquireTimeoutMillis: 60000,
+        createTimeoutMillis: 30000,
+        idleTimeoutMillis: 30000,
+        reapIntervalMillis: 1000,
+        createRetryIntervalMillis: 200,
+      },
+      acquireConnectionTimeout: 60000,
     },
+
+
     sqlite: {
       client: 'sqlite',
       connection: {

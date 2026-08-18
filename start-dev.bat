@@ -23,9 +23,9 @@ if exist "%~dp0frontend\package.json" (
 
 if exist "%~dp0dashboard\package.json" (
     echo =========================================================
-    echo  3. Starting React Vite Business Dashboard (Port 5173)
+    echo  3. Starting React Vite Business Dashboard (Port 5180)
     echo =========================================================
-    start "3. React POS/CRM/ERP Dashboard (Port 5173)" cmd /k "cd /d "%~dp0dashboard" && set "PATH=%USERPROFILE%\.config\herd\bin\nvm\v22.13.0;%PATH%" && npm run dev"
+    start "3. React POS/CRM/ERP Dashboard (Port 5180)" cmd /k "cd /d "%~dp0dashboard" && set "PATH=%USERPROFILE%\.config\herd\bin\nvm\v22.13.0;%PATH%" && npm run dev"
 )
 
 echo.
@@ -33,6 +33,6 @@ echo =========================================================
 echo All 3 servers launching in separate terminal windows!
 echo  - Strapi CMS Admin:       http://localhost:1337/admin
 echo  - Next.js Customer Portal: http://localhost:3000
-echo  - POS/CRM/ERP Dashboard:   http://localhost:5173
+echo  - POS/CRM/ERP Dashboard:   http://localhost:5180
 echo =========================================================
 echo.
