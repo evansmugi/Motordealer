@@ -1,0 +1,202 @@
+/* AETHEL ERP Operations OS — Design System & Fuse Button Standard */
+
+:root {
+  --erp-bg-dark: #090B0E;
+  --erp-card-bg: #11141A;
+  --erp-card-border: rgba(255, 255, 255, 0.08);
+  --erp-sidebar-bg: #0C0E13;
+  --erp-header-bg: rgba(12, 14, 19, 0.85);
+  
+  --erp-text-main: #F1F5F9;
+  --erp-text-muted: #94A3B8;
+  --erp-text-dim: #64748B;
+  
+  --erp-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --erp-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  
+  /* Module Accents */
+  --accent-dashboard: #6366f1;
+  --accent-dashboard-light: #818cf8;
+  --accent-dashboard-rgb: 99, 102, 241;
+  
+  --accent-catalog: #3b82f6;
+  --accent-catalog-light: #60a5fa;
+  --accent-catalog-rgb: 59, 130, 246;
+  
+  --accent-inventory: #f59e0b;
+  --accent-inventory-light: #fbbf24;
+  --accent-inventory-rgb: 245, 158, 11;
+  
+  --accent-procurement: #8b5cf6;
+  --accent-procurement-light: #a78bfa;
+  --accent-procurement-rgb: 139, 92, 246;
+  
+  --accent-sales: #84cc16;
+  --accent-sales-light: #a3e635;
+  --accent-sales-rgb: 132, 204, 22;
+  
+  --accent-crm: #0284c7;
+  --accent-crm-light: #38bdf8;
+  --accent-crm-rgb: 2, 132, 199;
+  
+  --accent-marketing: #f43f5e;
+  --accent-marketing-light: #fb7185;
+  --accent-marketing-rgb: 244, 63, 94;
+  
+  --accent-finance: #10b981;
+  --accent-finance-light: #34d399;
+  --accent-finance-rgb: 16, 185, 129;
+}
+
+/* Global Reset for ERP Root */
+#root {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  border-inline: none !important;
+  min-height: 100vh;
+  background-color: var(--erp-bg-dark);
+  color: var(--erp-text-main);
+  font-family: var(--erp-font-sans);
+}
+
+body {
+  margin: 0;
+  background-color: var(--erp-bg-dark);
+  color: var(--erp-text-main);
+  overflow-x: hidden;
+}
+
+/* Fuse ERP Header Button Design Standard */
+.aq-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 48px;
+  padding: 10px 24px;
+  border-radius: 14px;
+  font-family: var(--erp-font-sans);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  text-decoration: none;
+  background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 230, 0.4);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.aq-btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transition: left 0.6s ease;
+}
+
+.aq-btn-primary:hover {
+  transform: translateY(-4px) scale(1.02);
+  filter: brightness(1.15);
+}
+
+.aq-btn-primary:hover::after {
+  left: 100%;
+}
+
+.aq-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 10px 24px;
+  border-radius: 14px;
+  font-family: var(--erp-font-sans);
+  font-size: 13px;
+  font-weight: 850;
+  background: #1E293B;
+  color: #F8FAFC;
+  border: 1.5px solid #334155;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.aq-btn-secondary:hover {
+  background: #334155;
+  border-color: #64748B;
+  transform: translateY(-2px);
+}
+
+/* Common ERP Cards */
+.erp-card {
+  background: var(--erp-card-bg);
+  border: 1px solid var(--erp-card-border);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.erp-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--erp-card-border);
+}
+
+.erp-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.erp-table th {
+  padding: 12px 16px;
+  color: var(--erp-text-dim);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  border-bottom: 1px solid var(--erp-card-border);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.erp-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--erp-text-main);
+}
+
+.erp-table tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+.badge-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+.badge-blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+.badge-purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
+.badge-rose { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }

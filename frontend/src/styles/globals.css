@@ -1,0 +1,135 @@
+/* NEXUS PRIME — Avant-Garde Futuristic Visual Identity */
+
+:root {
+  --nexus-bg: #08090C;
+  --nexus-surface: #0E1017;
+  --nexus-surface-hover: #151822;
+  --nexus-border: rgba(255, 255, 255, 0.08);
+  --nexus-border-hover: rgba(255, 255, 255, 0.2);
+  
+  --nexus-text: #F8FAFC;
+  --nexus-text-muted: #94A3B8;
+  --nexus-text-dim: #64748B;
+  
+  --nexus-accent-emerald: #10B981;
+  --nexus-accent-cobalt: #3B82F6;
+  --nexus-accent-violet: #8B5CF6;
+  --nexus-accent-amber: #F59E0B;
+  
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--nexus-bg);
+  color: var(--nexus-text);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Spatial Grid Mesh Pattern */
+.spatial-grid-bg {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Kinetic Light Aura */
+.light-aura {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(16, 185, 129, 0.05) 50%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+/* Glassmorphism Surface */
+.glass-panel {
+  background: rgba(14, 16, 23, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--nexus-border);
+}
+
+.glass-panel:hover {
+  border-color: var(--nexus-border-hover);
+}
+
+/* Buttons */
+.nexus-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 28px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+
+.nexus-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px -5px rgba(59, 130, 246, 0.6);
+  filter: brightness(1.1);
+}
+
+.nexus-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 24px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--nexus-text);
+  font-size: 13px;
+  font-weight: 700;
+  border: 1px solid var(--nexus-border);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.nexus-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--nexus-border-hover);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--nexus-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
