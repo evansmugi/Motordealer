@@ -10,10 +10,10 @@ export default function CategoriesPage() {
     <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '40px 40px 80px' }}>
       {/* Header */}
       <div style={{ marginBottom: '40px' }}>
-        <h1 style={{ fontSize: '32px', fontWeight: '900', color: '#F8FAFC', marginBottom: '8px' }}>
+        <h1 style={{ fontSize: '32px', fontWeight: '900', color: 'var(--nexus-text)', marginBottom: '8px' }}>
           Hardware Categories
         </h1>
-        <p style={{ fontSize: '15px', color: '#94A3B8', maxWidth: '560px' }}>
+        <p style={{ fontSize: '15px', color: 'var(--nexus-text-muted)', maxWidth: '560px' }}>
           Browse our curated taxonomy of next-generation hardware systems. Each division represents a distinct frontier of engineering.
         </p>
       </div>
@@ -37,7 +37,7 @@ export default function CategoriesPage() {
               }}>
                 <div style={{
                   position: 'absolute', inset: 0,
-                  background: 'linear-gradient(90deg, transparent 0%, rgba(14, 16, 23, 0.9) 100%)'
+                  background: 'linear-gradient(90deg, transparent 0%, var(--nexus-surface) 100%)'
                 }} />
                 <div style={{
                   position: 'absolute', bottom: '24px', left: '24px', zIndex: 1
@@ -50,8 +50,8 @@ export default function CategoriesPage() {
                   }}>
                     {category.itemCount} Products
                   </div>
-                  <h2 style={{ fontSize: '22px', fontWeight: '900', color: '#F8FAFC' }}>{category.name}</h2>
-                  <p style={{ fontSize: '12px', color: '#94A3B8', marginTop: '4px', maxWidth: '280px' }}>
+                  <h2 style={{ fontSize: '22px', fontWeight: '900', color: 'var(--nexus-text)' }}>{category.name}</h2>
+                  <p style={{ fontSize: '12px', color: 'var(--nexus-text-muted)', marginTop: '4px', maxWidth: '280px' }}>
                     {category.description}
                   </p>
                 </div>
@@ -65,30 +65,22 @@ export default function CategoriesPage() {
                       <div style={{
                         display: 'flex', alignItems: 'center', gap: '14px',
                         padding: '12px 14px', borderRadius: '12px',
-                        background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)',
+                        background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)',
                         transition: 'all 0.2s ease', cursor: 'pointer'
                       }}
-                        onMouseEnter={e => {
-                          e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
-                          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
-                        }}
-                        onMouseLeave={e => {
-                          e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
-                          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)';
-                        }}
                       >
                         <div style={{
                           width: '52px', height: '52px', borderRadius: '10px', flexShrink: 0,
                           backgroundImage: `url(${product.images[0]})`,
                           backgroundSize: 'cover', backgroundPosition: 'center',
-                          border: '1px solid rgba(255,255,255,0.08)'
+                          border: '1px solid var(--nexus-border)'
                         }} />
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: '13px', fontWeight: '800', color: '#F8FAFC' }}>{product.name}</div>
-                          <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>{product.brand} · {product.sku}</div>
+                          <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--nexus-text)' }}>{product.name}</div>
+                          <div style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', marginTop: '2px' }}>{product.brand} · {product.sku}</div>
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontSize: '15px', fontWeight: '900', color: '#F8FAFC' }}>${product.price.toLocaleString()}</div>
+                          <div style={{ fontSize: '15px', fontWeight: '900', color: 'var(--nexus-text)' }}>${product.price.toLocaleString()}</div>
                           {product.badge && (
                             <div style={{
                               fontSize: '9px', fontWeight: '800', padding: '2px 6px', borderRadius: '4px',
@@ -97,11 +89,11 @@ export default function CategoriesPage() {
                             }}>{product.badge}</div>
                           )}
                         </div>
-                        <ChevronRight size={16} color="#64748B" />
+                        <ChevronRight size={16} color="var(--nexus-text-dim)" />
                       </div>
                     </Link>
                   )) : (
-                    <div style={{ padding: '20px', textAlign: 'center', color: '#64748B', fontSize: '13px' }}>
+                    <div style={{ padding: '20px', textAlign: 'center', color: 'var(--nexus-text-dim)', fontSize: '13px' }}>
                       Coming soon — products in development.
                     </div>
                   )}

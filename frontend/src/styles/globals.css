@@ -1,6 +1,7 @@
 /* NEXUS PRIME — Avant-Garde Futuristic Visual Identity */
 
-:root {
+:root,
+[data-theme="dark"] {
   --nexus-bg: #08090C;
   --nexus-surface: #0E1017;
   --nexus-surface-hover: #151822;
@@ -20,6 +21,23 @@
   --font-mono: 'JetBrains Mono', monospace;
 }
 
+[data-theme="light"] {
+  --nexus-bg: #F1F5F9;
+  --nexus-surface: #FFFFFF;
+  --nexus-surface-hover: #F8FAFC;
+  --nexus-border: rgba(15, 23, 42, 0.12);
+  --nexus-border-hover: rgba(15, 23, 42, 0.3);
+  
+  --nexus-text: #0F172A;
+  --nexus-text-muted: #475569;
+  --nexus-text-dim: #64748B;
+
+  --nexus-accent-emerald: #059669;
+  --nexus-accent-cobalt: #2563EB;
+  --nexus-accent-violet: #7C3AED;
+  --nexus-accent-amber: #D97706;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -32,6 +50,7 @@ body {
   font-family: var(--font-sans);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Spatial Grid Mesh Pattern */
@@ -40,6 +59,12 @@ body {
     linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 40px 40px;
+}
+
+[data-theme="light"] .spatial-grid-bg {
+  background-image: 
+    linear-gradient(to right, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
 }
 
 /* Kinetic Light Aura */
@@ -55,10 +80,11 @@ body {
 
 /* Glassmorphism Surface */
 .glass-panel {
-  background: rgba(14, 16, 23, 0.7);
+  background: var(--nexus-surface);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--nexus-border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .glass-panel:hover {
@@ -101,7 +127,7 @@ body {
   height: 48px;
   padding: 0 24px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--nexus-surface);
   color: var(--nexus-text);
   font-size: 13px;
   font-weight: 700;
@@ -112,7 +138,7 @@ body {
 }
 
 .nexus-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--nexus-surface-hover);
   border-color: var(--nexus-border-hover);
 }
 
@@ -126,10 +152,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1E293B;
+  background: #64748B;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #94A3B8;
 }

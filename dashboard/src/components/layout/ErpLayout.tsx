@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   LayoutDashboard,
   Package,
@@ -12,7 +12,9 @@ import {
   Search,
   Bell,
   Zap,
-  Globe
+  Globe,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 interface ErpLayoutProps {
@@ -27,6 +29,32 @@ export const ErpLayout: React.FC<ErpLayoutProps> = ({
   children
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+  useEffect(() => {
+    try {
+      const savedTheme = localStorage.getItem('aethel_erp_theme') as 'dark' | 'light';
+      if (savedTheme) {
+        setTheme(savedTheme);
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    setTheme(prev => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      try {
+        localStorage.setItem('aethel_erp_theme', next);
+        document.documentElement.setAttribute('data-theme', next);
+      } catch (e) {
+        console.error(e);
+      }
+      return next;
+    });
+  };
 
   const menuItems = [
     { id: 'dashboard', label: 'Executive Telemetry', icon: LayoutDashboard, accent: '#6366f1' },
@@ -41,18 +69,19 @@ export const ErpLayout: React.FC<ErpLayoutProps> = ({
   ];
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', width: '100%', background: '#090B0E' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', width: '100%', background: 'var(--erp-bg-dark)', transition: 'background 0.3s ease' }}>
       {/* Left Navigation Sidebar */}
       <aside style={{
         width: '260px',
-        background: '#0C0E13',
-        borderRight: '1px solid rgba(255, 255, 255, 0.08)',
+        background: 'var(--erp-sidebar-bg)',
+        borderRight: '1px solid var(--erp-card-border)',
         display: 'flex',
         flexDirection: 'column',
-        flexShrink: 0
+        flexShrink: 0,
+        transition: 'background 0.3s ease, border-color 0.3s ease'
       }}>
         {/* Brand Header */}
-        <div style={{ padding: '24px 20px', borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+        <div style={{ padding: '24px 20px', borderBottom: '1px solid var(--erp-card-border)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{
               width: '36px',
@@ -67,10 +96,10 @@ export const ErpLayout: React.FC<ErpLayoutProps> = ({
               <Zap size={20} color="#fff" />
             </div>
             <div>
-              <div style={{ fontSize: '15px', fontWeight: '900', letterSpacing: '1px', color: '#F1F5F9', textTransform: 'uppercase' }}>
+              <div style={{ fontSize: '15px', fontWeight: '900', letterSpacing: '1px', color: 'var(--erp-text-main)', textTransform: 'uppercase' }}>
                 AETHEL<span style={{ color: '#6366f1' }}>.OS</span>
               </div>
-              <div style={{ fontSize: '10px', color: '#64748B', fontWeight: '600', letterSpacing: '0.5px' }}>
+              <div style={{ fontSize: '10px', color: 'var(--erp-text-dim)', fontWeight: '600', letterSpacing: '0.5px' }}>
                 OPERATIONAL OS v4.2
               </div>
             </div>
@@ -79,7 +108,7 @@ export const ErpLayout: React.FC<ErpLayoutProps> = ({
 
         {/* Navigation Menu */}
         <nav style={{ padding: '16px 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div style={{ padding: '8px 12px', fontSize: '10px', fontWeight: '800', color: '#475569', letterSpacing: '1px', textTransform: 'uppercase' }}>
+          <div style={{ padding: '8px 12px', fontSize: '10px', fontWeight: '800', color: 'var(--erp-text-dim)', letterSpacing: '1px', textTransform: 'uppercase' }}>
             Core Operations
           </div>
           {menuItems.map((item) => {
@@ -96,8 +125,8 @@ export const ErpLayout: React.FC<ErpLayoutProps> = ({
                   padding: '12px 14px',
                   borderRadius: '10px',
                   border: 'none',
-                  background: isActive ? 'rgba(255, 255, 255, 0.06)' : 'transparent',
-                  color: isActive ? '#FFFFFF' : '#94A3B8',
+                  background: isActive ? 'var(--erp-card-border)' : 'transparent',
+                  color: isActive ? 'var(--erp-text-main)' : 'var(--erp-text-muted)',
                   fontSize: '13px',
                   fontWeight: isActive ? '700' : '500',
                   cursor: 'pointer',
@@ -106,7 +135,7 @@ export const ErpLayout: React.FC<ErpLayoutProps> = ({
                   borderLeft: isActive ? `3px solid ${item.accent}` : '3px solid transparent'
                 }}
               >
-                <Icon size={18} color={isActive ? item.accent : '#64748B'} />
+                <Icon size={18} color={isActive ? item.accent : 'var(--erp-text-dim)'} />
                 <span>{item.label}</span>
               </button>
             );
@@ -114,12 +143,12 @@ export const ErpLayout: React.FC<ErpLayoutProps> = ({
         </nav>
 
         {/* Footer Telemetry Status */}
-        <div style={{ padding: '16px 20px', borderTop: '1px solid rgba(255, 255, 255, 0.06)', background: 'rgba(0, 0, 0, 0.2)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#34d399', fontWeight: '600' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#34d399', boxShadow: '0 0 8px #34d399' }}></span>
+        <div style={{ padding: '16px 20px', borderTop: '1px solid var(--erp-card-border)', background: 'var(--erp-bg-dark)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#10b981', fontWeight: '600' }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }}></span>
             PostgreSQL & Strapi Synced
           </div>
-          <div style={{ fontSize: '10px', color: '#64748B', marginTop: '4px' }}>
+          <div style={{ fontSize: '10px', color: 'var(--erp-text-dim)', marginTop: '4px' }}>
             Port 5181 • Latency 1.2ms
           </div>
         </div>
@@ -130,26 +159,27 @@ export const ErpLayout: React.FC<ErpLayoutProps> = ({
         {/* Top Header Command Bar */}
         <header style={{
           height: '64px',
-          background: 'rgba(12, 14, 19, 0.85)',
+          background: 'var(--erp-header-bg)',
           backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          borderBottom: '1px solid var(--erp-card-border)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '0 28px',
           position: 'sticky',
           top: 0,
-          zIndex: 100
+          zIndex: 100,
+          transition: 'background 0.3s ease, border-color 0.3s ease'
         }}>
           {/* Global Search Bar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '380px', background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '8px 14px' }}>
-            <Search size={16} color="#64748B" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '380px', background: 'var(--erp-card-bg)', border: '1px solid var(--erp-card-border)', borderRadius: '10px', padding: '8px 14px' }}>
+            <Search size={16} color="var(--erp-text-dim)" />
             <input
               type="text"
               placeholder="Search SKUs, Orders, Customers (Ctrl + K)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ background: 'transparent', border: 'none', color: '#F1F5F9', fontSize: '12px', outline: 'none', width: '100%' }}
+              style={{ background: 'transparent', border: 'none', color: 'var(--erp-text-main)', fontSize: '12px', outline: 'none', width: '100%' }}
             />
           </div>
 
@@ -160,18 +190,39 @@ export const ErpLayout: React.FC<ErpLayoutProps> = ({
               Storefront Live (Port 3001)
             </div>
 
-            <button style={{ background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8', cursor: 'pointer', position: 'relative' }}>
+            {/* Sun / Moon Theme Switcher */}
+            <button
+              onClick={toggleTheme}
+              title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+              style={{
+                background: 'var(--erp-card-bg)',
+                border: '1px solid var(--erp-card-border)',
+                borderRadius: '10px',
+                width: '36px',
+                height: '36px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--erp-text-main)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              {theme === 'dark' ? <Sun size={18} color="#F59E0B" /> : <Moon size={18} color="#6366f1" />}
+            </button>
+
+            <button style={{ background: 'var(--erp-card-bg)', border: '1px solid var(--erp-card-border)', borderRadius: '10px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--erp-text-muted)', cursor: 'pointer', position: 'relative' }}>
               <Bell size={18} />
               <span style={{ position: 'absolute', top: '6px', right: '6px', width: '6px', height: '6px', background: '#f43f5e', borderRadius: '50%' }}></span>
             </button>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingLeft: '12px', borderLeft: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingLeft: '12px', borderLeft: '1px solid var(--erp-card-border)' }}>
               <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '12px', fontWeight: '800' }}>
                 EX
               </div>
               <div style={{ textAlign: 'left' }}>
-                <div style={{ fontSize: '12px', fontWeight: '700', color: '#F1F5F9' }}>Evans Mugi</div>
-                <div style={{ fontSize: '10px', color: '#64748B' }}>Chief Architect</div>
+                <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--erp-text-main)' }}>Evans Mugi</div>
+                <div style={{ fontSize: '10px', color: 'var(--erp-text-dim)' }}>Chief Architect</div>
               </div>
             </div>
           </div>

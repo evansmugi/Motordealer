@@ -8,10 +8,10 @@ export const MarketingStudio: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: '900', color: '#F1F5F9', margin: 0, letterSpacing: '-0.5px' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: '900', color: 'var(--erp-text-main)', margin: 0, letterSpacing: '-0.5px' }}>
             Marketing & Campaign Studio
           </h1>
-          <p style={{ fontSize: '13px', color: '#94A3B8', marginTop: '4px' }}>
+          <p style={{ fontSize: '13px', color: 'var(--erp-text-muted)', marginTop: '4px' }}>
             Promotional code engine, campaign budget tracking, and landing page conversion analytics.
           </p>
         </div>
@@ -31,7 +31,7 @@ export const MarketingStudio: React.FC = () => {
 
       <div className="erp-card">
         <div className="erp-card-header">
-          <div style={{ fontSize: '15px', fontWeight: '800', color: '#F1F5F9' }}>Active Promo Campaigns</div>
+          <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--erp-text-main)' }}>Active Promo Campaigns</div>
           <span className="badge badge-rose">{CAMPAIGNS.length} CAMPAIGNS RUNNING</span>
         </div>
 
@@ -50,14 +50,14 @@ export const MarketingStudio: React.FC = () => {
           <tbody>
             {CAMPAIGNS.map((camp: CampaignItem) => (
               <tr key={camp.id}>
-                <td style={{ fontFamily: 'var(--erp-font-mono)', fontWeight: '800', color: '#fb7185' }}>{camp.code}</td>
-                <td style={{ fontWeight: '800', color: '#F1F5F9' }}>{camp.name}</td>
-                <td style={{ color: '#94A3B8' }}>{camp.discountType}</td>
-                <td style={{ fontWeight: '700', color: '#34d399' }}>
+                <td style={{ fontFamily: 'var(--erp-font-mono)', fontWeight: '800', color: '#e11d48' }}>{camp.code}</td>
+                <td style={{ fontWeight: '800', color: 'var(--erp-text-main)' }}>{camp.name}</td>
+                <td style={{ color: 'var(--erp-text-muted)' }}>{camp.discountType}</td>
+                <td style={{ fontWeight: '700', color: '#10b981' }}>
                   {camp.discountType === 'PERCENTAGE' ? `${camp.discountValue}% OFF` : `$${camp.discountValue} OFF`}
                 </td>
-                <td style={{ fontWeight: '700', color: '#F1F5F9' }}>{camp.usageCount} redeemed</td>
-                <td style={{ color: '#60a5fa' }}>${camp.budget.toLocaleString()}</td>
+                <td style={{ fontWeight: '700', color: 'var(--erp-text-main)' }}>{camp.usageCount} redeemed</td>
+                <td style={{ color: '#2563eb' }}>${camp.budget.toLocaleString()}</td>
                 <td>
                   <span className="badge badge-rose">ACTIVE</span>
                 </td>

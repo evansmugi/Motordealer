@@ -26,10 +26,10 @@ export const ProductCatalog: React.FC = () => {
       {/* Top Header with Catalog Accent Fuse Button */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: '900', color: '#F1F5F9', margin: 0, letterSpacing: '-0.5px' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: '900', color: 'var(--erp-text-main)', margin: 0, letterSpacing: '-0.5px' }}>
             Product & SKU Matrix
           </h1>
-          <p style={{ fontSize: '13px', color: '#94A3B8', marginTop: '4px' }}>
+          <p style={{ fontSize: '13px', color: 'var(--erp-text-muted)', marginTop: '4px' }}>
             Manage product specs, pricing, variant matrix, and sync state to the Storefront.
           </p>
         </div>
@@ -54,7 +54,7 @@ export const ProductCatalog: React.FC = () => {
       </div>
 
       {syncStatus && (
-        <div style={{ padding: '12px 16px', background: 'rgba(59, 130, 246, 0.15)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '10px', color: '#60a5fa', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ padding: '12px 16px', background: 'rgba(59, 130, 246, 0.15)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '10px', color: '#2563eb', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <CheckCircle2 size={18} /> {syncStatus}
         </div>
       )}
@@ -62,14 +62,14 @@ export const ProductCatalog: React.FC = () => {
       {/* Catalog Search & Data Grid Table */}
       <div className="erp-card">
         <div className="erp-card-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '320px', background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '8px', padding: '6px 12px' }}>
-            <Search size={16} color="#64748B" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '320px', background: 'var(--erp-bg-dark)', border: '1px solid var(--erp-card-border)', borderRadius: '8px', padding: '6px 12px' }}>
+            <Search size={16} color="var(--erp-text-dim)" />
             <input
               type="text"
               placeholder="Search by product name or SKU..."
               value={filterText}
               onChange={(e) => setFilterText(e.target.value)}
-              style={{ background: 'transparent', border: 'none', color: '#F1F5F9', fontSize: '12px', outline: 'none', width: '100%' }}
+              style={{ background: 'transparent', border: 'none', color: 'var(--erp-text-main)', fontSize: '12px', outline: 'none', width: '100%' }}
             />
           </div>
           <span className="badge badge-blue">{filtered.length} SKUs Listed</span>
@@ -94,33 +94,33 @@ export const ProductCatalog: React.FC = () => {
                   <img
                     src={prod.images[0]}
                     alt={prod.name}
-                    style={{ width: '44px', height: '44px', borderRadius: '8px', objectFit: 'cover', border: '1px solid rgba(255,255,255,0.1)' }}
+                    style={{ width: '44px', height: '44px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--erp-card-border)' }}
                   />
                 </td>
                 <td>
-                  <div style={{ fontWeight: '800', color: '#F1F5F9' }}>{prod.name}</div>
-                  <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>Brand: {prod.brand} • Rating: {prod.rating}★</div>
+                  <div style={{ fontWeight: '800', color: 'var(--erp-text-main)' }}>{prod.name}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--erp-text-dim)', marginTop: '2px' }}>Brand: {prod.brand} • Rating: {prod.rating}★</div>
                 </td>
-                <td style={{ fontFamily: 'var(--erp-font-mono)', fontWeight: '700', color: '#60a5fa' }}>{prod.sku}</td>
+                <td style={{ fontFamily: 'var(--erp-font-mono)', fontWeight: '700', color: '#2563eb' }}>{prod.sku}</td>
                 <td>
-                  <div style={{ fontWeight: '800', color: '#34d399' }}>${prod.price.toLocaleString()}</div>
-                  <div style={{ fontSize: '11px', color: '#64748B' }}>Cost: ${prod.costPrice.toLocaleString()}</div>
+                  <div style={{ fontWeight: '800', color: '#10b981' }}>${prod.price.toLocaleString()}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--erp-text-dim)' }}>Cost: ${prod.costPrice.toLocaleString()}</div>
                 </td>
                 <td>
-                  <div style={{ fontWeight: '800', color: prod.stock < 20 ? '#fb7185' : '#F1F5F9' }}>
+                  <div style={{ fontWeight: '800', color: prod.stock < 20 ? '#e11d48' : 'var(--erp-text-main)' }}>
                     {prod.stock} units
                   </div>
-                  <div style={{ fontSize: '11px', color: '#fbbf24' }}>Reserved: {prod.reservedStock}</div>
+                  <div style={{ fontSize: '11px', color: '#d97706' }}>Reserved: {prod.reservedStock}</div>
                 </td>
                 <td>
                   <span className="badge badge-emerald">PUBLISHED</span>
                 </td>
                 <td>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: '6px', padding: '6px', color: '#94A3B8', cursor: 'pointer' }}>
+                    <button style={{ background: 'var(--erp-bg-dark)', border: '1px solid var(--erp-card-border)', borderRadius: '6px', padding: '6px', color: 'var(--erp-text-muted)', cursor: 'pointer' }}>
                       <Eye size={14} />
                     </button>
-                    <button style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: '6px', padding: '6px', color: '#60a5fa', cursor: 'pointer' }}>
+                    <button style={{ background: 'var(--erp-bg-dark)', border: '1px solid var(--erp-card-border)', borderRadius: '6px', padding: '6px', color: '#2563eb', cursor: 'pointer' }}>
                       <Edit3 size={14} />
                     </button>
                   </div>

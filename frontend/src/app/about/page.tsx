@@ -64,10 +64,10 @@ export default function AboutPage() {
           }}>
             ABOUT US
           </div>
-          <h1 style={{ fontSize: '40px', fontWeight: '900', color: '#F8FAFC', marginBottom: '16px', lineHeight: '1.15' }}>
+          <h1 style={{ fontSize: '40px', fontWeight: '900', color: 'var(--nexus-text)', marginBottom: '16px', lineHeight: '1.15' }}>
             Building the Infrastructure for Tomorrow&apos;s Operators
           </h1>
-          <p style={{ fontSize: '16px', color: '#94A3B8', lineHeight: '1.8' }}>
+          <p style={{ fontSize: '16px', color: 'var(--nexus-text-muted)', lineHeight: '1.8' }}>
             NEXUS PRIME is the premier platform for sourcing, deploying, and managing next-generation hardware systems — from bio-neural interfaces to quantum compute modules. We exist to empower researchers, engineers, and operators with the tools they need to build the future.
           </p>
         </div>
@@ -83,10 +83,10 @@ export default function AboutPage() {
         }}>
           {STATS.map((stat, i) => (
             <div key={i} style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '32px', fontWeight: '900', color: '#F8FAFC', fontFamily: 'var(--font-mono)' }}>
+              <div style={{ fontSize: '32px', fontWeight: '900', color: 'var(--nexus-text)', fontFamily: 'var(--font-mono)' }}>
                 {stat.value}
               </div>
-              <div style={{ fontSize: '12px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '4px' }}>
+              <div style={{ fontSize: '12px', color: 'var(--nexus-text-dim)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '4px' }}>
                 {stat.label}
               </div>
             </div>
@@ -96,7 +96,7 @@ export default function AboutPage() {
 
       {/* Values */}
       <section style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 40px 48px' }}>
-        <h2 style={{ fontSize: '24px', fontWeight: '900', color: '#F8FAFC', marginBottom: '24px', textAlign: 'center' }}>
+        <h2 style={{ fontSize: '24px', fontWeight: '900', color: 'var(--nexus-text)', marginBottom: '24px', textAlign: 'center' }}>
           Our Engineering Principles
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
@@ -115,8 +115,8 @@ export default function AboutPage() {
               }}>
                 {value.icon}
               </div>
-              <h3 style={{ fontSize: '16px', fontWeight: '900', color: '#F8FAFC', marginBottom: '8px' }}>{value.title}</h3>
-              <p style={{ fontSize: '13px', color: '#94A3B8', lineHeight: '1.7' }}>{value.description}</p>
+              <h3 style={{ fontSize: '16px', fontWeight: '900', color: 'var(--nexus-text)', marginBottom: '8px' }}>{value.title}</h3>
+              <p style={{ fontSize: '13px', color: 'var(--nexus-text-muted)', lineHeight: '1.7' }}>{value.description}</p>
             </div>
           ))}
         </div>
@@ -129,10 +129,10 @@ export default function AboutPage() {
           background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(16, 185, 129, 0.05) 100%)',
           border: '1px solid rgba(59, 130, 246, 0.15)', textAlign: 'center'
         }}>
-          <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#F8FAFC', marginBottom: '16px' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: '900', color: 'var(--nexus-text)', marginBottom: '16px' }}>
             &ldquo;We don&apos;t sell products. We deploy capability.&rdquo;
           </h2>
-          <p style={{ fontSize: '15px', color: '#94A3B8', maxWidth: '560px', margin: '0 auto 24px', lineHeight: '1.7' }}>
+          <p style={{ fontSize: '15px', color: 'var(--nexus-text-muted)', maxWidth: '560px', margin: '0 auto 24px', lineHeight: '1.7' }}>
             NEXUS PRIME is purpose-built for operators who demand laboratory-grade precision, military-grade reliability, and consumer-grade usability — all in a single transaction.
           </p>
           <Link href="/products" className="nexus-btn-primary" style={{ display: 'inline-flex' }}>
@@ -143,7 +143,7 @@ export default function AboutPage() {
 
       {/* Team / Offices */}
       <section style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 40px 80px' }}>
-        <h2 style={{ fontSize: '20px', fontWeight: '900', color: '#F8FAFC', marginBottom: '20px', textAlign: 'center' }}>
+        <h2 style={{ fontSize: '20px', fontWeight: '900', color: 'var(--nexus-text)', marginBottom: '20px', textAlign: 'center' }}>
           Global Presence
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
@@ -153,10 +153,10 @@ export default function AboutPage() {
             { city: 'Tokyo', country: 'Japan', role: 'APAC R&D Lab', tz: 'JST (UTC+9)' },
           ].map((office, i) => (
             <div key={i} className="glass-panel" style={{ borderRadius: '16px', padding: '24px' }}>
-              <div style={{ fontSize: '16px', fontWeight: '900', color: '#F8FAFC', marginBottom: '4px' }}>{office.city}</div>
+              <div style={{ fontSize: '16px', fontWeight: '900', color: 'var(--nexus-text)', marginBottom: '4px' }}>{office.city}</div>
               <div style={{ fontSize: '12px', color: '#3B82F6', fontWeight: '700', marginBottom: '8px' }}>{office.country}</div>
-              <div style={{ fontSize: '12px', color: '#94A3B8', marginBottom: '4px' }}>{office.role}</div>
-              <div style={{ fontSize: '11px', color: '#64748B', fontFamily: 'var(--font-mono)' }}>{office.tz}</div>
+              <div style={{ fontSize: '12px', color: 'var(--nexus-text-muted)', marginBottom: '4px' }}>{office.role}</div>
+              <div style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontFamily: 'var(--font-mono)' }}>{office.tz}</div>
             </div>
           ))}
         </div>

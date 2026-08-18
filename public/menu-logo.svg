@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50" width="200" height="50">
+  <defs>
+    <linearGradient id="menuGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+  </defs>
+  <!-- Compact Emblem -->
+  <g transform="translate(5, 5)">
+    <polygon points="20,2 36,11 36,29 20,38 4,29 4,11" fill="url(#menuGlow)" />
+    <polygon points="20,6 32,13 32,27 20,34 8,27 8,13" fill="#0E1017" />
+    <path d="M 14 13 L 26 13 L 14 27 L 26 27" stroke="url(#menuGlow)" stroke-width="3" stroke-linecap="round" fill="none" />
+  </g>
+
+  <!-- Compact Text -->
+  <text x="50" y="27" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="18" fill="#F8FAFC" letter-spacing="1.5">
+    NEXUS<tspan fill="#3B82F6">.PRIME</tspan>
+  </text>
+  <text x="50" y="39" font-family="'JetBrains Mono', monospace" font-weight="600" font-size="8" fill="#64748B" letter-spacing="1">
+    OPERATIONAL CONTROL
+  </text>
+</svg>

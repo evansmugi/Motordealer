@@ -26,7 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="spatial-grid-bg">
-      <body style={{ background: '#08090C', color: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <body style={{ background: 'var(--nexus-bg)', color: 'var(--nexus-text)', minHeight: '100vh', display: 'flex', flexDirection: 'column', transition: 'background-color 0.3s ease, color 0.3s ease' }}>
         <StoreProvider>
           <Navbar />
           <main style={{ flex: 1 }}>

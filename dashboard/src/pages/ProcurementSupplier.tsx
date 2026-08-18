@@ -16,10 +16,10 @@ export const ProcurementSupplier: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: '900', color: '#F1F5F9', margin: 0, letterSpacing: '-0.5px' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: '900', color: 'var(--erp-text-main)', margin: 0, letterSpacing: '-0.5px' }}>
             Procurement & Supplier CRM
           </h1>
-          <p style={{ fontSize: '13px', color: '#94A3B8', marginTop: '4px' }}>
+          <p style={{ fontSize: '13px', color: 'var(--erp-text-muted)', marginTop: '4px' }}>
             Manage vendor relations, Purchase Orders (PO), Goods Received Notes (GRN), and landed cost calculations.
           </p>
         </div>
@@ -42,14 +42,14 @@ export const ProcurementSupplier: React.FC = () => {
       </div>
 
       {poCreatedNotice && (
-        <div style={{ padding: '12px 16px', background: 'rgba(139, 92, 246, 0.15)', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '10px', color: '#a78bfa', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ padding: '12px 16px', background: 'rgba(139, 92, 246, 0.15)', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '10px', color: '#7c3aed', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <CheckCircle2 size={18} /> {poCreatedNotice}
         </div>
       )}
 
       <div className="erp-card">
         <div className="erp-card-header">
-          <div style={{ fontSize: '15px', fontWeight: '800', color: '#F1F5F9' }}>Verified Vendor Network</div>
+          <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--erp-text-main)' }}>Verified Vendor Network</div>
           <span className="badge badge-purple">{supplierList.length} SUPPLIERS ACTIVE</span>
         </div>
 
@@ -68,14 +68,14 @@ export const ProcurementSupplier: React.FC = () => {
           <tbody>
             {supplierList.map((sup: SupplierItem) => (
               <tr key={sup.id}>
-                <td style={{ fontFamily: 'var(--erp-font-mono)', fontWeight: '700', color: '#a78bfa' }}>{sup.code}</td>
-                <td style={{ fontWeight: '800', color: '#F1F5F9' }}>{sup.name}</td>
-                <td style={{ color: '#94A3B8' }}>{sup.contactName}</td>
-                <td style={{ color: '#60a5fa' }}>{sup.email}</td>
-                <td style={{ fontWeight: '700', color: '#F1F5F9' }}>{sup.leadTimeDays} Days</td>
+                <td style={{ fontFamily: 'var(--erp-font-mono)', fontWeight: '700', color: '#7c3aed' }}>{sup.code}</td>
+                <td style={{ fontWeight: '800', color: 'var(--erp-text-main)' }}>{sup.name}</td>
+                <td style={{ color: 'var(--erp-text-muted)' }}>{sup.contactName}</td>
+                <td style={{ color: '#2563eb' }}>{sup.email}</td>
+                <td style={{ fontWeight: '700', color: 'var(--erp-text-main)' }}>{sup.leadTimeDays} Days</td>
                 <td>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#fbbf24', fontWeight: '800' }}>
-                    <Star size={14} fill="#fbbf24" /> {sup.rating}
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#d97706', fontWeight: '800' }}>
+                    <Star size={14} fill="#d97706" /> {sup.rating}
                   </span>
                 </td>
                 <td>

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { CAMPAIGNS, PRODUCTS } from '../../lib/mock-dataset';
-import { Tag, Zap, Clock, Copy, Check, ArrowRight } from 'lucide-react';
+import { Tag, Zap, Copy, Check, ArrowRight } from 'lucide-react';
 
 export default function CampaignsPage() {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
@@ -33,22 +33,22 @@ export default function CampaignsPage() {
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '6px',
             padding: '6px 14px', borderRadius: '8px', fontSize: '11px', fontWeight: '800',
-            background: 'rgba(139, 92, 246, 0.2)', color: '#A78BFA',
+            background: 'rgba(139, 92, 246, 0.2)', color: '#7C3AED',
             letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '16px'
           }}>
             <Zap size={14} /> Active Promotions
           </div>
-          <h1 style={{ fontSize: '36px', fontWeight: '900', color: '#F8FAFC', marginBottom: '12px', lineHeight: '1.2' }}>
+          <h1 style={{ fontSize: '36px', fontWeight: '900', color: 'var(--nexus-text)', marginBottom: '12px', lineHeight: '1.2' }}>
             Campaigns & Exclusive Deals
           </h1>
-          <p style={{ fontSize: '16px', color: '#94A3B8', maxWidth: '560px', lineHeight: '1.6' }}>
+          <p style={{ fontSize: '16px', color: 'var(--nexus-text-muted)', maxWidth: '560px', lineHeight: '1.6' }}>
             Unlock premium pricing on next-generation hardware. Apply promo codes at checkout to redeem your exclusive operator discount.
           </p>
         </div>
       </div>
 
       {/* Active Campaigns Grid */}
-      <h2 style={{ fontSize: '20px', fontWeight: '900', color: '#F8FAFC', marginBottom: '20px' }}>Active Campaigns</h2>
+      <h2 style={{ fontSize: '20px', fontWeight: '900', color: 'var(--nexus-text)', marginBottom: '20px' }}>Active Campaigns</h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px', marginBottom: '48px' }}>
         {CAMPAIGNS.filter(c => c.active).map(campaign => {
           const discountLabel = campaign.discountType === 'PERCENTAGE'
@@ -79,11 +79,11 @@ export default function CampaignsPage() {
                   <Tag size={14} /> {discountLabel}
                 </div>
 
-                <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#F8FAFC', marginBottom: '6px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '900', color: 'var(--nexus-text)', marginBottom: '6px' }}>
                   {campaign.name}
                 </h3>
 
-                <p style={{ fontSize: '12px', color: '#94A3B8', marginBottom: '16px' }}>
+                <p style={{ fontSize: '12px', color: 'var(--nexus-text-muted)', marginBottom: '16px' }}>
                   {campaign.usageCount} operators have used this campaign
                 </p>
 
@@ -91,11 +91,11 @@ export default function CampaignsPage() {
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: '8px',
                   padding: '10px 14px', borderRadius: '10px',
-                  background: 'rgba(255,255,255,0.04)', border: '1px dashed rgba(255,255,255,0.15)',
+                  background: 'var(--nexus-bg)', border: '1px dashed var(--nexus-border)',
                   marginBottom: '16px'
                 }}>
                   <span style={{
-                    flex: 1, fontSize: '15px', fontWeight: '900', color: '#F8FAFC',
+                    flex: 1, fontSize: '15px', fontWeight: '900', color: 'var(--nexus-text)',
                     fontFamily: 'var(--font-mono)', letterSpacing: '2px'
                   }}>
                     {campaign.code}
@@ -115,17 +115,17 @@ export default function CampaignsPage() {
                 {/* Usage Progress */}
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '6px' }}>
-                    <span style={{ color: '#64748B', fontWeight: '700' }}>Budget Utilization</span>
-                    <span style={{ color: '#F8FAFC', fontWeight: '800' }}>{Math.round(usagePercent)}%</span>
+                    <span style={{ color: 'var(--nexus-text-dim)', fontWeight: '700' }}>Budget Utilization</span>
+                    <span style={{ color: 'var(--nexus-text)', fontWeight: '800' }}>{Math.round(usagePercent)}%</span>
                   </div>
-                  <div style={{ height: '6px', borderRadius: '3px', background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+                  <div style={{ height: '6px', borderRadius: '3px', background: 'var(--nexus-border)', overflow: 'hidden' }}>
                     <div style={{
                       height: '100%', borderRadius: '3px', width: `${usagePercent}%`,
                       background: usagePercent > 75 ? 'linear-gradient(90deg, #F59E0B, #EF4444)' : 'linear-gradient(90deg, #3B82F6, #8B5CF6)',
                       transition: 'width 0.5s ease'
                     }} />
                   </div>
-                  <div style={{ fontSize: '11px', color: '#64748B', marginTop: '6px' }}>
+                  <div style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', marginTop: '6px' }}>
                     Budget: ${campaign.budget.toLocaleString()}
                   </div>
                 </div>
@@ -136,7 +136,7 @@ export default function CampaignsPage() {
       </div>
 
       {/* Featured Deals Section */}
-      <h2 style={{ fontSize: '20px', fontWeight: '900', color: '#F8FAFC', marginBottom: '20px' }}>Featured Deals</h2>
+      <h2 style={{ fontSize: '20px', fontWeight: '900', color: 'var(--nexus-text)', marginBottom: '20px' }}>Featured Deals</h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
         {featuredProducts.map(product => (
           <Link key={product.id} href={`/product/${product.slug}`} style={{ textDecoration: 'none' }}>
@@ -159,11 +159,11 @@ export default function CampaignsPage() {
                 )}
               </div>
               <div style={{ padding: '16px' }}>
-                <div style={{ fontSize: '14px', fontWeight: '800', color: '#F8FAFC', marginBottom: '8px' }}>{product.name}</div>
+                <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--nexus-text)', marginBottom: '8px' }}>{product.name}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '18px', fontWeight: '900', color: '#F8FAFC' }}>${product.price.toLocaleString()}</span>
+                  <span style={{ fontSize: '18px', fontWeight: '900', color: 'var(--nexus-text)' }}>${product.price.toLocaleString()}</span>
                   {product.compareAtPrice && (
-                    <span style={{ fontSize: '14px', color: '#64748B', textDecoration: 'line-through' }}>
+                    <span style={{ fontSize: '14px', color: 'var(--nexus-text-dim)', textDecoration: 'line-through' }}>
                       ${product.compareAtPrice.toLocaleString()}
                     </span>
                   )}

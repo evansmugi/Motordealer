@@ -45,7 +45,7 @@ export const ProductCard: React.FC<{ product: ProductItem }> = ({ product }) => 
       {/* Badge Overlay */}
       <div style={{ position: 'absolute', top: '16px', left: '16px', zIndex: 10, display: 'flex', gap: '8px' }}>
         {product.badge && (
-          <span style={{ padding: '4px 10px', borderRadius: '20px', background: 'rgba(59, 130, 246, 0.2)', border: '1px solid rgba(59, 130, 246, 0.4)', color: '#60A5FA', fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          <span style={{ padding: '4px 10px', borderRadius: '20px', background: 'rgba(59, 130, 246, 0.2)', border: '1px solid rgba(59, 130, 246, 0.4)', color: '#3B82F6', fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             {product.badge}
           </span>
         )}
@@ -76,34 +76,34 @@ export const ProductCard: React.FC<{ product: ProductItem }> = ({ product }) => 
       </button>
 
       {/* Image Media Showcase */}
-      <Link href={`/product/${product.slug}`} style={{ textDecoration: 'none', position: 'relative', display: 'block', height: '260px', overflow: 'hidden', background: '#090B0E' }}>
+      <Link href={`/product/${product.slug}`} style={{ textDecoration: 'none', position: 'relative', display: 'block', height: '260px', overflow: 'hidden', background: 'var(--nexus-surface)' }}>
         <img
           src={product.images[currentImageIndex] || product.images[0]}
           alt={product.name}
           style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
         />
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '60px', background: 'linear-gradient(to top, rgba(14, 16, 23, 1), transparent)' }}></div>
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '40px', background: 'linear-gradient(to top, var(--nexus-surface), transparent)' }}></div>
       </Link>
 
       {/* Card Body Details */}
       <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-            <span style={{ fontSize: '11px', color: '#64748B', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+            <span style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
               {product.brand}
             </span>
-            <span style={{ fontSize: '11px', color: '#fbbf24', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: '700' }}>
-              <Star size={12} fill="#fbbf24" /> {product.rating}
+            <span style={{ fontSize: '11px', color: '#D97706', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: '700' }}>
+              <Star size={12} fill="#D97706" /> {product.rating}
             </span>
           </div>
 
           <Link href={`/product/${product.slug}`} style={{ textDecoration: 'none' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#F8FAFC', marginBottom: '8px', lineHeight: '1.3' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--nexus-text)', marginBottom: '8px', lineHeight: '1.3' }}>
               {product.name}
             </h3>
           </Link>
 
-          <p style={{ fontSize: '12px', color: '#94A3B8', lineHeight: '1.5', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: '14px' }}>
+          <p style={{ fontSize: '12px', color: 'var(--nexus-text-muted)', lineHeight: '1.5', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: '14px' }}>
             {product.shortDescription}
           </p>
 
@@ -119,9 +119,9 @@ export const ProductCard: React.FC<{ product: ProductItem }> = ({ product }) => 
                     borderRadius: '6px',
                     fontSize: '10px',
                     fontWeight: '700',
-                    background: selectedVariant === v.color ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-                    border: selectedVariant === v.color ? '1px solid #3B82F6' : '1px solid rgba(255, 255, 255, 0.08)',
-                    color: selectedVariant === v.color ? '#60A5FA' : '#94A3B8',
+                    background: selectedVariant === v.color ? 'rgba(59, 130, 246, 0.2)' : 'var(--nexus-bg)',
+                    border: selectedVariant === v.color ? '1px solid #3B82F6' : '1px solid var(--nexus-border)',
+                    color: selectedVariant === v.color ? '#3B82F6' : 'var(--nexus-text-muted)',
                     cursor: 'pointer'
                   }}
                 >
@@ -133,13 +133,13 @@ export const ProductCard: React.FC<{ product: ProductItem }> = ({ product }) => 
         </div>
 
         {/* Pricing & Add to Cart Footer */}
-        <div style={{ paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ paddingTop: '12px', borderTop: '1px solid var(--nexus-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ fontSize: '18px', fontWeight: '900', color: '#F8FAFC' }}>
+            <div style={{ fontSize: '18px', fontWeight: '900', color: 'var(--nexus-text)' }}>
               ${product.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
             {product.compareAtPrice && (
-              <div style={{ fontSize: '11px', color: '#64748B', textDecoration: 'line-through' }}>
+              <div style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', textDecoration: 'line-through' }}>
                 ${product.compareAtPrice.toLocaleString()}
               </div>
             )}
@@ -148,7 +148,7 @@ export const ProductCard: React.FC<{ product: ProductItem }> = ({ product }) => 
           <div style={{ display: 'flex', gap: '8px' }}>
             <button
               onClick={handleQuickView}
-              style={{ background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '8px', color: '#94A3B8', cursor: 'pointer' }}
+              style={{ background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '8px', color: 'var(--nexus-text-muted)', cursor: 'pointer' }}
               title="Quick View"
             >
               <Eye size={16} />

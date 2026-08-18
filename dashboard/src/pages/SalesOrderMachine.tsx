@@ -46,10 +46,10 @@ export const SalesOrderMachine: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: '900', color: '#F1F5F9', margin: 0, letterSpacing: '-0.5px' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: '900', color: 'var(--erp-text-main)', margin: 0, letterSpacing: '-0.5px' }}>
             Sales & Order Fulfillment Machine
           </h1>
-          <p style={{ fontSize: '13px', color: '#94A3B8', marginTop: '4px' }}>
+          <p style={{ fontSize: '13px', color: 'var(--erp-text-muted)', marginTop: '4px' }}>
             Controlled transactional order state lifecycle execution & invoice generation.
           </p>
         </div>
@@ -72,14 +72,14 @@ export const SalesOrderMachine: React.FC = () => {
       </div>
 
       {statusMessage && (
-        <div style={{ padding: '12px 16px', background: 'rgba(132, 204, 22, 0.15)', border: '1px solid rgba(132, 204, 22, 0.3)', borderRadius: '10px', color: '#a3e635', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ padding: '12px 16px', background: 'rgba(132, 204, 22, 0.15)', border: '1px solid rgba(132, 204, 22, 0.3)', borderRadius: '10px', color: '#65a30d', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <CheckCircle2 size={18} /> {statusMessage}
         </div>
       )}
 
       <div className="erp-card">
         <div className="erp-card-header">
-          <div style={{ fontSize: '15px', fontWeight: '800', color: '#F1F5F9' }}>Order Fulfillment Pipeline</div>
+          <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--erp-text-main)' }}>Order Fulfillment Pipeline</div>
           <span className="badge badge-emerald">STATE MACHINE ACTIVE</span>
         </div>
 
@@ -100,15 +100,15 @@ export const SalesOrderMachine: React.FC = () => {
               const nextState = stateTransitions[ord.orderStatus];
               return (
                 <tr key={ord.id}>
-                  <td style={{ fontFamily: 'var(--erp-font-mono)', fontWeight: '700', color: '#a3e635' }}>{ord.orderNumber}</td>
+                  <td style={{ fontFamily: 'var(--erp-font-mono)', fontWeight: '700', color: '#65a30d' }}>{ord.orderNumber}</td>
                   <td>
-                    <div style={{ fontWeight: '700', color: '#F1F5F9' }}>{ord.customerName}</div>
-                    <div style={{ fontSize: '11px', color: '#64748B' }}>{ord.customerEmail}</div>
+                    <div style={{ fontWeight: '700', color: 'var(--erp-text-main)' }}>{ord.customerName}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--erp-text-dim)' }}>{ord.customerEmail}</div>
                   </td>
                   <td>
-                    <div style={{ fontSize: '12px', color: '#94A3B8' }}>{ord.items.map((i: { name: string; quantity: number }) => `${i.name} (x${i.quantity})`).join(', ')}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--erp-text-muted)' }}>{ord.items.map((i: { name: string; quantity: number }) => `${i.name} (x${i.quantity})`).join(', ')}</div>
                   </td>
-                  <td style={{ fontWeight: '800', color: '#34d399' }}>${ord.totalAmount.toLocaleString()}</td>
+                  <td style={{ fontWeight: '800', color: '#10b981' }}>${ord.totalAmount.toLocaleString()}</td>
                   <td>
                     <span className={`badge ${ord.orderStatus === 'DELIVERED' || ord.orderStatus === 'SHIPPED' ? 'badge-emerald' : 'badge-amber'}`}>
                       {ord.orderStatus}
@@ -136,13 +136,13 @@ export const SalesOrderMachine: React.FC = () => {
                         Advance to {nextState} <ChevronRight size={14} />
                       </button>
                     ) : (
-                      <span style={{ fontSize: '11px', color: '#64748B', fontWeight: '700' }}>Terminal State</span>
+                      <span style={{ fontSize: '11px', color: 'var(--erp-text-dim)', fontWeight: '700' }}>Terminal State</span>
                     )}
                   </td>
                   <td>
                     <button
                       onClick={() => setSelectedOrder(ord)}
-                      style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: '6px', padding: '6px 12px', color: '#94A3B8', fontSize: '12px', cursor: 'pointer' }}
+                      style={{ background: 'var(--erp-bg-dark)', border: '1px solid var(--erp-card-border)', borderRadius: '6px', padding: '6px 12px', color: 'var(--erp-text-muted)', fontSize: '12px', cursor: 'pointer' }}
                     >
                       View Drawer
                     </button>
@@ -155,32 +155,32 @@ export const SalesOrderMachine: React.FC = () => {
       </div>
 
       {selectedOrder && (
-        <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: '#0C0E13', borderLeft: '1px solid rgba(255,255,255,0.1)', padding: '28px', zIndex: 1000, overflowY: 'auto', boxShadow: '-10px 0 30px rgba(0,0,0,0.5)' }}>
+        <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: 'var(--erp-card-bg)', borderLeft: '1px solid var(--erp-card-border)', padding: '28px', zIndex: 1000, overflowY: 'auto', boxShadow: '-10px 0 30px rgba(0,0,0,0.2)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: '900', color: '#F1F5F9', margin: 0 }}>
+            <h2 style={{ fontSize: '18px', fontWeight: '900', color: 'var(--erp-text-main)', margin: 0 }}>
               Order Drawer: {selectedOrder.orderNumber}
             </h2>
-            <button onClick={() => setSelectedOrder(null)} style={{ background: 'transparent', border: 'none', color: '#94A3B8', fontSize: '18px', cursor: 'pointer' }}>✕</button>
+            <button onClick={() => setSelectedOrder(null)} style={{ background: 'transparent', border: 'none', color: 'var(--erp-text-muted)', fontSize: '18px', cursor: 'pointer' }}>✕</button>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ padding: '14px', background: 'rgba(255,255,255,0.02)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ fontSize: '11px', color: '#64748B', textTransform: 'uppercase', fontWeight: '700' }}>Customer Shipping Destination</div>
-              <div style={{ fontSize: '13px', fontWeight: '700', color: '#F1F5F9', marginTop: '4px' }}>{selectedOrder.customerName}</div>
-              <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '2px' }}>
+            <div style={{ padding: '14px', background: 'var(--erp-bg-dark)', borderRadius: '10px', border: '1px solid var(--erp-card-border)' }}>
+              <div style={{ fontSize: '11px', color: 'var(--erp-text-dim)', textTransform: 'uppercase', fontWeight: '700' }}>Customer Shipping Destination</div>
+              <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--erp-text-main)', marginTop: '4px' }}>{selectedOrder.customerName}</div>
+              <div style={{ fontSize: '12px', color: 'var(--erp-text-muted)', marginTop: '2px' }}>
                 {selectedOrder.shippingAddress.street}, {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} {selectedOrder.shippingAddress.zip}
               </div>
             </div>
 
-            <div style={{ padding: '14px', background: 'rgba(255,255,255,0.02)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ fontSize: '11px', color: '#64748B', textTransform: 'uppercase', fontWeight: '700', marginBottom: '10px' }}>Audit State Timeline</div>
+            <div style={{ padding: '14px', background: 'var(--erp-bg-dark)', borderRadius: '10px', border: '1px solid var(--erp-card-border)' }}>
+              <div style={{ fontSize: '11px', color: 'var(--erp-text-dim)', textTransform: 'uppercase', fontWeight: '700', marginBottom: '10px' }}>Audit State Timeline</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {selectedOrder.timeline.map((item: { status: string; timestamp: string; note: string }, idx: number) => (
                   <div key={idx} style={{ display: 'flex', gap: '10px', fontSize: '12px' }}>
-                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#a3e635', marginTop: '4px' }}></div>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#65a30d', marginTop: '4px' }}></div>
                     <div>
-                      <div style={{ fontWeight: '700', color: '#F1F5F9' }}>{item.status}</div>
-                      <div style={{ fontSize: '11px', color: '#64748B' }}>{new Date(item.timestamp).toLocaleString()} — {item.note}</div>
+                      <div style={{ fontWeight: '700', color: 'var(--erp-text-main)' }}>{item.status}</div>
+                      <div style={{ fontSize: '11px', color: 'var(--erp-text-dim)' }}>{new Date(item.timestamp).toLocaleString()} — {item.note}</div>
                     </div>
                   </div>
                 ))}

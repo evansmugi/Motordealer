@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, ShieldCheck, Cpu, Zap, Activity } from 'lucide-react';
+import { ArrowRight, Activity } from 'lucide-react';
 
 export const HeroBanner: React.FC = () => {
   return (
@@ -27,17 +27,17 @@ export const HeroBanner: React.FC = () => {
           gap: '8px',
           padding: '6px 16px',
           borderRadius: '30px',
-          background: 'rgba(255, 255, 255, 0.04)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          background: 'var(--nexus-surface)',
+          border: '1px solid var(--nexus-border)',
           fontSize: '12px',
           fontWeight: '700',
           color: '#3B82F6',
           marginBottom: '24px',
-          boxShadow: '0 0 20px rgba(59, 130, 246, 0.2)'
+          boxShadow: '0 0 20px rgba(59, 130, 246, 0.15)'
         }}>
           <Activity size={16} />
           <span>AETHEL NEURAL SYNTHESIS 2026</span>
-          <span style={{ color: '#64748B' }}>•</span>
+          <span style={{ color: 'var(--nexus-text-dim)' }}>•</span>
           <span style={{ color: '#10B981' }}>128-QUBIT DISCOVERY READY</span>
         </div>
 
@@ -47,7 +47,7 @@ export const HeroBanner: React.FC = () => {
           fontWeight: '900',
           lineHeight: '1.08',
           letterSpacing: '-2px',
-          color: '#F8FAFC',
+          color: 'var(--nexus-text)',
           marginBottom: '20px'
         }}>
           Next-Gen Bio-Neural & <br />
@@ -63,7 +63,7 @@ export const HeroBanner: React.FC = () => {
         {/* Narrative Description */}
         <p style={{
           fontSize: '18px',
-          color: '#94A3B8',
+          color: 'var(--nexus-text-muted)',
           maxWidth: '720px',
           margin: '0 auto 36px',
           lineHeight: '1.6'
@@ -76,8 +76,8 @@ export const HeroBanner: React.FC = () => {
           <Link href="/products" className="nexus-btn-primary">
             Explore Hardware Catalog <ArrowRight size={18} />
           </Link>
-          <Link href="/campaigns/nexus-launch" className="nexus-btn-secondary">
-            View Launch Campaign
+          <Link href="/campaigns" className="nexus-btn-secondary">
+            View Active Deals
           </Link>
         </div>
 
@@ -90,20 +90,20 @@ export const HeroBanner: React.FC = () => {
           textAlign: 'left'
         }}>
           <div className="glass-panel" style={{ padding: '20px', borderRadius: '16px' }}>
-            <div style={{ fontSize: '11px', color: '#64748B', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase' }}>BIO-LATENCY</div>
-            <div style={{ fontSize: '24px', fontWeight: '900', color: '#F8FAFC', margin: '4px 0' }}>0.8 ms</div>
+            <div style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase' }}>BIO-LATENCY</div>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--nexus-text)', margin: '4px 0' }}>0.8 ms</div>
             <div style={{ fontSize: '12px', color: '#10B981' }}>Retinal optical sync</div>
           </div>
 
           <div className="glass-panel" style={{ padding: '20px', borderRadius: '16px' }}>
-            <div style={{ fontSize: '11px', color: '#64748B', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase' }}>QUBIT COHERENCE</div>
-            <div style={{ fontSize: '24px', fontWeight: '900', color: '#F8FAFC', margin: '4px 0' }}>450 μs</div>
+            <div style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase' }}>QUBIT COHERENCE</div>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--nexus-text)', margin: '4px 0' }}>450 μs</div>
             <div style={{ fontSize: '12px', color: '#3B82F6' }}>128 Qubit superconducting</div>
           </div>
 
           <div className="glass-panel" style={{ padding: '20px', borderRadius: '16px' }}>
-            <div style={{ fontSize: '11px', color: '#64748B', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase' }}>DISPATCH LATENCY</div>
-            <div style={{ fontSize: '24px', fontWeight: '900', color: '#F8FAFC', margin: '4px 0' }}>Instant</div>
+            <div style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase' }}>DISPATCH LATENCY</div>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--nexus-text)', margin: '4px 0' }}>Instant</div>
             <div style={{ fontSize: '12px', color: '#8B5CF6' }}>Automated warehouse packing</div>
           </div>
         </div>

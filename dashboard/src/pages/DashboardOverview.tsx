@@ -16,10 +16,10 @@ export const DashboardOverview: React.FC = () => {
       {/* Top Section Header with Fuse Button Standard */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: '900', color: '#F1F5F9', margin: 0, letterSpacing: '-0.5px' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: '900', color: 'var(--erp-text-main)', margin: 0, letterSpacing: '-0.5px' }}>
             Executive Operations Telemetry
           </h1>
-          <p style={{ fontSize: '13px', color: '#94A3B8', marginTop: '4px' }}>
+          <p style={{ fontSize: '13px', color: 'var(--erp-text-muted)', marginTop: '4px' }}>
             Real-time business performance, warehouse velocity, and order pipeline analytics.
           </p>
         </div>
@@ -44,53 +44,53 @@ export const DashboardOverview: React.FC = () => {
       {/* KPI Cards Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '18px' }}>
         <div className="erp-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#94A3B8', fontSize: '12px', fontWeight: '700' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--erp-text-muted)', fontSize: '12px', fontWeight: '700' }}>
             <span>TOTAL REVENUE</span>
             <DollarSign size={18} color="#6366f1" />
           </div>
-          <div style={{ fontSize: '28px', fontWeight: '900', color: '#F1F5F9', margin: '10px 0 4px' }}>
+          <div style={{ fontSize: '28px', fontWeight: '900', color: 'var(--erp-text-main)', margin: '10px 0 4px' }}>
             ${totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#34d399', fontWeight: '700' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#10b981', fontWeight: '700' }}>
             <ArrowUpRight size={14} /> +24.8% vs last week
           </div>
         </div>
 
         <div className="erp-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#94A3B8', fontSize: '12px', fontWeight: '700' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--erp-text-muted)', fontSize: '12px', fontWeight: '700' }}>
             <span>ACTIVE ORDERS</span>
             <ShoppingBag size={18} color="#3b82f6" />
           </div>
-          <div style={{ fontSize: '28px', fontWeight: '900', color: '#F1F5F9', margin: '10px 0 4px' }}>
+          <div style={{ fontSize: '28px', fontWeight: '900', color: 'var(--erp-text-main)', margin: '10px 0 4px' }}>
             {totalOrders}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#34d399', fontWeight: '700' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#10b981', fontWeight: '700' }}>
             <ArrowUpRight size={14} /> 100% Payment Verified
           </div>
         </div>
 
         <div className="erp-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#94A3B8', fontSize: '12px', fontWeight: '700' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--erp-text-muted)', fontSize: '12px', fontWeight: '700' }}>
             <span>PENDING FULFILLMENT</span>
             <Truck size={18} color="#f59e0b" />
           </div>
-          <div style={{ fontSize: '28px', fontWeight: '900', color: '#F1F5F9', margin: '10px 0 4px' }}>
+          <div style={{ fontSize: '28px', fontWeight: '900', color: 'var(--erp-text-main)', margin: '10px 0 4px' }}>
             {pendingFulfillment}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#fbbf24', fontWeight: '700' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#d97706', fontWeight: '700' }}>
             Alpha Central Allocated
           </div>
         </div>
 
         <div className="erp-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#94A3B8', fontSize: '12px', fontWeight: '700' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--erp-text-muted)', fontSize: '12px', fontWeight: '700' }}>
             <span>LOW STOCK ALERTS</span>
             <AlertTriangle size={18} color="#f43f5e" />
           </div>
-          <div style={{ fontSize: '28px', fontWeight: '900', color: '#F1F5F9', margin: '10px 0 4px' }}>
+          <div style={{ fontSize: '28px', fontWeight: '900', color: 'var(--erp-text-main)', margin: '10px 0 4px' }}>
             {lowStockCount} SKUs
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#fb7185', fontWeight: '700' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#e11d48', fontWeight: '700' }}>
             Reorder point triggered
           </div>
         </div>
@@ -102,8 +102,8 @@ export const DashboardOverview: React.FC = () => {
         <div className="erp-card">
           <div className="erp-card-header">
             <div>
-              <div style={{ fontSize: '15px', fontWeight: '800', color: '#F1F5F9' }}>Live Order Stream</div>
-              <div style={{ fontSize: '11px', color: '#64748B' }}>State Machine Orders & Dispatch Status</div>
+              <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--erp-text-main)' }}>Live Order Stream</div>
+              <div style={{ fontSize: '11px', color: 'var(--erp-text-dim)' }}>State Machine Orders & Dispatch Status</div>
             </div>
             <span className="badge badge-emerald">REALTIME SYNC</span>
           </div>
@@ -122,12 +122,12 @@ export const DashboardOverview: React.FC = () => {
             <tbody>
               {ORDERS.map((ord: OrderItem) => (
                 <tr key={ord.id}>
-                  <td style={{ fontFamily: 'var(--erp-font-mono)', fontWeight: '700', color: '#60a5fa' }}>{ord.orderNumber}</td>
+                  <td style={{ fontFamily: 'var(--erp-font-mono)', fontWeight: '700', color: '#2563eb' }}>{ord.orderNumber}</td>
                   <td>
-                    <div style={{ fontWeight: '700' }}>{ord.customerName}</div>
-                    <div style={{ fontSize: '11px', color: '#64748B' }}>{ord.customerEmail}</div>
+                    <div style={{ fontWeight: '700', color: 'var(--erp-text-main)' }}>{ord.customerName}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--erp-text-dim)' }}>{ord.customerEmail}</div>
                   </td>
-                  <td style={{ fontWeight: '800', color: '#F1F5F9' }}>${ord.totalAmount.toLocaleString()}</td>
+                  <td style={{ fontWeight: '800', color: 'var(--erp-text-main)' }}>${ord.totalAmount.toLocaleString()}</td>
                   <td>
                     <span className={`badge ${ord.orderStatus === 'SHIPPED' ? 'badge-emerald' : 'badge-amber'}`}>
                       {ord.orderStatus}
@@ -136,7 +136,7 @@ export const DashboardOverview: React.FC = () => {
                   <td>
                     <span className="badge badge-blue">{ord.paymentStatus}</span>
                   </td>
-                  <td style={{ fontSize: '11px', color: '#94A3B8' }}>{new Date(ord.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                  <td style={{ fontSize: '11px', color: 'var(--erp-text-muted)' }}>{new Date(ord.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                 </tr>
               ))}
             </tbody>
@@ -146,11 +146,11 @@ export const DashboardOverview: React.FC = () => {
         {/* Multi-Warehouse Status Panel */}
         <div className="erp-card">
           <div className="erp-card-header">
-            <div style={{ fontSize: '15px', fontWeight: '800', color: '#F1F5F9' }}>Warehouse Matrix</div>
+            <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--erp-text-main)' }}>Warehouse Matrix</div>
             <select
               value={selectedWarehouse}
               onChange={(e) => setSelectedWarehouse(e.target.value)}
-              style={{ background: '#1E293B', border: '1px solid #334155', color: '#F1F5F9', borderRadius: '6px', padding: '4px 8px', fontSize: '11px' }}
+              style={{ background: 'var(--erp-bg-dark)', border: '1px solid var(--erp-card-border)', color: 'var(--erp-text-main)', borderRadius: '6px', padding: '4px 8px', fontSize: '11px' }}
             >
               <option value="ALL">All Warehouses</option>
               <option value="wh-alpha">Alpha Central</option>
@@ -161,15 +161,15 @@ export const DashboardOverview: React.FC = () => {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {PRODUCTS.slice(0, 4).map((prod: ProductItem, idx: number) => (
-              <div key={idx} style={{ padding: '12px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '10px' }}>
+              <div key={idx} style={{ padding: '12px', background: 'var(--erp-bg-dark)', border: '1px solid var(--erp-card-border)', borderRadius: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: '700' }}>
-                  <span style={{ color: '#F1F5F9' }}>{prod.sku}</span>
-                  <span style={{ color: '#60a5fa', fontFamily: 'var(--erp-font-mono)' }}>STOCK: {prod.stock}</span>
+                  <span style={{ color: 'var(--erp-text-main)' }}>{prod.sku}</span>
+                  <span style={{ color: '#2563eb', fontFamily: 'var(--erp-font-mono)' }}>STOCK: {prod.stock}</span>
                 </div>
-                <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>{prod.name}</div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginTop: '8px', color: '#94A3B8' }}>
-                  <span>Available: <strong style={{ color: '#34d399' }}>{prod.stock - prod.reservedStock}</strong></span>
-                  <span>Reserved: <strong style={{ color: '#fbbf24' }}>{prod.reservedStock}</strong></span>
+                <div style={{ fontSize: '11px', color: 'var(--erp-text-dim)', marginTop: '2px' }}>{prod.name}</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginTop: '8px', color: 'var(--erp-text-muted)' }}>
+                  <span>Available: <strong style={{ color: '#10b981' }}>{prod.stock - prod.reservedStock}</strong></span>
+                  <span>Reserved: <strong style={{ color: '#d97706' }}>{prod.reservedStock}</strong></span>
                 </div>
               </div>
             ))}

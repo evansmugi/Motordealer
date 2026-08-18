@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { PRODUCTS, PRODUCTS as productList, ProductItem } from '../lib/mock-dataset';
+import { ProductItem } from '../lib/mock-dataset';
 
 export interface CartItem {
   product: ProductItem;
@@ -16,6 +16,8 @@ interface StoreContextType {
   isCartOpen: boolean;
   isSearchOpen: boolean;
   quickViewProduct: ProductItem | null;
+  theme: 'dark' | 'light';
+  toggleTheme: () => void;
   addToCart: (product: ProductItem, variantColor?: string, variantOption?: string, quantity?: number) => void;
   removeFromCart: (productId: string, variantColor: string) => void;
   updateQuantity: (productId: string, variantColor: string, quantity: number) => void;
@@ -36,14 +38,20 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<ProductItem | null>(null);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
   // Load from localStorage on mount
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem('nexus_cart');
       const savedWishlist = localStorage.getItem('nexus_wishlist');
+      const savedTheme = localStorage.getItem('nexus_theme') as 'dark' | 'light';
       if (savedCart) setCart(JSON.parse(savedCart));
       if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
+      if (savedTheme) {
+        setTheme(savedTheme);
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -58,6 +66,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       console.error(e);
     }
   }, [cart, wishlist]);
+
+  const toggleTheme = () => {
+    setTheme(prev => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      try {
+        localStorage.setItem('nexus_theme', next);
+        document.documentElement.setAttribute('data-theme', next);
+      } catch (e) {
+        console.error(e);
+      }
+      return next;
+    });
+  };
 
   const addToCart = (
     product: ProductItem,
@@ -115,6 +136,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         isCartOpen,
         isSearchOpen,
         quickViewProduct,
+        theme,
+        toggleTheme,
         addToCart,
         removeFromCart,
         updateQuantity,
