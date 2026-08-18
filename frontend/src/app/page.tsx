@@ -70,7 +70,7 @@ export default async function HomePage() {
 
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <a 
-              href="http://localhost:1337/admin" 
+              href="http://localhost:1338/admin" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="gradient-button"
@@ -81,7 +81,7 @@ export default async function HomePage() {
             </a>
 
             <a 
-              href="http://localhost:1337/api" 
+              href="http://localhost:1338/api" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="secondary-button"
@@ -129,7 +129,7 @@ export default async function HomePage() {
               <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.25rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-subtle)', marginBottom: '0.4rem', fontWeight: 600 }}>HOST ENDPOINT</div>
                 <div className="code-font" style={{ fontSize: '0.95rem', fontWeight: 600, color: '#a5b4fc' }}>
-                  http://localhost:1337/api
+                  http://localhost:1338/api
                 </div>
               </div>
             </div>
@@ -238,7 +238,7 @@ export default async function HomePage() {
                 <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, marginBottom: '1rem' }}>1</div>
                 <h4 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '0.5rem' }}>Login to Admin</h4>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                  Open <a href="http://localhost:1337/admin" target="_blank" style={{ color: '#818cf8', textDecoration: 'underline' }}>http://localhost:1337/admin</a> and create your administrator credentials.
+                  Open <a href="http://localhost:1338/admin" target="_blank" style={{ color: '#818cf8', textDecoration: 'underline' }}>http://localhost:1338/admin</a> and create your administrator credentials.
                 </p>
               </div>
 

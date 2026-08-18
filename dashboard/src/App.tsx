@@ -76,7 +76,7 @@ export default function App() {
         setStrapiStatus({ connected: res.status === 404 || res.ok, latency });
       } catch {
         try {
-          const resLocal = await fetch('http://localhost:1337/api');
+          const resLocal = await fetch('http://localhost:1338/api');
           setStrapiStatus({ connected: resLocal.status === 404 || resLocal.ok, latency: Date.now() - start });
         } catch {
           setStrapiStatus({ connected: false, latency: 0 });

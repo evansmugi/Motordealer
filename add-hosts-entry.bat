@@ -6,8 +6,8 @@ if %errorlevel% neq 0 (
     exit /b
 )
 
-:: Add strapi.test to hosts file
+:: Add motordealer.test to hosts file
 echo. >> C:\Windows\System32\drivers\etc\hosts
-echo 127.0.0.1 strapi.test  #laragon magic! >> C:\Windows\System32\drivers\etc\hosts
-echo Done! strapi.test added to hosts file.
+echo 127.0.0.1 motordealer.test  #laragon magic! >> C:\Windows\System32\drivers\etc\hosts
+echo Done! motordealer.test added to hosts file.
 pause

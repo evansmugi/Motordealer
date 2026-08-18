@@ -61,7 +61,7 @@ export default function Header({ status }: HeaderProps) {
           </div>
 
           <a 
-            href="http://localhost:1337/admin" 
+            href="http://localhost:1338/admin" 
             target="_blank" 
             rel="noopener noreferrer"
             className="gradient-button"
