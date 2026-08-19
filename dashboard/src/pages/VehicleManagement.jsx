@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { 
   Car, Plus, Eye, Pencil, Trash2, Search, Filter, ShieldCheck, 
   TrendingUp, Layers, CheckCircle2, AlertTriangle, ArrowUpRight, DollarSign,
-  Tag, Award, Sparkles, X, PlusCircle, Check, ArrowLeft
+  Tag, Award, Sparkles, X, PlusCircle, Check, ArrowLeft, Star
 } from 'lucide-react';
 import CRMLayout from '../components/crm/CRMLayout';
 import PredictiveSelect from '../components/common/PredictiveSelect';
@@ -12,6 +12,7 @@ import ActionTooltip from '../components/common/ActionTooltip';
 import ActionConfirmModal from '../components/common/ActionConfirmModal';
 import { VEHICLES } from '../data/mock-dataset.ts';
 import { getStoredBrands, saveStoredBrands } from '../lib/brands';
+import { getStoredVehicles, upsertStoredVehicle } from '../lib/vehicles';
 import { useCRMStore } from '../context/CRMStore';
 
 const STOREFRONT_MASTER_VEHICLES = (VEHICLES || []).map(v => ({
@@ -62,12 +63,16 @@ export default function VehicleManagement() {
     setLoading(true);
     let strapiList = [];
     try {
-      const res = await fetch('http://localhost:1338/api/car-listings?pagination[limit]=100');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const res = await fetch('http://localhost:1338/api/car-listings?pagination[limit]=100', { signal: controller.signal });
+      clearTimeout(timeoutId);
       if (res.ok) {
         const json = await res.json();
         if (json && Array.isArray(json.data)) {
           strapiList = json.data.map(item => {
             const attr = item.attributes || item;
+            const isF = Boolean(attr.isFeatured || attr.offer_type === 'Featured' || (attr.badges && attr.badges.includes('FEATURED')));
             return {
               id: String(item.id || attr.id),
               listing_title: attr.listing_title || `${attr.year || ''} ${attr.make || ''} ${attr.model || ''}`,
@@ -82,7 +87,8 @@ export default function VehicleManagement() {
               mileage: attr.mileage || '4,500 KM',
               color: attr.color || 'Black',
               interior_color: attr.interior_color || 'Black',
-              offer_type: attr.offer_type || 'Featured',
+              offer_type: isF ? 'Featured' : (attr.offer_type || 'For Sale'),
+              isFeatured: isF,
               currentStatus: attr.currentStatus || 'Available',
               features: Array.isArray(attr.features) ? attr.features : ['Panoramic Sunroof'],
               images: Array.isArray(attr.images) && attr.images.length > 0
@@ -95,29 +101,55 @@ export default function VehicleManagement() {
       }
     } catch (e) {
       console.warn('Strapi fetch fallback:', e);
+    } finally {
+      const persistentLocal = getStoredVehicles();
+      const merged = [...strapiList];
+      
+      persistentLocal.forEach(pItem => {
+        const existingIdx = merged.findIndex(m => String(m.id) === String(pItem.id));
+        const isF = Boolean(pItem.isFeatured || pItem.offer_type === 'Featured');
+        const normalized = { ...pItem, isFeatured: isF, offer_type: isF ? 'Featured' : (pItem.offer_type || 'For Sale') };
+        if (existingIdx >= 0) {
+          merged[existingIdx] = { ...merged[existingIdx], ...normalized };
+        } else {
+          merged.push(normalized);
+        }
+      });
+
+      STOREFRONT_MASTER_VEHICLES.forEach(masterItem => {
+        if (!merged.some(m => String(m.id) === String(masterItem.id))) {
+          const isF = masterItem.id === 'veh-001' || masterItem.offer_type === 'Featured';
+          merged.push({
+            ...masterItem,
+            isFeatured: isF,
+            offer_type: isF ? 'Featured' : (masterItem.offer_type || 'For Sale')
+          });
+        }
+      });
+
+      setListings(merged);
+      setLoading(false);
     }
-
-    const persistentLocal = getStoredVehicles();
-    const merged = [...strapiList];
-    
-    persistentLocal.forEach(pItem => {
-      const existingIdx = merged.findIndex(m => String(m.id) === String(pItem.id));
-      if (existingIdx >= 0) {
-        merged[existingIdx] = { ...merged[existingIdx], ...pItem };
-      } else {
-        merged.push(pItem);
-      }
-    });
-
-    STOREFRONT_MASTER_VEHICLES.forEach(masterItem => {
-      if (!merged.some(m => String(m.id) === String(masterItem.id))) {
-        merged.push(masterItem);
-      }
-    });
-
-    setListings(merged);
-    setLoading(false);
   }
+
+  const toggleFeaturedStatus = (listing) => {
+    const currentlyFeatured = Boolean(listing.isFeatured || listing.offer_type === 'Featured');
+    const nextFeatured = !currentlyFeatured;
+    const updated = {
+      ...listing,
+      isFeatured: nextFeatured,
+      offer_type: nextFeatured ? 'Featured' : 'For Sale'
+    };
+
+    setListings(prev => prev.map(item => String(item.id) === String(listing.id) ? updated : item));
+    upsertStoredVehicle(updated);
+
+    fetch(`http://localhost:1338/api/car-listings/${listing.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: { isFeatured: nextFeatured, offer_type: nextFeatured ? 'Featured' : 'For Sale' } })
+    }).catch(() => null);
+  };
 
   useEffect(() => {
     fetchListings();
@@ -135,8 +167,15 @@ export default function VehicleManagement() {
 
   const filteredListings = useMemo(() => {
     return listings.filter(item => {
-      if (selectedOfferType !== 'All' && item.offer_type !== selectedOfferType) return false;
-      if (selectedMake !== 'All' && item.make !== selectedMake) return false;
+      if (selectedOfferType && selectedOfferType !== 'All' && selectedOfferType !== 'Select option...') {
+        if (selectedOfferType === 'Featured') {
+          const isF = Boolean(item.isFeatured || item.offer_type === 'Featured' || (Array.isArray(item.badges) && item.badges.includes('FEATURED')));
+          if (!isF) return false;
+        } else if (item.offer_type !== selectedOfferType) {
+          return false;
+        }
+      }
+      if (selectedMake && selectedMake !== 'All' && selectedMake !== 'Select option...' && item.make !== selectedMake) return false;
       if (searchTerm.trim() !== '') {
         const query = searchTerm.toLowerCase();
         const titleMatch = (item.listing_title || '').toLowerCase().includes(query);
@@ -388,50 +427,68 @@ export default function VehicleManagement() {
                     <th className="py-3.5 px-6">Price</th>
                     <th className="py-3.5 px-6">Condition</th>
                     <th className="py-3.5 px-6">Type</th>
+                    <th className="py-3.5 px-6">Featured</th>
                     <th className="py-3.5 px-6 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className={`divide-y text-xs ${
                   isLight ? 'divide-slate-200' : 'divide-neutral-900'
                 }`}>
-                  {filteredListings.slice((vehiclePage - 1) * itemsPerPage, vehiclePage * itemsPerPage).map(listing => (
-                    <tr key={listing.id} className={`transition-colors ${
-                      isLight ? 'hover:bg-slate-50' : 'hover:bg-[#121212]'
-                    }`}>
-                      <td className="py-3.5 px-6">
-                        {coverImage(listing) ? (
-                          <img className="w-16 h-11 object-cover rounded-lg border border-slate-200 dark:border-neutral-800 shadow-sm" src={coverImage(listing)} alt="" />
-                        ) : (
-                          <div className={`w-16 h-11 border rounded-lg flex items-center justify-center text-[9px] uppercase font-mono ${
-                            isLight ? 'bg-slate-100 border-slate-200 text-slate-400' : 'bg-neutral-900 border-neutral-800 text-neutral-500'
-                          }`}>
-                            No Img
-                          </div>
-                        )}
-                      </td>
-                      <td className={`py-3.5 px-6 font-bold text-sm ${
-                        isLight ? 'text-slate-900' : 'text-white'
+                  {filteredListings.slice((vehiclePage - 1) * itemsPerPage, vehiclePage * itemsPerPage).map(listing => {
+                    const isF = Boolean(listing.isFeatured || listing.offer_type === 'Featured');
+                    return (
+                      <tr key={listing.id} className={`transition-colors ${
+                        isLight ? 'hover:bg-slate-50' : 'hover:bg-[#121212]'
                       }`}>
-                        {listing.listing_title}
-                      </td>
-                      <td className={`py-3.5 px-6 ${isLight ? 'text-slate-600' : 'text-neutral-300'}`}>
-                        {listing.make} • <span className="text-[#c9a84c] font-bold">{listing.year}</span>
-                      </td>
-                      <td className="py-3.5 px-6 font-extrabold text-[#c9a84c] text-sm">
-                        {formatPrice(listing.price)}
-                      </td>
-                      <td className={`py-3.5 px-6 ${isLight ? 'text-slate-600' : 'text-neutral-300'}`}>
-                        {listing.condition}
-                      </td>
-                      <td className="py-3.5 px-6">
-                        <span className={`border text-[10px] font-bold px-2.5 py-1 rounded-md uppercase ${
-                          isLight 
-                            ? 'bg-amber-50 text-amber-900 border-amber-300' 
-                            : 'bg-[#c9a84c]/10 text-[#c9a84c] border-[#c9a84c]/30'
+                        <td className="py-3.5 px-6">
+                          {coverImage(listing) ? (
+                            <img className="w-16 h-11 object-cover rounded-lg border border-slate-200 dark:border-neutral-800 shadow-sm" src={coverImage(listing)} alt="" />
+                          ) : (
+                            <div className={`w-16 h-11 border rounded-lg flex items-center justify-center text-[9px] uppercase font-mono ${
+                              isLight ? 'bg-slate-100 border-slate-200 text-slate-400' : 'bg-neutral-900 border-neutral-800 text-neutral-500'
+                            }`}>
+                              No Img
+                            </div>
+                          )}
+                        </td>
+                        <td className={`py-3.5 px-6 font-bold text-sm ${
+                          isLight ? 'text-slate-900' : 'text-white'
                         }`}>
-                          {listing.offer_type || 'For Sale'}
-                        </span>
-                      </td>
+                          {listing.listing_title}
+                        </td>
+                        <td className={`py-3.5 px-6 ${isLight ? 'text-slate-600' : 'text-neutral-300'}`}>
+                          {listing.make} • <span className="text-[#c9a84c] font-bold">{listing.year}</span>
+                        </td>
+                        <td className="py-3.5 px-6 font-extrabold text-[#c9a84c] text-sm">
+                          {formatPrice(listing.price)}
+                        </td>
+                        <td className={`py-3.5 px-6 ${isLight ? 'text-slate-600' : 'text-neutral-300'}`}>
+                          {listing.condition}
+                        </td>
+                        <td className="py-3.5 px-6">
+                          <span className={`border text-[10px] font-bold px-2.5 py-1 rounded-md uppercase ${
+                            isLight 
+                              ? 'bg-amber-50 text-amber-900 border-amber-300' 
+                              : 'bg-[#c9a84c]/10 text-[#c9a84c] border-[#c9a84c]/30'
+                          }`}>
+                            {listing.offer_type || 'For Sale'}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-6">
+                          <button
+                            type="button"
+                            onClick={() => toggleFeaturedStatus(listing)}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
+                              isF
+                                ? 'bg-[#c9a84c]/20 text-[#c9a84c] border-[#c9a84c]/60 shadow-md hover:bg-[#c9a84c]/30'
+                                : 'bg-slate-900/60 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700'
+                            }`}
+                            title="Toggle Storefront Homepage Featured Status"
+                          >
+                            <Star size={13} className={isF ? 'text-[#c9a84c]' : 'text-slate-500'} fill={isF ? '#c9a84c' : 'none'} />
+                            <span>{isF ? 'Featured' : 'Standard'}</span>
+                          </button>
+                        </td>
                       <td className="py-3.5 px-6 text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           <ActionTooltip text="Preview Dedicated Un-Editable Vehicle Dossier">
@@ -467,7 +524,8 @@ export default function VehicleManagement() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  )
+                  })}
                 </tbody>
               </table>
             </div>

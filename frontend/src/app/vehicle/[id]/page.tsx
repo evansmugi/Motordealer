@@ -58,6 +58,7 @@ export default function VehicleDossierPage() {
   });
 
   const [activeImage, setActiveImage] = useState<string>(vehicle.images[0]);
+  const [activeMediaTab, setActiveMediaTab] = useState<'GALLERY' | 'VIDEO'>('GALLERY');
 
   useEffect(() => {
     const stored = getStoredVehicles();
@@ -121,17 +122,51 @@ export default function VehicleDossierPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Gallery Column */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="rounded-3xl overflow-hidden border border-[#c9a84c]/30 shadow-2xl h-[420px]">
-              <img src={activeImage} alt={vehicle.title} className="w-full h-full object-cover" />
+            <div className="flex gap-2 mb-2">
+              <button
+                onClick={() => setActiveMediaTab('GALLERY')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-extrabold uppercase transition-all ${
+                  activeMediaTab === 'GALLERY' ? 'bg-[#c9a84c] text-black' : 'bg-[#121212] text-neutral-400 border border-neutral-800'
+                }`}
+              >
+                HD Photo Gallery
+              </button>
+              <button
+                onClick={() => setActiveMediaTab('VIDEO')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-extrabold uppercase flex items-center gap-1.5 transition-all ${
+                  activeMediaTab === 'VIDEO' ? 'bg-[#c9a84c] text-black' : 'bg-[#121212] text-neutral-400 border border-neutral-800'
+                }`}
+              >
+                <Video size={14} /> HD Video Walkthrough
+              </button>
             </div>
+
+            {activeMediaTab === 'VIDEO' ? (
+              <div className="rounded-3xl overflow-hidden border border-[#c9a84c]/30 shadow-2xl h-[420px] bg-black">
+                <iframe
+                  src={embedVideoUrl || ''}
+                  title="Vehicle Video Walkthrough"
+                  className="w-full h-full border-none"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <div className="rounded-3xl overflow-hidden border border-[#c9a84c]/30 shadow-2xl h-[420px]">
+                <img src={activeImage} alt={vehicle.title} className="w-full h-full object-cover" />
+              </div>
+            )}
 
             <div className="grid grid-cols-3 gap-3">
               {vehicle.images.map((img: string, idx: number) => (
                 <button
                   key={idx}
-                  onClick={() => setActiveImage(img)}
+                  onClick={() => {
+                    setActiveImage(img);
+                    setActiveMediaTab('GALLERY');
+                  }}
                   className={`h-24 rounded-xl overflow-hidden border-2 transition-all ${
-                    activeImage === img ? 'border-[#c9a84c] scale-105' : 'border-neutral-800 opacity-60 hover:opacity-100'
+                    activeImage === img && activeMediaTab === 'GALLERY' ? 'border-[#c9a84c] scale-105' : 'border-neutral-800 opacity-60 hover:opacity-100'
                   }`}
                 >
                   <img src={img} alt="" className="w-full h-full object-cover" />

@@ -73,7 +73,9 @@ export function App() {
         <Route path="/admin/vehicles" element={<VehicleManagement />} />
         <Route path="/vehicles" element={<VehicleManagement />} />
         <Route path="/add-listing" element={<AddListing />} />
+        <Route path="/admin/vehicles/add" element={<AddListing />} />
         <Route path="/edit-listing/:id" element={<EditListing />} />
+        <Route path="/admin/vehicles/edit/:id" element={<EditListing />} />
         <Route path="/view-listing/:id" element={<ViewListing />} />
         <Route path="/admin/vehicles/view/:id" element={<ViewListing />} />
         <Route path="/brand-identity" element={<BrandIdentity />} />

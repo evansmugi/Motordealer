@@ -214,7 +214,8 @@ export default function AddListing() {
         mileage: String(form.mileage),
         color: form.color,
         interior_color: form.interior_color,
-        offer_type: form.offer_type,
+        offer_type: form.isFeatured || form.offer_type === 'Featured' ? 'Featured' : (form.offer_type || 'For Sale'),
+        isFeatured: Boolean(form.isFeatured || form.offer_type === 'Featured'),
         listing_description: form.listing_description,
         currentStatus: form.status || 'Available',
         features: form.features,
@@ -592,6 +593,42 @@ export default function AddListing() {
                   onChange={(val) => setForm({ ...form, fuel_type: val })}
                 />
               </div>
+            </div>
+
+            {/* Featured Showcase Listing Toggle */}
+            <div className={`p-4 border rounded-xl flex items-center justify-between transition-colors mt-3 ${
+              isLight ? 'bg-amber-50/50 border-amber-200' : 'bg-[#c9a84c]/10 border-[#c9a84c]/30'
+            }`}>
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="isFeaturedToggleAdd"
+                  checked={Boolean(form.isFeatured || form.offer_type === 'Featured')}
+                  onChange={(e) => setForm({
+                    ...form,
+                    isFeatured: e.target.checked,
+                    offer_type: e.target.checked ? 'Featured' : 'For Sale'
+                  })}
+                  className="w-4 h-4 accent-[#c9a84c] rounded cursor-pointer"
+                />
+                <div>
+                  <label htmlFor="isFeaturedToggleAdd" className={`block text-xs font-bold flex items-center gap-1.5 cursor-pointer ${
+                    isLight ? 'text-slate-900' : 'text-white'
+                  }`}>
+                    <Sparkles size={14} className="text-[#c9a84c]" /> Mark as Featured Showcase Vehicle
+                  </label>
+                  <p className={`text-[11px] mt-0.5 ${isLight ? 'text-slate-600' : 'text-neutral-400'}`}>
+                    Automatically displays this vehicle in the Featured Cars Showcase section on the Storefront Homepage.
+                  </p>
+                </div>
+              </div>
+              <span className={`text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-md border ${
+                Boolean(form.isFeatured || form.offer_type === 'Featured')
+                  ? 'bg-[#c9a84c] text-black border-[#c9a84c]'
+                  : 'bg-slate-900/50 text-slate-400 border-slate-700'
+              }`}>
+                {Boolean(form.isFeatured || form.offer_type === 'Featured') ? '★ Featured On Homepage' : 'Standard Inventory'}
+              </span>
             </div>
 
             {/* Media 1 Exact Telemetry Cards Configuration */}

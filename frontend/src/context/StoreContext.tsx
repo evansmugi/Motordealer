@@ -93,15 +93,20 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [reservations, setReservations] = useState<VehicleReservation[]>(SAMPLE_RESERVATIONS);
 
   const refreshVehicles = async () => {
+    let loaded: VehicleItem[] = [];
     try {
-      const res = await fetch('http://localhost:1338/api/car-listings');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const res = await fetch('http://localhost:1338/api/car-listings', { signal: controller.signal });
+      clearTimeout(timeoutId);
       if (res.ok) {
         const json = await res.json();
         if (json && Array.isArray(json.data) && json.data.length > 0) {
-          const loaded: VehicleItem[] = json.data.map((item: any, idx: number) => {
+          loaded = json.data.map((item: any, idx: number) => {
             const attr = item.attributes || item;
             const id = String(item.id || attr.id || `strapi-${idx}`);
             const priceNum = Number(attr.price) || 24500000;
+            const isF = attr.isFeatured !== undefined ? Boolean(attr.isFeatured) : Boolean(attr.offer_type === 'Featured' || (attr.badges && attr.badges.includes('FEATURED')));
             return {
               id,
               stockNumber: attr.stockNumber || `KNK-${1000 + Number(item.id || idx)}`,
@@ -175,35 +180,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 inspectionDate: '2026-08-01',
                 inspectorName: 'KnK Senior Master Technician',
                 centerLocation: 'Nairobi HQ Complex',
-                breakdown: {
-                  mechanical: 'PASS',
-                  exteriorBody: 'PASS',
-                  interiorComfort: 'PASS',
-                  electricalElectronics: 'PASS',
-                  suspensionSteering: 'PASS',
-                  brakesTyres: 'PASS'
-                },
+                breakdown: { mechanical: 'PASS', exteriorBody: 'PASS', interiorComfort: 'PASS', electricalElectronics: 'PASS', suspensionSteering: 'PASS', brakesTyres: 'PASS' },
                 notes: 'Vehicle inspected and passed 150-point KnK Quality Certification.'
               },
               history: {
-                previousOwners: 1,
-                serviceHistory: 'FULL_DEALER_SERVICE_HISTORY',
-                accidentStatus: 'ACCIDENT_FREE_VERIFIED',
-                mileageVerified: true,
-                odometerKm: Number(attr.mileage) || 8400,
-                lastServiceDate: '2026-07-15',
-                lastServiceKm: Number(attr.mileage) || 8400,
-                importStatus: 'DIRECT_UK_IMPORT'
+                previousOwners: 1, serviceHistory: 'FULL_DEALER_SERVICE_HISTORY', accidentStatus: 'ACCIDENT_FREE_VERIFIED', mileageVerified: true, odometerKm: Number(attr.mileage) || 8400, lastServiceDate: '2026-07-15', lastServiceKm: Number(attr.mileage) || 8400, importStatus: 'DIRECT_UK_IMPORT'
               },
-              pricing: {
-                cashPrice: priceNum,
-                originalPrice: Math.round(priceNum * 1.08),
-                costPrice: Math.round(priceNum * 0.85),
-                minDepositPercent: 20,
-                estimatedMonthlyPayment: Math.round((priceNum * 0.8) / 48),
-                vatIncluded: true,
-                dutyPaid: true
-              },
+              pricing: { cashPrice: priceNum, originalPrice: Math.round(priceNum * 1.08), costPrice: Math.round(priceNum * 0.85), minDepositPercent: 20, estimatedMonthlyPayment: Math.round((priceNum * 0.8) / 48), vatIncluded: true, dutyPaid: true },
               availability: attr.currentStatus === 'Sold' ? 'SOLD' : attr.currentStatus === 'Reserved' ? 'RESERVED' : 'AVAILABLE',
               daysInStock: 12,
               branchId: 'nairobi-hq',
@@ -213,32 +196,115 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 ? attr.images.map((img: any) => typeof img === 'string' ? img : img.url)
                 : ['https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop'],
               frames360: [],
-              badges: [attr.offer_type || 'Featured', attr.condition || 'Foreign Used'],
-              isFeatured: true,
+              badges: [isF ? 'FEATURED' : 'For Sale', attr.condition || 'Foreign Used'],
+              isFeatured: isF,
               shortTagline: attr.tagline || attr.listing_title || 'Luxury Flagship',
-              overviewDescription: attr.listing_description || 'High-specification vehicle listed via KnK Enterprise Admin.'
+              overviewDescription: attr.listing_description || 'High-specification vehicle listed via KnK Enterprise Admin.',
+              video_url: attr.video_url || attr.youtube_video_url || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+              youtubeUrl: attr.video_url || attr.youtube_video_url || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
             };
           });
-
-          // Merge Strapi API vehicles with master VEHICLES dataset without duplicating IDs
-          const existingIds = new Set(loaded.map(v => v.id));
-          const combined = [...loaded];
-          VEHICLES.forEach(v => {
-            if (!existingIds.has(v.id)) {
-              combined.push(v);
-            }
-          });
-
-          setVehicles(combined);
         }
       }
     } catch (e) {
       console.warn('Could not load vehicles from Strapi backend, using dataset fallback:', e);
+    } finally {
+      // Read persistent local storage dataset from Admin
+      let localVehicles: VehicleItem[] = [];
+      try {
+        const rawLocal = localStorage.getItem('knk_custom_car_listings');
+        if (rawLocal) {
+          const parsed = JSON.parse(rawLocal);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            localVehicles = parsed.map((item: any) => {
+              const isF = item.isFeatured !== undefined ? Boolean(item.isFeatured) : Boolean(item.offer_type === 'Featured' || (Array.isArray(item.badges) && item.badges.includes('FEATURED')));
+              const priceNum = Number(item.price) || 24500000;
+              return {
+                id: String(item.id),
+                stockNumber: item.stockNumber || `KNK-${item.id}`,
+                vin: item.vin || 'JTEPE53J80K049281',
+                registrationNumber: 'KDF 890X',
+                make: item.make || 'Toyota',
+                model: item.model || 'Land Cruiser Prado',
+                generation: '2025 Model',
+                trim: item.listing_title || `${item.make} ${item.model}`,
+                variant: item.engine || '2.8 Turbo Diesel',
+                year: Number(item.year) || 2025,
+                registrationYear: Number(item.year) || 2025,
+                condition: 'NEW',
+                bodyType: 'SUV',
+                segment: 'Luxury Flagship',
+                colorExterior: item.color || 'Heritage Sand',
+                colorInterior: item.interior_color || 'Cognac Leather',
+                interiorMaterial: 'Nappa Leather',
+                engine: { type: item.engine || '2.8L Turbo Diesel', displacementCc: 2755, litres: 2.8, cylinders: 4, configuration: 'Inline 4', aspiration: 'TURBOCHARGED', powerHp: 204, powerKw: 150, torqueNm: 500, zeroToHundredKm: 9.2, topSpeedKm: 180 },
+                fuelEnergy: { fuelType: 'DIESEL', consumptionL100km: 8.5, co2EmissionsGkm: 195, rangeKm: 1390 },
+                transmission: { type: 'AUTOMATIC', gears: 8, paddleShifters: true, driveModes: ['Sport', 'Eco'] },
+                drivetrain: { type: '4WD', diffLock: true, lowRange: true, terrainModes: ['Rock', 'Mud'] },
+                dimensions: { lengthMm: 4925, widthMm: 1980, heightMm: 1870, wheelbaseMm: 2850, groundClearanceMm: 215, kerbWeightKg: 2330, bootCapacityLiters: 620, seats: 7, doors: 5, towingCapacityKg: 3500 },
+                features: [{ category: 'INTERIOR_COMFORT', title: 'Luxury', items: item.features || ['Panoramic Sunroof', 'Nappa Leather'] }],
+                inspection: { score: 99, inspectionDate: '2026-08-15', inspectorName: 'Marcus Vance', centerLocation: 'Nairobi', breakdown: { mechanical: 'PASS', exteriorBody: 'PASS', interiorComfort: 'PASS', electricalElectronics: 'PASS', suspensionSteering: 'PASS', brakesTyres: 'PASS' }, notes: 'Inspected and certified.' },
+                history: { previousOwners: 0, serviceHistory: 'FULL_DEALER_SERVICE_HISTORY', accidentStatus: 'ACCIDENT_FREE_VERIFIED', mileageVerified: true, odometerKm: 45, lastServiceDate: '2026-08-01', lastServiceKm: 45, importStatus: 'LOCAL_NEW' },
+                pricing: { cashPrice: priceNum, originalPrice: priceNum * 1.05, costPrice: priceNum * 0.85, minDepositPercent: 20, estimatedMonthlyPayment: Math.round((priceNum * 0.8) / 48), vatIncluded: true, dutyPaid: true },
+                availability: 'AVAILABLE',
+                daysInStock: 5,
+                branchId: 'nairobi',
+                branchName: 'KnK Main Showroom',
+                heroImage: (item.images && item.images[0] && (item.images[0].url || item.images[0])) || 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop',
+                images: Array.isArray(item.images) && item.images.length > 0 ? item.images.map((i: any) => typeof i === 'string' ? i : i.url) : ['https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop'],
+                frames360: [],
+                badges: [isF ? 'FEATURED' : 'For Sale'],
+                isFeatured: isF,
+                shortTagline: item.tagline || item.listing_title || 'Flagship Dossier',
+                overviewDescription: item.listing_description || 'Listed via KnK Enterprise Admin.',
+                video_url: item.video_url || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                youtubeUrl: item.video_url || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+              };
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Error reading local car listings:', err);
+      }
+
+      // Merge Strapi API + local storage + master dataset
+      const combined = [...loaded];
+      localVehicles.forEach(lVeh => {
+        const existingIdx = combined.findIndex(c => String(c.id) === String(lVeh.id));
+        if (existingIdx >= 0) {
+          combined[existingIdx] = { ...combined[existingIdx], ...lVeh };
+        } else {
+          combined.push(lVeh);
+        }
+      });
+
+      VEHICLES.forEach(v => {
+        const existingIdx = combined.findIndex(c => String(c.id) === String(v.id));
+        if (existingIdx < 0) {
+          combined.push({
+            ...v,
+            isFeatured: v.isFeatured || v.id === 'veh-001'
+          });
+        }
+      });
+
+      setVehicles(combined);
     }
   };
 
   useEffect(() => {
     refreshVehicles();
+
+    const handleVehiclesUpdated = () => {
+      refreshVehicles();
+    };
+
+    window.addEventListener('knk_vehicles_updated', handleVehiclesUpdated);
+    window.addEventListener('storage', handleVehiclesUpdated);
+    return () => {
+      window.removeEventListener('knk_vehicles_updated', handleVehiclesUpdated);
+      window.removeEventListener('storage', handleVehiclesUpdated);
+    };
   }, []);
 
   // Load from localStorage on mount

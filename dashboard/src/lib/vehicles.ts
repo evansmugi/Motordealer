@@ -22,6 +22,7 @@ export interface VehicleListing {
   features: string[];
   images: Array<{ url: string } | string>;
   video_url?: string;
+  isFeatured?: boolean;
 }
 
 const STORAGE_KEY = 'knk_custom_car_listings';
@@ -45,6 +46,7 @@ const INITIAL_MASTER_LISTINGS: VehicleListing[] = (MOCK_VEHICLES || []).map(v =>
   color: v.colorExterior || 'Obsidian Black',
   interior_color: v.colorInterior || 'Nappa Leather',
   offer_type: (v.badges && v.badges.includes('FEATURED')) || v.isFeatured ? 'Featured' : 'For Sale',
+  isFeatured: (v.badges && v.badges.includes('FEATURED')) || v.isFeatured || (v as any).offer_type === 'Featured' || String(v.id) === 'veh-001',
   listing_description: 'High-specification executive vehicle dossier.',
   currentStatus: 'Available',
   features: ['Burmester 3D Surround Sound', 'Panoramic Sunroof', '360-Degree Surround View Camera', 'Nappa Leather Seats', 'Adaptive Air Suspension'],

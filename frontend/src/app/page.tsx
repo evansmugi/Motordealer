@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Search, ShieldCheck, Car, Award, ChevronRight, Star, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
+import { Search, ShieldCheck, ChevronRight, ArrowRight, Zap } from 'lucide-react';
 import PredictiveSelect from '../components/common/PredictiveSelect';
 
 import { useStore } from '../context/StoreContext';
@@ -39,7 +39,15 @@ export default function HomePage() {
   const { vehicles: storeVehicles } = useStore();
   const rawList = (storeVehicles && storeVehicles.length > 0) ? storeVehicles : VEHICLES;
   
-  const featuredCars = rawList.slice(0, 6).map((v: any) => ({
+  const featuredItems = rawList.filter((v: any) =>
+    v.isFeatured === true ||
+    v.is_featured === true ||
+    (v.isFeatured !== false && (v.offer_type === 'Featured' || (Array.isArray(v.badges) && v.badges.includes('FEATURED'))))
+  );
+
+  const displayList = featuredItems.length > 0 ? featuredItems : rawList.slice(0, 6);
+
+  const featuredCars = displayList.map((v: any) => ({
     id: v.id,
     title: `${v.year || 2024} ${v.make || ''} ${v.model || ''} ${v.trim ? v.trim : ''}`.trim(),
     make: v.make || 'Mercedes-Benz',
@@ -50,7 +58,8 @@ export default function HomePage() {
     mileage: v.history?.odometerKm ? `${Number(v.history.odometerKm).toLocaleString()} KM` : (v.mileage || '45 KM'),
     fuel: typeof v.fuelEnergy === 'object' ? (v.fuelEnergy.fuelType || 'Petrol') : (v.fuel_type || 'Petrol'),
     transmission: typeof v.transmission === 'object' ? (v.transmission.type || 'Automatic') : (v.transmission || 'Automatic'),
-    features: v.features ? (Array.isArray(v.features) ? v.features.flatMap((f: any) => typeof f === 'string' ? f : (f.items || [])) : []) : ['Burmester 3D Sound', 'Panoramic Sunroof']
+    features: v.features ? (Array.isArray(v.features) ? v.features.flatMap((f: any) => typeof f === 'string' ? f : (f.items || [])) : []) : ['Burmester 3D Sound', 'Panoramic Sunroof'],
+    isFeatured: Boolean(v.isFeatured || v.is_featured || v.offer_type === 'Featured' || (Array.isArray(v.badges) && v.badges.includes('FEATURED')))
   }));
 
   return (
@@ -199,6 +208,11 @@ export default function HomePage() {
                   <span className="absolute top-4 left-4 bg-black/80 backdrop-blur-md text-[#c9a84c] text-[10px] font-bold px-2.5 py-1 rounded-lg border border-[#c9a84c]/30">
                     {car.year}
                   </span>
+                  {car.isFeatured && (
+                    <span className="absolute top-4 right-4 bg-[#c9a84c] text-black text-[10px] font-extrabold tracking-wider uppercase px-2.5 py-1 rounded-lg shadow-lg flex items-center gap-1">
+                      ★ FEATURED
+                    </span>
+                  )}
                 </div>
 
                 <div className="p-6 flex-1 flex flex-col justify-between space-y-4">

@@ -80,6 +80,10 @@
         "Sold"
       ],
       "default": "Available"
+    },
+    "isFeatured": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

@@ -32,6 +32,13 @@ export default function AdminSidebar({ children }) {
                           location.pathname.startsWith('/crm/ai-settings')
   const isCrmRoute = (location.pathname.startsWith('/crm') || location.pathname === '/crm') && !isCampaignRoute && !isSettingsRoute
 
+  const isVehiclesRoute = location.pathname.startsWith('/admin/vehicles') ||
+                          location.pathname.startsWith('/vehicles') ||
+                          location.pathname === '/add-listing' ||
+                          location.pathname.startsWith('/edit-listing') ||
+                          location.pathname.startsWith('/view-listing')
+
+  const [vehiclesOpen, setVehiclesOpen] = useState(isVehiclesRoute)
   const [crmOpen, setCrmOpen] = useState(isCrmRoute)
   const [analyticsOpen, setAnalyticsOpen] = useState(isAnalyticsRoute)
   const [campaignOpen, setCampaignOpen] = useState(isCampaignRoute)
@@ -43,6 +50,7 @@ export default function AdminSidebar({ children }) {
   // Synchronize open accordions upon route navigation
   if (prevPath !== location.pathname) {
     setPrevPath(location.pathname)
+    setVehiclesOpen(isVehiclesRoute)
     setCrmOpen(isCrmRoute)
     setAnalyticsOpen(isAnalyticsRoute)
     setCampaignOpen(isCampaignRoute)
@@ -58,6 +66,11 @@ export default function AdminSidebar({ children }) {
     await supabase.auth.signOut()
     navigate('/admin', { replace: true })
   }
+
+  const vehiclesSubItems = [
+    { path: '/admin/vehicles', label: 'Vehicle Inventory', icon: Car },
+    { path: '/add-listing',     label: 'Add Vehicle',       icon: PlusCircle },
+  ]
 
   const crmSubItems = [
     { path: '/crm',               label: 'Overview',            icon: LayoutDashboard },
@@ -114,13 +127,8 @@ export default function AdminSidebar({ children }) {
     { path: '/analytics/campaign-monitor?tab=qr',         label: 'Showroom QR Codes',     icon: QrCode },
   ]
 
-
-
   const mainNav = [
     { path: '/admin/dashboard', label: 'Admin Dashboard', icon: LayoutDashboard },
-    { path: '/admin/vehicles',  label: 'Vehicles Management', icon: Car },
-    { path: '/add-listing',     label: 'Add Vehicle',     icon: PlusCircle },
-    { path: '/brand-identity',  label: 'Brand Identity',  icon: Sparkles },
   ]
 
   const sidebarContent = (
@@ -163,6 +171,69 @@ export default function AdminSidebar({ children }) {
               </Link>
             )
           })}
+
+          {/* Vehicles Management Accordion Menu */}
+          <div>
+            <button
+              onClick={() => setVehiclesOpen(!vehiclesOpen)}
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all shadow-sm group ${
+                isVehiclesRoute
+                  ? 'bg-[#c9a84c]/20 text-[#c9a84c] border-[#c9a84c]/50 font-black shadow-md'
+                  : 'bg-slate-900/80 border-slate-800 text-slate-100 hover:text-amber-300 hover:bg-slate-800 hover:border-[#c9a84c]/50'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span>Vehicles Management</span>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-[#c9a84c]/20 text-[#c9a84c] border border-[#c9a84c]/30">{vehiclesSubItems.length}</span>
+                {vehiclesOpen ? <ChevronDown size={14} className="text-amber-400" /> : <ChevronRight size={14} className="text-amber-400/80 group-hover:text-amber-300" />}
+              </div>
+            </button>
+
+            {/* Sub-menu Items */}
+            {vehiclesOpen && (
+              <div className="mt-2 ml-2 pl-3 border-l-2 border-l-[#c9a84c]/40 space-y-1.5">
+                {vehiclesSubItems.map(sub => {
+                  const SubIcon = sub.icon
+                  const isSubActive = location.pathname === sub.path || 
+                    (sub.path === '/add-listing' && (location.pathname === '/add-listing' || location.pathname === '/admin/vehicles/add')) || 
+                    (sub.path === '/admin/vehicles' && (location.pathname === '/admin/vehicles' || location.pathname === '/vehicles'));
+
+                  return (
+                    <Link
+                      key={sub.path}
+                      to={sub.path}
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex items-center justify-between px-3 py-2 rounded-lg text-[11px] font-bold tracking-wider uppercase transition-all shadow-sm group ${
+                        isSubActive
+                          ? 'bg-gradient-to-r from-[#c9a84c] to-[#eab308] text-slate-950 font-black border border-[#fef08a] shadow-md scale-[1.01]'
+                          : 'bg-slate-900/90 border border-slate-800 text-slate-100 hover:text-white hover:bg-slate-800 hover:border-[#c9a84c]/50'
+                      }`}
+                    >
+                      <span>{sub.label}</span>
+                      <SubIcon size={14} className={isSubActive ? 'text-slate-950' : 'text-amber-400/80 group-hover:text-amber-300 transition-colors'} />
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Brand Identity Link */}
+          <Link
+            to="/brand-identity"
+            onClick={() => setMobileOpen(false)}
+            className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm group ${
+              location.pathname === '/brand-identity'
+                ? 'bg-gradient-to-r from-[#c9a84c] to-[#eab308] text-slate-950 border border-[#fef08a] font-black shadow-md'
+                : 'bg-slate-900/80 border border-slate-800 text-slate-100 hover:text-white hover:bg-slate-800 hover:border-[#c9a84c]/50'
+            }`}
+          >
+            <span>Brand Identity</span>
+            <Sparkles size={16} className={location.pathname === '/brand-identity' ? 'text-slate-950' : 'text-amber-400/80 group-hover:text-amber-300 transition-colors'} />
+          </Link>
 
           {/* Fuse CRM Suite Accordion Menu */}
           <div className="pt-3">

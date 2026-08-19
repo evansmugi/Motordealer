@@ -22,13 +22,16 @@ export default function VehicleDetailPage() {
 
   const vehicle = vehicles.find(v => v.id === slug || v.stockNumber.toLowerCase() === slug?.toLowerCase()) || vehicles[0] || VEHICLES[0];
 
-  const [activeTab, setActiveTab] = useState<'360' | 'GALLERY'>('360');
+  const [activeTab, setActiveTab] = useState<'360' | 'VIDEO' | 'GALLERY'>('360');
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
   const [isTradeInOpen, setIsTradeInOpen] = useState(false);
 
   const isWishlisted = wishlist.includes(vehicle.id);
   const isCompared = compareList.includes(vehicle.id);
+
+  const videoWalkthroughUrl = (vehicle as any).video_url || (vehicle as any).youtubeUrl || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+  const embedUrl = getEmbedVideoUrl(videoWalkthroughUrl);
 
   return (
     <div style={{ maxWidth: '1280px', margin: '40px auto 0', padding: '0 40px 80px' }}>
@@ -37,9 +40,9 @@ export default function VehicleDetailPage() {
         <ArrowLeft size={16} /> Back to Vehicle Inventory Matrix
       </Link>
 
-      {/* Main Grid: Left Gallery/360 + Right Purchase/Reservation Panel */}
+      {/* Main Grid: Left Gallery/360/Video + Right Purchase/Reservation Panel */}
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '40px', alignItems: 'start' }}>
-        {/* Left Column: Media Showcase (360 Spin + HD Photo Gallery) */}
+        {/* Left Column: Media Showcase (360 Spin + HD Video Showcase + HD Photo Gallery) */}
         <div>
           {/* Switcher Tabs */}
           <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
@@ -57,6 +60,24 @@ export default function VehicleDetailPage() {
               }}
             >
               360° Exterior Spin Simulator
+            </button>
+            <button
+              onClick={() => setActiveTab('VIDEO')}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '10px',
+                fontSize: '12px',
+                fontWeight: '900',
+                background: activeTab === 'VIDEO' ? 'rgba(59, 130, 246, 0.2)' : 'var(--nexus-surface)',
+                border: activeTab === 'VIDEO' ? '1px solid #3B82F6' : '1px solid var(--nexus-border)',
+                color: activeTab === 'VIDEO' ? '#3B82F6' : 'var(--nexus-text-muted)',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <Video size={14} /> HD Video Showcase
             </button>
             <button
               onClick={() => setActiveTab('GALLERY')}
@@ -77,6 +98,16 @@ export default function VehicleDetailPage() {
 
           {activeTab === '360' ? (
             <Vehicle360Viewer frames={vehicle.frames360} vehicleTitle={`${vehicle.make} ${vehicle.model}`} />
+          ) : activeTab === 'VIDEO' ? (
+            <div className="glass-panel" style={{ borderRadius: '20px', overflow: 'hidden', height: '420px', marginBottom: '16px', background: '#000' }}>
+              <iframe
+                src={embedUrl || ''}
+                title={`${vehicle.make} ${vehicle.model} Walkthrough Video`}
+                style={{ width: '100%', height: '100%', border: 'none' }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
           ) : (
             <div>
               <div className="glass-panel" style={{ borderRadius: '20px', overflow: 'hidden', height: '420px', marginBottom: '16px' }}>

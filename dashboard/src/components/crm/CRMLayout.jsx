@@ -79,7 +79,7 @@ const campaignMonitorNavItems = [
 ]
 
 const vehiclesNavItems = [
-  { path: '/admin/vehicles',       label: 'Inventory Directory', icon: Car },
+  { path: '/admin/vehicles',       label: 'Vehicle Inventory',   icon: Car },
   { path: '/add-listing',           label: 'Add Vehicle',         icon: PlusCircle },
   { path: '/brand-identity',        label: 'Brand Assets',        icon: Sparkles },
   { path: '/crm/trade-in-requests', label: 'Trade-In Valuations', icon: RefreshCw },

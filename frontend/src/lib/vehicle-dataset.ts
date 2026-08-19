@@ -139,6 +139,8 @@ export interface VehicleItem {
   isFeatured: boolean;
   shortTagline: string;
   overviewDescription: string;
+  video_url?: string;
+  youtubeUrl?: string;
 }
 
 export interface BranchLocation {
@@ -238,6 +240,8 @@ export const BRANCHES: BranchLocation[] = [
 export const VEHICLES: VehicleItem[] = [
   {
     id: 'veh-001',
+    video_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    youtubeUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
     stockNumber: 'NK-2026-901',
     vin: 'JTEPE53J80K049281',
     registrationNumber: 'KDF 890X',
