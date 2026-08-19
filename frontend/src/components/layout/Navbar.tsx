@@ -3,10 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { useStore } from '../../context/StoreContext';
-import { Search, ShoppingCart, Heart, Zap, Sun, Moon } from 'lucide-react';
+import { Search, Heart, Car, Sun, Moon, Layers, ArrowRightLeft, Calculator } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
-  const { cartCount, wishlist, setIsCartOpen, setIsSearchOpen, theme, toggleTheme } = useStore();
+  const { wishlist, compareList, theme, toggleTheme, setIsSearchOpen, openTradeInModal } = useStore();
 
   return (
     <header style={{
@@ -16,7 +16,7 @@ export const Navbar: React.FC = () => {
       borderBottom: '1px solid var(--nexus-border)',
       position: 'sticky',
       top: 0,
-      zIndex: 50,
+      zIndex: 100,
       display: 'flex',
       alignItems: 'center',
       padding: '0 40px',
@@ -26,8 +26,8 @@ export const Navbar: React.FC = () => {
       {/* Brand Mark */}
       <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px' }}>
         <div style={{
-          width: '38px',
-          height: '38px',
+          width: '40px',
+          height: '40px',
           borderRadius: '12px',
           background: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
           display: 'flex',
@@ -35,29 +35,35 @@ export const Navbar: React.FC = () => {
           justifyContent: 'center',
           boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)'
         }}>
-          <Zap size={22} color="#fff" />
+          <Car size={22} color="#fff" />
         </div>
         <div style={{ fontSize: '18px', fontWeight: '900', letterSpacing: '1px', color: 'var(--nexus-text)' }}>
-          NEXUS<span style={{ color: '#3B82F6' }}>.PRIME</span>
+          AETHEL<span style={{ color: '#3B82F6' }}>.MOTORS</span>
         </div>
       </Link>
 
-      {/* Navigation Links */}
-      <nav style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-        <Link href="/products" style={{ color: 'var(--nexus-text-muted)', fontSize: '14px', fontWeight: '600', textDecoration: 'none', transition: 'color 0.2s' }}>
-          Catalog
+      {/* Automotive Navigation Links */}
+      <nav style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
+        <Link href="/products" style={{ color: 'var(--nexus-text-muted)', fontSize: '14px', fontWeight: '700', textDecoration: 'none', transition: 'color 0.2s' }}>
+          Vehicle Inventory
         </Link>
-        <Link href="/categories" style={{ color: 'var(--nexus-text-muted)', fontSize: '14px', fontWeight: '600', textDecoration: 'none', transition: 'color 0.2s' }}>
-          Categories
+        <Link href="/compare" style={{ color: 'var(--nexus-text-muted)', fontSize: '14px', fontWeight: '700', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Layers size={15} color="#3B82F6" />
+          Compare ({compareList.length})
         </Link>
-        <Link href="/campaigns" style={{ color: 'var(--nexus-text-muted)', fontSize: '14px', fontWeight: '600', textDecoration: 'none', transition: 'color 0.2s' }}>
-          Deals
+        <Link href="/finance" style={{ color: 'var(--nexus-text-muted)', fontSize: '14px', fontWeight: '700', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Calculator size={15} color="#10B981" />
+          Finance
         </Link>
-        <Link href="/about" style={{ color: 'var(--nexus-text-muted)', fontSize: '14px', fontWeight: '600', textDecoration: 'none', transition: 'color 0.2s' }}>
-          About
+        <Link href="/trade-in" style={{ color: 'var(--nexus-text-muted)', fontSize: '14px', fontWeight: '700', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <ArrowRightLeft size={15} color="#8B5CF6" />
+          Trade-In
         </Link>
-        <Link href="/account" style={{ color: 'var(--nexus-text-muted)', fontSize: '14px', fontWeight: '600', textDecoration: 'none', transition: 'color 0.2s' }}>
-          Portal
+        <Link href="/categories" style={{ color: 'var(--nexus-text-muted)', fontSize: '14px', fontWeight: '700', textDecoration: 'none' }}>
+          Body Types
+        </Link>
+        <Link href="/about" style={{ color: 'var(--nexus-text-muted)', fontSize: '14px', fontWeight: '700', textDecoration: 'none' }}>
+          About Dealership
         </Link>
       </nav>
 
@@ -80,7 +86,7 @@ export const Navbar: React.FC = () => {
           }}
         >
           <Search size={16} />
-          <span>Search products...</span>
+          <span>Search VIN, Make, Model...</span>
           <span style={{ fontSize: '11px', background: 'var(--nexus-border)', padding: '2px 6px', borderRadius: '4px' }}>/</span>
         </button>
 
@@ -114,28 +120,6 @@ export const Navbar: React.FC = () => {
             </span>
           )}
         </Link>
-
-        {/* Cart Drawer Trigger */}
-        <button
-          onClick={() => setIsCartOpen(true)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
-            border: 'none',
-            borderRadius: '10px',
-            padding: '8px 16px',
-            color: '#fff',
-            fontSize: '13px',
-            fontWeight: '700',
-            cursor: 'pointer',
-            boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)'
-          }}
-        >
-          <ShoppingCart size={18} />
-          <span>Cart ({cartCount})</span>
-        </button>
       </div>
     </header>
   );

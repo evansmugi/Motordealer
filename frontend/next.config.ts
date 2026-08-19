@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(__dirname),
   },
+  experimental: {
+    cpus: 1,
+  },
 };
 
 export default nextConfig;

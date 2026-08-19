@@ -1,0 +1,64 @@
+{
+  "kind": "collectionType",
+  "collectionName": "analytics_sessions",
+  "info": {
+    "singularName": "analytics-session",
+    "pluralName": "analytics-sessions",
+    "displayName": "Analytics Session",
+    "description": "Managed Analytics Session entity"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "session_id": {
+      "type": "string",
+      "required": true
+    },
+    "visitor_id": {
+      "type": "string"
+    },
+    "ip_address": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "latitude": {
+      "type": "float"
+    },
+    "longitude": {
+      "type": "float"
+    },
+    "browser": {
+      "type": "string"
+    },
+    "os": {
+      "type": "string"
+    },
+    "device_type": {
+      "type": "string"
+    },
+    "entry_page": {
+      "type": "string"
+    },
+    "page_views_count": {
+      "type": "integer",
+      "default": 1
+    },
+    "duration_seconds": {
+      "type": "integer",
+      "default": 0
+    },
+    "started_at": {
+      "type": "datetime"
+    },
+    "last_active_at": {
+      "type": "datetime"
+    }
+  }
+}

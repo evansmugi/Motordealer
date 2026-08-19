@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "analytics_touchpoint_journeys",
+  "info": {
+    "singularName": "analytics-touchpoint-journey",
+    "pluralName": "analytics-touchpoint-journeys",
+    "displayName": "Analytics Touchpoint Journey",
+    "description": "Managed Analytics Touchpoint Journey entity"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "visitor_id": {
+      "type": "string",
+      "required": true
+    },
+    "touchpoints": {
+      "type": "json"
+    },
+    "converted": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

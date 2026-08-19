@@ -1,0 +1,238 @@
+/* Quantum Dark & Gold Design Tokens */
+:root {
+  --bg-void: #020617;
+  --card-glass: rgba(15, 23, 42, 0.55);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-glass-gold: rgba(201, 168, 76, 0.25);
+  --border-glass-top: rgba(255, 255, 255, 0.15);
+  
+  --gold-primary: #c9a84c;
+  --gold-glow: rgba(201, 168, 76, 0.35);
+  
+  --blue-neon: #3b82f6;
+  --purple-neon: #8b5cf6;
+  --emerald-neon: #10b981;
+  --amber-neon: #f59e0b;
+  --rose-neon: #f43f5e;
+  --cyan-neon: #0ea5e9;
+}
+
+/* Glass Card Utility */
+.q-card {
+  background: var(--card-glass);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--border-glass);
+
+  border-top: 1px solid var(--border-glass-top);
+  border-radius: 1rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.q-card:hover {
+  border-color: var(--border-glass-gold);
+  box-shadow: 0 20px 40px rgba(201, 168, 76, 0.08);
+}
+
+.q-card-gold {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-top: 1px solid rgba(201, 168, 76, 0.4);
+  border-radius: 1rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+}
+
+/* Light Theme Overrides for Glass Cards */
+.light-theme .q-card,
+[data-theme='light'] .q-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-top: 1px solid #cbd5e1;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  color: #0f172a;
+}
+
+.light-theme .q-card-gold,
+[data-theme='light'] .q-card-gold {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-top: 1px solid #fcd34d;
+  box-shadow: 0 10px 25px rgba(201, 168, 76, 0.12);
+  color: #78350f;
+}
+
+/* Floating Mesh Blobs */
+.qb-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.15;
+  pointer-events: none;
+  animation: qbFloat 18s ease-in-out infinite alternate;
+}
+
+.qb1 { width: 500px; height: 500px; background: #c9a84c; top: -100px; left: -100px; }
+.qb2 { width: 450px; height: 450px; background: #3b82f6; top: 30%; right: -150px; animation-delay: -4s; }
+.qb3 { width: 400px; height: 400px; background: #8b5cf6; bottom: -100px; left: 20%; animation-delay: -8s; }
+.qb4 { width: 350px; height: 350px; background: #10b981; top: 60%; right: 25%; animation-delay: -12s; }
+
+@keyframes qbFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, -30px) scale(1.08); }
+  100% { transform: translate(-30px, 40px) scale(0.95); }
+}
+
+/* Universal Gold Accent Custom Scrollbars for All Tables & Modules */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: #c9a84c rgba(15, 23, 42, 0.9);
+}
+
+::-webkit-scrollbar,
+.crm-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track,
+.crm-scroll::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border-radius: 8px;
+  border: 1px solid rgba(201, 168, 76, 0.25) !important;
+}
+
+::-webkit-scrollbar-thumb,
+.crm-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #c9a84c 0%, #f3d885 50%, #b8973b 100%) !important;
+  border-radius: 8px;
+  border: 2px solid rgba(15, 23, 42, 0.9) !important;
+  box-shadow: 0 0 10px rgba(201, 168, 76, 0.6), inset 0 0 4px rgba(255, 255, 255, 0.4) !important;
+}
+
+::-webkit-scrollbar-thumb:hover,
+.crm-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #f3d885 0%, #ffd700 50%, #c9a84c 100%) !important;
+  box-shadow: 0 0 16px rgba(201, 168, 76, 0.9), inset 0 0 6px rgba(255, 255, 255, 0.6) !important;
+}
+
+::-webkit-scrollbar-corner,
+.crm-scroll::-webkit-scrollbar-corner {
+  background: rgba(15, 23, 42, 0.95);
+}
+
+/* System-wide Modern Custom Date & Time Selectors */
+input[type="date"],
+input[type="datetime-local"],
+input[type="month"] {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  position: relative;
+  cursor: pointer;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Custom Calendar Picker Icon Styling */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="month"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  border-radius: 0.375rem;
+  padding: 0.25rem;
+  filter: invert(70%) sepia(50%) saturate(600%) hue-rotate(5deg) brightness(95%) contrast(90%);
+  opacity: 0.85;
+  transition: all 0.2s ease-in-out;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
+input[type="month"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+  transform: scale(1.15);
+  filter: invert(80%) sepia(80%) saturate(1000%) hue-rotate(5deg) brightness(105%) contrast(100%);
+}
+
+.light-theme input[type="date"]::-webkit-calendar-picker-indicator,
+[data-theme='light'] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(30%) sepia(20%) saturate(400%) hue-rotate(5deg) brightness(90%) contrast(90%);
+}
+
+/* ================================================================
+   Fuse ERP Standard — Gold Accent Primary & Secondary Buttons
+================================================================ */
+.aq-btn-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #f59e0b 0%, #c9a84c 50%, #9a7b2c 100%);
+  color: #020617;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(254, 240, 138, 0.8);
+  box-shadow: 0 10px 25px -5px rgba(201, 168, 76, 0.5), 0 0 20px rgba(201, 168, 76, 0.3);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.aq-btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  transition: left 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.aq-btn-primary:hover {
+  transform: translateY(-3px) scale(1.03);
+  filter: brightness(1.15);
+  box-shadow: 0 15px 35px -5px rgba(201, 168, 76, 0.85), 0 0 30px rgba(201, 168, 76, 0.6);
+  border-color: #ffffff;
+}
+
+.aq-btn-primary:hover::before {
+  left: 100%;
+}
+
+.aq-btn-primary:active {
+  transform: translateY(-1px) scale(0.99);
+  box-shadow: 0 5px 15px -3px rgba(201, 168, 76, 0.5);
+}
+
+.aq-btn-secondary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(15, 23, 42, 0.8);
+  color: #f1f5f9;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.aq-btn-secondary:hover {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(201, 168, 76, 0.6);
+  color: #c9a84c;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -4px rgba(201, 168, 76, 0.3);
+}
+

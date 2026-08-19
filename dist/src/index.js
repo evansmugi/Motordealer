@@ -1,20 +1,23 @@
 "use strict";
-// import type { Core } from '@strapi/strapi';
 Object.defineProperty(exports, "__esModule", { value: true });
+const seedData_1 = require("./bootstrap/seedData");
+const slaCron_1 = require("./cron/slaCron");
 exports.default = {
     /**
      * An asynchronous register function that runs before
      * your application is initialized.
-     *
-     * This gives you an opportunity to extend code.
      */
     register( /* { strapi }: { strapi: Core.Strapi } */) { },
     /**
      * An asynchronous bootstrap function that runs before
      * your application gets started.
-     *
-     * This gives you an opportunity to set up your data model,
-     * run jobs, or perform some special logic.
      */
-    bootstrap( /* { strapi }: { strapi: Core.Strapi } */) { },
+    bootstrap({ strapi }) {
+        // Run initial seed data check
+        (0, seedData_1.seedInitialData)(strapi).catch(console.error);
+        // Run SLA check every 5 minutes
+        setInterval(() => {
+            (0, slaCron_1.runSlaCheck)(strapi).catch(console.error);
+        }, 5 * 60 * 1000);
+    },
 };

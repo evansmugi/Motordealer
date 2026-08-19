@@ -1,0 +1,102 @@
+{
+  "kind": "collectionType",
+  "collectionName": "crm_leads",
+  "info": {
+    "singularName": "crm-lead",
+    "pluralName": "crm-leads",
+    "displayName": "CRM Lead",
+    "description": "Managed CRM Lead entity"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "company": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "currentStatus": {
+      "type": "enumeration",
+      "enum": [
+        "new",
+        "contacted",
+        "qualified",
+        "proposal",
+        "negotiation",
+        "won",
+        "lost"
+      ],
+      "default": "new"
+    },
+    "campaign_id": {
+      "type": "string"
+    },
+    "assigned_to": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "text"
+    },
+    "conversion_probability": {
+      "type": "integer",
+      "default": 50
+    },
+    "intent_score": {
+      "type": "integer",
+      "default": 20
+    },
+    "intent_tier": {
+      "type": "enumeration",
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "HOT"
+      ],
+      "default": "LOW"
+    },
+    "buying_timeline": {
+      "type": "string"
+    },
+    "behavioral_metrics": {
+      "type": "json"
+    },
+    "score_last_calculated_at": {
+      "type": "datetime"
+    },
+    "ip_address": {
+      "type": "string"
+    },
+    "latitude": {
+      "type": "float"
+    },
+    "longitude": {
+      "type": "float"
+    },
+    "location_name": {
+      "type": "string"
+    },
+    "browser": {
+      "type": "string"
+    },
+    "device": {
+      "type": "string"
+    },
+    "os": {
+      "type": "string"
+    }
+  }
+}

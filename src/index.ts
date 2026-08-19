@@ -1,20 +1,24 @@
-// import type { Core } from '@strapi/strapi';
+import { seedInitialData } from './bootstrap/seedData';
+import { runSlaCheck } from './cron/slaCron';
 
 export default {
   /**
    * An asynchronous register function that runs before
    * your application is initialized.
-   *
-   * This gives you an opportunity to extend code.
    */
   register(/* { strapi }: { strapi: Core.Strapi } */) {},
 
   /**
    * An asynchronous bootstrap function that runs before
    * your application gets started.
-   *
-   * This gives you an opportunity to set up your data model,
-   * run jobs, or perform some special logic.
    */
-  bootstrap(/* { strapi }: { strapi: Core.Strapi } */) {},
+  bootstrap({ strapi }: { strapi: any }) {
+    // Run initial seed data check
+    seedInitialData(strapi).catch(console.error);
+
+    // Run SLA check every 5 minutes
+    setInterval(() => {
+      runSlaCheck(strapi).catch(console.error);
+    }, 5 * 60 * 1000);
+  },
 };

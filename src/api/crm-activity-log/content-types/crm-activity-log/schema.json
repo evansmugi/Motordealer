@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "crm_activity_logs",
+  "info": {
+    "singularName": "crm-activity-log",
+    "pluralName": "crm-activity-logs",
+    "displayName": "CRM Activity Log",
+    "description": "Managed CRM Activity Log entity"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "lead_id": {
+      "type": "string"
+    },
+    "lead_name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "content": {
+      "type": "text"
+    },
+    "is_archived": {
+      "type": "boolean",
+      "default": false
+    },
+    "log_date": {
+      "type": "datetime"
+    }
+  }
+}

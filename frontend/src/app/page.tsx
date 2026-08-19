@@ -2,117 +2,260 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { HeroBanner } from '../components/storefront/HeroBanner';
-import { ProductCard } from '../components/storefront/ProductCard';
-import { PRODUCTS, CATEGORIES, type ProductItem, type CategoryItem } from '../lib/mock-dataset';
-import { ArrowRight, Cpu } from 'lucide-react';
+import { Search, ShieldCheck, Car, Award, ChevronRight, Star, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
+import PredictiveSelect from '../components/common/PredictiveSelect';
+
+const MAKE_OPTIONS = [
+  { value: 'Mercedes-Benz', label: 'Mercedes-Benz', badge: 'German' },
+  { value: 'BMW', label: 'BMW', badge: 'German' },
+  { value: 'Audi', label: 'Audi', badge: 'German' },
+  { value: 'Porsche', label: 'Porsche', badge: 'German' },
+  { value: 'Land Rover', label: 'Land Rover', badge: 'British' },
+  { value: 'Lexus', label: 'Lexus', badge: 'Japanese' }
+];
+
+const BODY_OPTIONS = [
+  { value: 'SUV', label: 'Luxury SUV' },
+  { value: 'Sedan', label: 'Executive Sedan' },
+  { value: 'Coupe', label: 'Sport Coupe' },
+  { value: 'Convertible', label: 'Roadster' }
+];
+
+const PRICE_OPTIONS = [
+  { value: '5000000', label: 'Under KES 5 Million' },
+  { value: '10000000', label: 'KES 5M - 10M' },
+  { value: '20000000', label: 'KES 10M - 20M' },
+  { value: '50000000', label: 'KES 20M+ Flagship' }
+];
 
 export default function HomePage() {
-  const [selectedCat, setSelectedCat] = useState<string>('ALL');
+  const [selectedMake, setSelectedMake] = useState('Mercedes-Benz');
+  const [selectedBody, setSelectedBody] = useState('SUV');
+  const [selectedPrice, setSelectedPrice] = useState('20000000');
 
-  const filteredProducts = selectedCat === 'ALL'
-    ? PRODUCTS
-    : PRODUCTS.filter(p => p.category === selectedCat);
+  const featuredCars = [
+    {
+      id: '1',
+      title: '2024 Mercedes-Benz S 580 4MATIC',
+      price: 'KES 24,500,000',
+      image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop',
+      make: 'Mercedes-Benz',
+      year: '2024',
+      mileage: '8,400 KM',
+      fuel: 'Petrol'
+    },
+    {
+      id: '2',
+      title: '2024 Porsche Cayenne Turbo E-Hybrid',
+      price: 'KES 28,000,000',
+      image: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?w=800&auto=format&fit=crop',
+      make: 'Porsche',
+      year: '2024',
+      mileage: '3,200 KM',
+      fuel: 'PHEV'
+    },
+    {
+      id: '3',
+      title: '2023 Range Rover Autobiography LWB',
+      price: 'KES 32,500,000',
+      image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&auto=format&fit=crop',
+      make: 'Land Rover',
+      year: '2023',
+      mileage: '12,000 KM',
+      fuel: 'Petrol V8'
+    }
+  ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '60px' }}>
-      {/* Signature Interaction #1: Spatial Hero Composition */}
-      <HeroBanner />
-
-      {/* Category Spatial Collections Section */}
-      <section style={{ maxWidth: '1280px', margin: '0 auto', width: '100%', padding: '0 40px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px' }}>
-          <div>
-            <div style={{ fontSize: '12px', color: '#3B82F6', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>
-              SPATIAL DIVISIONS
+    <div className="bg-[#080808] text-white min-h-screen">
+      {/* Header Bar */}
+      <header className="border-b border-neutral-900 bg-[#0a0a0a]/90 backdrop-blur-xl sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#e5c158] to-[#c9a84c] text-black font-extrabold flex items-center justify-center text-base">
+              KnK
             </div>
-            <h2 style={{ fontSize: '32px', fontWeight: '900', color: 'var(--nexus-text)' }}>
-              Curated Technology Matrix
-            </h2>
-          </div>
-          <Link href="/products" style={{ color: '#3B82F6', fontSize: '14px', fontWeight: '700', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            View Full Matrix <ArrowRight size={16} />
+            <div>
+              <span className="text-lg font-black text-white uppercase tracking-wider">KnK <span className="text-[#c9a84c]">Automotive</span></span>
+              <span className="block text-[9px] text-neutral-500 uppercase tracking-widest">Enterprise Storefront</span>
+            </div>
           </Link>
-        </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
-          {CATEGORIES.map((cat: CategoryItem) => (
-            <div
-              key={cat.id}
-              onClick={() => setSelectedCat(selectedCat === cat.slug ? 'ALL' : cat.slug)}
-              className="glass-panel"
-              style={{
-                borderRadius: '16px',
-                padding: '24px',
-                cursor: 'pointer',
-                border: selectedCat === cat.slug ? '1px solid #3B82F6' : '1px solid var(--nexus-border)',
-                background: selectedCat === cat.slug ? 'rgba(59, 130, 246, 0.1)' : 'var(--nexus-surface)',
-                transition: 'all 0.3s ease'
-              }}
+          <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-neutral-300 uppercase tracking-wider">
+            <Link href="/vehicle" className="hover:text-[#c9a84c] transition-colors">Inventory</Link>
+            <Link href="/accessories" className="hover:text-[#c9a84c] transition-colors">Accessories</Link>
+            <Link href="/import-with-us" className="hover:text-[#c9a84c] transition-colors">Import With Us</Link>
+            <Link href="/helpmechoose" className="hover:text-[#c9a84c] transition-colors">Car Assistant</Link>
+            <Link href="/book-test-drive" className="hover:text-[#c9a84c] transition-colors">Book Test Drive</Link>
+            <Link href="/about" className="hover:text-[#c9a84c] transition-colors">About Us</Link>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <Link
+              href="/book-test-drive"
+              className="px-5 py-2.5 bg-gradient-to-r from-[#e5c158] to-[#c9a84c] text-black font-bold text-xs rounded-xl uppercase tracking-wider hover:opacity-90 transition-all shadow-lg shadow-[#c9a84c]/20"
             >
-              <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--nexus-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', color: '#3B82F6' }}>
-                <Cpu size={22} />
+              Book Viewing
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="relative pt-16 pb-24 px-6 overflow-hidden">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#c9a84c]/10 rounded-full filter blur-[120px] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-7 space-y-6">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#c9a84c]/10 border border-[#c9a84c]/30 text-[#c9a84c] text-xs font-semibold">
+              <Zap size={14} /> East Africa's Premier Luxury Fleet
+            </div>
+
+            <h1 className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-white leading-none">
+              Drive The <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e5c158] via-[#c9a84c] to-[#997926]">Pinnacle</span> Of Automotive Engineering.
+            </h1>
+
+            <p className="text-sm sm:text-base text-neutral-400 max-w-2xl leading-relaxed">
+              KnK Automotive provides verified, high-specification luxury vehicles, bespoke import services, and comprehensive concierge trade-in support.
+            </p>
+
+            {/* Predictive Filter Bar */}
+            <div className="bg-[#0a0a0a] border border-neutral-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4">
+              <h3 className="text-xs font-bold text-[#c9a84c] uppercase tracking-wider flex items-center gap-2">
+                <Search size={14} /> Instant Inventory Finder
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-[11px] text-neutral-400 font-semibold mb-1">Make</label>
+                  <PredictiveSelect
+                    options={MAKE_OPTIONS}
+                    value={selectedMake}
+                    onChange={setSelectedMake}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] text-neutral-400 font-semibold mb-1">Body Style</label>
+                  <PredictiveSelect
+                    options={BODY_OPTIONS}
+                    value={selectedBody}
+                    onChange={setSelectedBody}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] text-neutral-400 font-semibold mb-1">Budget Range</label>
+                  <PredictiveSelect
+                    options={PRICE_OPTIONS}
+                    value={selectedPrice}
+                    onChange={setSelectedPrice}
+                  />
+                </div>
               </div>
-              <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--nexus-text)', marginBottom: '6px' }}>{cat.name}</h3>
-              <p style={{ fontSize: '12px', color: 'var(--nexus-text-muted)', lineHeight: '1.5' }}>{cat.description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
 
-      {/* Featured Hardware Catalog Grid Section */}
-      <section style={{ maxWidth: '1280px', margin: '0 auto', width: '100%', padding: '0 40px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-          <div>
-            <h2 style={{ fontSize: '28px', fontWeight: '900', color: 'var(--nexus-text)' }}>
-              {selectedCat === 'ALL' ? 'Featured Hardware Units' : `Category: ${selectedCat}`}
-            </h2>
-            <p style={{ fontSize: '13px', color: 'var(--nexus-text-dim)', marginTop: '4px' }}>
-              Sub-millisecond bio-feedback sync & high-density cryogenic processing modules.
-            </p>
-          </div>
-          {selectedCat !== 'ALL' && (
-            <button onClick={() => setSelectedCat('ALL')} style={{ background: 'var(--nexus-surface)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '6px 14px', color: 'var(--nexus-text-muted)', fontSize: '12px', cursor: 'pointer' }}>
-              Reset Filter
-            </button>
-          )}
-        </div>
-
-        {/* Signature Interaction #2: Product Card System */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '28px' }}>
-          {filteredProducts.map((product: ProductItem) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </section>
-
-      {/* Editorial Technology Narrative Section */}
-      <section style={{ maxWidth: '1280px', margin: '0 auto', width: '100%', padding: '0 40px' }}>
-        <div className="glass-panel" style={{ borderRadius: '24px', padding: '60px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'center' }}>
-          <div>
-            <span style={{ fontSize: '12px', color: '#10B981', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase' }}>ARCHITECTURE DISCLOSURE</span>
-            <h2 style={{ fontSize: '36px', fontWeight: '900', color: 'var(--nexus-text)', margin: '12px 0 20px', lineHeight: '1.2' }}>
-              Built Upon Dual Strapi 5 & PostgreSQL Telemetry Engine
-            </h2>
-            <p style={{ fontSize: '15px', color: 'var(--nexus-text-muted)', lineHeight: '1.7', marginBottom: '28px' }}>
-              NEXUS PRIME isolates public consumer interactions from internal enterprise operations. Real-time inventory deductions, state machine transitions, and supplier logistics are managed autonomously inside the AETHEL ERP OS.
-            </p>
-            <div style={{ display: 'flex', gap: '16px' }}>
-              <a href="http://localhost:5181" target="_blank" rel="noreferrer" className="nexus-btn-primary">
-                Launch AETHEL ERP OS →
-              </a>
+              <Link
+                href="/vehicle"
+                className="w-full py-3.5 bg-[#c9a84c] hover:bg-[#e5c158] text-black font-extrabold rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
+              >
+                Search {selectedMake} Vehicles <ArrowRight size={16} />
+              </Link>
             </div>
           </div>
 
-          <div style={{ position: 'relative' }}>
-            <img
-              src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1000&auto=format&fit=crop"
-              alt="Quantum Core Architecture"
-              style={{ width: '100%', height: '360px', objectFit: 'cover', borderRadius: '20px', border: '1px solid var(--nexus-border)' }}
-            />
+          <div className="lg:col-span-5 relative">
+            <div className="relative rounded-3xl overflow-hidden border border-[#c9a84c]/30 shadow-2xl">
+              <img
+                src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1000&auto=format&fit=crop"
+                alt="Luxury Vehicle"
+                className="w-full h-[480px] object-cover hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6 p-4 bg-[#0d0d0d]/80 backdrop-blur-xl border border-neutral-800 rounded-2xl">
+                <span className="text-[10px] bg-[#c9a84c] text-black font-extrabold px-2 py-0.5 rounded uppercase">Featured Flagship</span>
+                <h4 className="text-base font-extrabold text-white mt-1">2024 Mercedes-Benz S 580 4MATIC</h4>
+                <p className="text-xs text-[#c9a84c] font-bold mt-0.5">KES 24,500,000</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
+
+      {/* Featured Vehicles Grid */}
+      <section className="py-16 px-6 bg-[#0a0a0a] border-t border-neutral-900">
+        <div className="max-w-7xl mx-auto space-y-10">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <span className="text-xs font-bold text-[#c9a84c] uppercase tracking-widest">KnK Showroom</span>
+              <h2 className="text-3xl font-black uppercase text-white tracking-tight mt-1">Featured Inventory Dossiers</h2>
+            </div>
+            <Link
+              href="/vehicle"
+              className="text-xs font-bold text-[#c9a84c] hover:underline flex items-center gap-1 uppercase tracking-wider"
+            >
+              View Full 48 Vehicle Inventory <ChevronRight size={16} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {featuredCars.map((car) => (
+              <div
+                key={car.id}
+                className="bg-[#101010] border border-neutral-800 hover:border-[#c9a84c]/50 rounded-2xl overflow-hidden group transition-all duration-300 flex flex-col"
+              >
+                <div className="relative h-60 overflow-hidden">
+                  <img
+                    src={car.image}
+                    alt={car.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <span className="absolute top-4 left-4 bg-black/80 backdrop-blur-md text-[#c9a84c] text-[10px] font-bold px-2.5 py-1 rounded-lg border border-[#c9a84c]/30">
+                    {car.year}
+                  </span>
+                </div>
+
+                <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                  <div>
+                    <h3 className="text-base font-bold text-white group-hover:text-[#c9a84c] transition-colors">{car.title}</h3>
+                    <div className="flex items-center gap-4 text-xs text-neutral-400 mt-2">
+                      <span>{car.mileage}</span>
+                      <span>•</span>
+                      <span>{car.fuel}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between border-t border-neutral-900 pt-4">
+                    <div>
+                      <span className="text-[10px] text-neutral-500 uppercase">Price</span>
+                      <div className="text-base font-black text-[#c9a84c]">{car.price}</div>
+                    </div>
+                    <Link
+                      href={`/vehicle/${car.id}`}
+                      className="px-4 py-2 bg-neutral-900 border border-neutral-800 text-white hover:bg-[#c9a84c] hover:text-black font-bold text-xs rounded-xl transition-all"
+                    >
+                      Dossier Details
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-neutral-900 bg-[#080808] py-12 px-6 text-neutral-500 text-xs">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-neutral-300 font-bold">
+            <ShieldCheck className="text-[#c9a84c]" size={18} /> KnK Automotive Enterprise Systems © 2026
+          </div>
+          <div className="flex gap-6 text-neutral-400">
+            <Link href="/about" className="hover:text-white">About</Link>
+            <Link href="/contact" className="hover:text-white">Contact</Link>
+            <Link href="/brand-identity" className="hover:text-white">Brand Guidelines</Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PredictiveSelect from '../components/common/PredictiveSelect';
 import { HeaderButton } from '../components/common/HeaderButton';
 import { WAREHOUSE_STOCKS, type WarehouseStock } from '../data/mock-dataset';
 import { ArrowRightLeft, CheckCircle2 } from 'lucide-react';
@@ -103,25 +104,38 @@ export const InventoryManagement: React.FC = () => {
             <form onSubmit={handleTransfer} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
                 <label style={{ fontSize: '12px', color: 'var(--erp-text-muted)', display: 'block', marginBottom: '4px' }}>Select SKU</label>
-                <select style={{ width: '100%', background: 'var(--erp-bg-dark)', border: '1px solid var(--erp-card-border)', color: 'var(--erp-text-main)', padding: '8px', borderRadius: '8px' }}>
-                  <option>NEX-NEURO-X1 (AETHEL Neural Visor)</option>
-                  <option>NEX-QUANT-CORE (VORTEX Quantum Core)</option>
-                </select>
+                <PredictiveSelect
+                  label="Select SKU"
+                  options={[
+                    { value: 'NEX-NEURO-X1', label: 'NEX-NEURO-X1 (AETHEL Neural Visor)' },
+                    { value: 'NEX-QUANT-CORE', label: 'NEX-QUANT-CORE (VORTEX Quantum Core)' }
+                  ] as any}
+                  value="NEX-NEURO-X1"
+                  onChange={() => {}}
+                />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 <div>
                   <label style={{ fontSize: '12px', color: 'var(--erp-text-muted)', display: 'block', marginBottom: '4px' }}>From Warehouse</label>
-                  <select style={{ width: '100%', background: 'var(--erp-bg-dark)', border: '1px solid var(--erp-card-border)', color: 'var(--erp-text-main)', padding: '8px', borderRadius: '8px' }}>
-                    <option>Alpha Central (US West)</option>
-                  </select>
+                  <PredictiveSelect
+                    label="From Warehouse"
+                    options={[{ value: 'Alpha Central', label: 'Alpha Central (US West)' }] as any}
+                    value="Alpha Central"
+                    onChange={() => {}}
+                  />
                 </div>
                 <div>
                   <label style={{ fontSize: '12px', color: 'var(--erp-text-muted)', display: 'block', marginBottom: '4px' }}>To Warehouse</label>
-                  <select style={{ width: '100%', background: 'var(--erp-bg-dark)', border: '1px solid var(--erp-card-border)', color: 'var(--erp-text-main)', padding: '8px', borderRadius: '8px' }}>
-                    <option>EU Central Hub (Frankfurt)</option>
-                    <option>Omega Logistics (US East)</option>
-                  </select>
+                  <PredictiveSelect
+                    label="To Warehouse"
+                    options={[
+                      { value: 'EU Central Hub', label: 'EU Central Hub (Frankfurt)' },
+                      { value: 'Omega Logistics', label: 'Omega Logistics (US East)' }
+                    ] as any}
+                    value="EU Central Hub"
+                    onChange={() => {}}
+                  />
                 </div>
               </div>
 

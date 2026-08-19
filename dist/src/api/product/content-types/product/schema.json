@@ -51,7 +51,7 @@
             "type": "integer",
             "default": 0
         },
-        "status": {
+        "currentStatus": {
             "type": "enumeration",
             "enum": ["draft", "published", "archived"],
             "default": "published"

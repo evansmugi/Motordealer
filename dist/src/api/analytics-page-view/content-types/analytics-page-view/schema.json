@@ -1,0 +1,37 @@
+{
+    "kind": "collectionType",
+    "collectionName": "analytics_page_views",
+    "info": {
+        "singularName": "analytics-page-view",
+        "pluralName": "analytics-page-views",
+        "displayName": "Analytics Page View",
+        "description": "Managed Analytics Page View entity"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "session_id": {
+            "type": "string",
+            "required": true
+        },
+        "path": {
+            "type": "string",
+            "required": true
+        },
+        "page_title": {
+            "type": "string"
+        },
+        "referrer": {
+            "type": "string"
+        },
+        "dwell_time_seconds": {
+            "type": "integer",
+            "default": 0
+        },
+        "timestamp": {
+            "type": "datetime"
+        }
+    }
+}

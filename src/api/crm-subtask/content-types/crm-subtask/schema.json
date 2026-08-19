@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "crm_subtasks",
+  "info": {
+    "singularName": "crm-subtask",
+    "pluralName": "crm-subtasks",
+    "displayName": "CRM Subtask",
+    "description": "Managed CRM Subtask entity"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "parent_id": {
+      "type": "string",
+      "required": true
+    },
+    "subject": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "assigned_to": {
+      "type": "string"
+    },
+    "creator_id": {
+      "type": "string"
+    },
+    "currentStatus": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "completed"
+      ],
+      "default": "pending"
+    },
+    "due_date": {
+      "type": "datetime"
+    },
+    "resolution_note": {
+      "type": "text"
+    }
+  }
+}

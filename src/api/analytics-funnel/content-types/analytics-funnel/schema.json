@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "analytics_funnels",
+  "info": {
+    "singularName": "analytics-funnel",
+    "pluralName": "analytics-funnels",
+    "displayName": "Analytics Funnel",
+    "description": "Managed Analytics Funnel entity"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "funnel_name": {
+      "type": "string",
+      "required": true
+    },
+    "steps": {
+      "type": "json"
+    },
+    "conversion_rate": {
+      "type": "float",
+      "default": 0
+    }
+  }
+}

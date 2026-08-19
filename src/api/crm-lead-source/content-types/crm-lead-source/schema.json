@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "crm_lead_sources",
+  "info": {
+    "singularName": "crm-lead-source",
+    "pluralName": "crm-lead-sources",
+    "displayName": "CRM Lead Source",
+    "description": "Managed CRM Lead Source entity"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "category": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

@@ -1,0 +1,111 @@
+{
+    "carDetails":[
+        {
+            "label":"Listing Title",
+            "name":"listingTitle",
+            "fieldType":"text",
+            "required":true,
+            "columns":2,
+            "icon":"FaClipboardList"
+        },
+         {
+            "label":"Tagline",
+            "name":"tagline",
+            "fieldType":"text",
+            "columns":2,
+            "icon":"FaTag"
+        },
+         {
+            "label":"Price",
+            "name":"price",
+            "fieldType":"text",
+            "required": true,
+            "columns":1,
+            "icon":"FaMoneyBillAlt"
+        },
+         {
+            "label":"Make",
+            "name":"make",
+            "fieldType":"dropdown",
+            "options":["Toyota", "Honda", "Nissan", "Mazda", "Subaru", "Mitsubishi", "Ford", "Chevrolet", "BMW", "Mercedes-Benz", "Audi", "Volkswagen", "Hyundai", "Kia", "Lexus", "Jeep", "Dodge", "Volvo", "Porsche", "Jaguar", "Land Rover", "Ferrari", "Lamborghini", "Peugeot", "Renault", "Suzuki", "Isuzu", "Tesla", "Cadillac", "GMC"],
+            "required":true,
+            "columns":1,
+            "icon":"FaCar"
+        },
+         {
+            "label":"Condition",
+            "name":"condition",
+            "fieldType":"dropdown",
+            "required":true,
+            "options":["New", "Pre-owned", "Foreign"],
+            "columns":1,
+            "icon":"FaCheckCircle"
+        },
+         {
+            "label":"Year",
+            "name":"year",
+            "fieldType":"number",
+            "required":true,
+            "columns":1,
+            "icon":"FaCalendarAlt"
+        },
+
+         {
+    "label": "Transmission",
+    "name": "transmission",
+    "fieldType": "dropdown",
+    "options": ["Automatic", "Manual", "CVT", "Dual-Clutch"],
+    "required": true,
+    "column": 1,
+    "icon": "FaCogs"
+  },
+  {
+    "label": "Engine",
+    "name": "engine",
+    "fieldType": "text",
+    "required": true,
+    "column": 1,
+    "icon": "FaOilCan"
+  },
+  {
+    "label": "Fuel Type",
+    "name": "fuelType",
+    "fieldType": "dropdown",
+    "options": ["Gasoline", "Diesel", "Electric", "Hybrid"],
+    "required": true,
+    "column": 1,
+    "icon": "FaGasPump"
+  },
+  {
+    "label": "Mileage",
+    "name": "mileage",
+    "fieldType": "number",
+    "column": 1,
+    "icon": "FaTachometerAlt"
+  },
+  {
+    "label": "Color",
+    "name": "color",
+    "fieldType": "text",
+    "column": 1,
+    "icon": "FaPalette"
+  },
+  {
+    "label": "Offer Type",
+    "name": "offerType",
+    "fieldType": "dropdown",
+    "options":["Buy", "Hot Offer", "sell", "Urgent"],
+    "column": 2,
+    "icon": "FaTags"
+  },
+  {
+    "label": "Listing Description",
+    "name": "listingDescription",
+    "fieldType": "textarea",
+    "required": true,
+    "column": 2,
+    "icon": "FaFileAlt"
+  }
+
+    ]
+}

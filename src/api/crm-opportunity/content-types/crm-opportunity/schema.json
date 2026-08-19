@@ -1,0 +1,58 @@
+{
+  "kind": "collectionType",
+  "collectionName": "crm_opportunities",
+  "info": {
+    "singularName": "crm-opportunity",
+    "pluralName": "crm-opportunities",
+    "displayName": "CRM Opportunity",
+    "description": "Managed CRM Opportunity entity"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "lead_id": {
+      "type": "string"
+    },
+    "vehicle_id": {
+      "type": "string"
+    },
+    "vehicle_name": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "expected_value": {
+      "type": "biginteger"
+    },
+    "close_date": {
+      "type": "date"
+    },
+    "probability": {
+      "type": "integer",
+      "default": 50
+    },
+    "stage": {
+      "type": "enumeration",
+      "enum": [
+        "qualification",
+        "proposal",
+        "negotiation",
+        "won_deals"
+      ],
+      "default": "qualification"
+    },
+    "campaign_id": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "text"
+    },
+    "youtube_video_url": {
+      "type": "string"
+    }
+  }
+}

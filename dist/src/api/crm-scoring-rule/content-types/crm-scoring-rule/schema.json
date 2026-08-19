@@ -1,0 +1,32 @@
+{
+    "kind": "collectionType",
+    "collectionName": "crm_scoring_rules",
+    "info": {
+        "singularName": "crm-scoring-rule",
+        "pluralName": "crm-scoring-rules",
+        "displayName": "CRM Scoring Rule",
+        "description": "Managed CRM Scoring Rule entity"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "rule_name": {
+            "type": "string",
+            "required": true
+        },
+        "trigger_event": {
+            "type": "string",
+            "required": true
+        },
+        "score_impact": {
+            "type": "integer",
+            "required": true
+        },
+        "is_active": {
+            "type": "boolean",
+            "default": true
+        }
+    }
+}

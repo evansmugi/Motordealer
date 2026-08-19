@@ -1,0 +1,70 @@
+{
+  "kind": "collectionType",
+  "collectionName": "crm_support_threads",
+  "info": {
+    "singularName": "crm-support-thread",
+    "pluralName": "crm-support-threads",
+    "displayName": "CRM Support Thread",
+    "description": "Managed CRM Support Thread entity"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "customer_id": {
+      "type": "string"
+    },
+    "customer_name": {
+      "type": "string",
+      "required": true
+    },
+    "customer_phone": {
+      "type": "string"
+    },
+    "customer_email": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "priority": {
+      "type": "enumeration",
+      "enum": [
+        "low",
+        "normal",
+        "high",
+        "urgent"
+      ],
+      "default": "normal"
+    },
+    "currentStatus": {
+      "type": "enumeration",
+      "enum": [
+        "open",
+        "pending",
+        "resolved",
+        "closed"
+      ],
+      "default": "open"
+    },
+    "last_message_at": {
+      "type": "datetime"
+    },
+    "ip_address": {
+      "type": "string"
+    },
+    "location_name": {
+      "type": "string"
+    },
+    "browser": {
+      "type": "string"
+    },
+    "device": {
+      "type": "string"
+    },
+    "os": {
+      "type": "string"
+    }
+  }
+}

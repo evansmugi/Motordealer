@@ -1,0 +1,72 @@
+{
+    "kind": "collectionType",
+    "collectionName": "crm_campaigns",
+    "info": {
+        "singularName": "crm-campaign",
+        "pluralName": "crm-campaigns",
+        "displayName": "CRM Campaign",
+        "description": "Managed CRM Campaign entity"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "name": {
+            "type": "string",
+            "required": true
+        },
+        "slug": {
+            "type": "string"
+        },
+        "type": {
+            "type": "string"
+        },
+        "budget": {
+            "type": "biginteger"
+        },
+        "spend": {
+            "type": "biginteger"
+        },
+        "start_date": {
+            "type": "date"
+        },
+        "end_date": {
+            "type": "date"
+        },
+        "currentStatus": {
+            "type": "enumeration",
+            "enum": [
+                "Active",
+                "Paused",
+                "Completed"
+            ],
+            "default": "Active"
+        },
+        "description": {
+            "type": "text"
+        },
+        "leads_count": {
+            "type": "integer",
+            "default": 0
+        },
+        "won_count": {
+            "type": "integer",
+            "default": 0
+        },
+        "total_revenue": {
+            "type": "biginteger",
+            "default": "0"
+        },
+        "conversion_rate": {
+            "type": "float",
+            "default": 0
+        },
+        "aligned_vehicle_id": {
+            "type": "string"
+        },
+        "channels": {
+            "type": "json"
+        }
+    }
+}

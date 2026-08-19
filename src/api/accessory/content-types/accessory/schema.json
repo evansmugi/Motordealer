@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "accessories",
+  "info": {
+    "singularName": "accessory",
+    "pluralName": "accessories",
+    "displayName": "Accessory",
+    "description": "Managed Accessory entity"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "category": {
+      "type": "string"
+    },
+    "price": {
+      "type": "biginteger",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "in_stock": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "analytics_blacklisted_ips",
+  "info": {
+    "singularName": "analytics-blacklisted-ip",
+    "pluralName": "analytics-blacklisted-ips",
+    "displayName": "Analytics Blacklisted IP",
+    "description": "Managed Analytics Blacklisted IP entity"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "ip_address": {
+      "type": "string",
+      "required": true
+    },
+    "reason": {
+      "type": "string"
+    },
+    "threat_score": {
+      "type": "integer",
+      "default": 80
+    },
+    "blocked_at": {
+      "type": "datetime"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}
