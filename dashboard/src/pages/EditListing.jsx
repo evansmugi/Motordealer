@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Car, Plus, ArrowLeft, Trash2, Check, Upload, Image as ImageIcon, X, Sliders, Video, Sparkles, Zap } from 'lucide-react';
 import CRMLayout from '../components/crm/CRMLayout';
 import PredictiveSelect from '../components/common/PredictiveSelect';
+import SuccessModal from '../components/common/SuccessModal';
 import { VEHICLES } from '../data/mock-dataset.ts';
 import { getStoredBrands } from '../lib/brands';
 import { getStoredVehicles, upsertStoredVehicle, getEmbedVideoUrl } from '../lib/vehicles';
@@ -370,9 +371,6 @@ export default function EditListing() {
       }).catch(() => null);
 
       setSuccess(true);
-      setTimeout(() => {
-        navigate('/admin/vehicles');
-      }, 1000);
     } catch (err) {
       console.error('Failed to update vehicle:', err);
     } finally {
@@ -1017,6 +1015,20 @@ export default function EditListing() {
             </div>
           </div>
         </form>
+
+        <SuccessModal
+          isOpen={success}
+          onClose={() => setSuccess(false)}
+          title="Vehicle Dossier Saved!"
+          vehicleTitle={form.listing_title || `${form.year} ${form.make} ${form.model}`}
+          message="Vehicle specifications, media gallery, and featured showcase status have been saved successfully and synchronized live with the storefront."
+          primaryActionText="Return to Vehicle Inventory"
+          onPrimaryAction={() => navigate('/admin/vehicles')}
+          secondaryActionText="Continue Editing"
+          onSecondaryAction={() => setSuccess(false)}
+          isLight={isLight}
+          autoCloseMs={5000}
+        />
       </div>
     </CRMLayout>
   );

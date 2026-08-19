@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Car, Plus, ArrowLeft, Upload, Image as ImageIcon, X, Check, Sparkles, Sliders, Video, Zap } from 'lucide-react';
 import CRMLayout from '../components/crm/CRMLayout';
 import PredictiveSelect from '../components/common/PredictiveSelect';
+import SuccessModal from '../components/common/SuccessModal';
 import { getStoredBrands } from '../lib/brands';
 import { upsertStoredVehicle, getEmbedVideoUrl } from '../lib/vehicles';
 import { useCRMStore } from '../context/CRMStore';
@@ -240,9 +241,6 @@ export default function AddListing() {
       }).catch(() => null);
 
       setSuccess(true);
-      setTimeout(() => {
-        navigate('/admin/vehicles');
-      }, 1000);
     } catch (err) {
       console.error('Failed to create vehicle:', err);
     } finally {
@@ -882,6 +880,44 @@ export default function AddListing() {
             </div>
           </div>
         </form>
+
+        <SuccessModal
+          isOpen={success}
+          onClose={() => setSuccess(false)}
+          title="New Vehicle Dossier Published!"
+          vehicleTitle={form.listing_title || `${form.year} ${form.make} ${form.model}`}
+          message="Your new vehicle listing has been saved to the persistent database and is now live on the storefront showroom."
+          primaryActionText="Return to Vehicle Inventory"
+          onPrimaryAction={() => navigate('/admin/vehicles')}
+          secondaryActionText="Add Another Vehicle"
+          onSecondaryAction={() => {
+            setSuccess(false);
+            setForm({
+              listing_title: '',
+              tagline: '',
+              price: '24500000',
+              make: 'Mercedes-Benz',
+              model: '',
+              condition: 'Brand New',
+              year: '2025',
+              transmission: 'Automatic',
+              engine: 'V8 Biturbo',
+              fuel_type: 'Petrol',
+              mileage: '45',
+              color: 'Obsidian Black',
+              interior_color: 'Black Nappa',
+              offer_type: 'Featured',
+              isFeatured: true,
+              listing_description: '',
+              status: 'Available',
+              features: ['Panoramic Sunroof', 'Nappa Leather Seats', 'Burmester 3D Surround Sound'],
+              images: ['https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop'],
+              video_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+            });
+          }}
+          isLight={isLight}
+          autoCloseMs={5000}
+        />
       </div>
     </CRMLayout>
   );

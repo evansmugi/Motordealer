@@ -10,6 +10,7 @@ import PredictiveSelect from '../components/common/PredictiveSelect';
 import UniversalPagination from '../components/common/UniversalPagination';
 import ActionTooltip from '../components/common/ActionTooltip';
 import ActionConfirmModal from '../components/common/ActionConfirmModal';
+import SuccessModal from '../components/common/SuccessModal';
 import { VEHICLES } from '../data/mock-dataset.ts';
 import { getStoredBrands, saveStoredBrands } from '../lib/brands';
 import { getStoredVehicles, upsertStoredVehicle } from '../lib/vehicles';
@@ -54,6 +55,7 @@ export default function VehicleManagement() {
   const [brands, setBrands] = useState([]);
   const [newBrandName, setNewBrandName] = useState('');
   const [brandSuccessNotice, setBrandSuccessNotice] = useState(null);
+  const [successNotice, setSuccessNotice] = useState(null);
 
   useEffect(() => {
     setBrands(getStoredBrands());
@@ -143,6 +145,14 @@ export default function VehicleManagement() {
 
     setListings(prev => prev.map(item => String(item.id) === String(listing.id) ? updated : item));
     upsertStoredVehicle(updated);
+
+    setSuccessNotice({
+      title: nextFeatured ? "Marked as Featured Vehicle!" : "Updated to Standard Inventory!",
+      vehicleTitle: listing.listing_title,
+      message: nextFeatured
+        ? "This vehicle is now flagged as Featured and automatically displays in the Featured Cars section on the Storefront Homepage."
+        : "This vehicle has been updated to Standard Inventory status and synchronized with the backend database."
+    });
 
     fetch(`http://localhost:1338/api/car-listings/${listing.id}`, {
       method: 'PUT',
@@ -634,6 +644,19 @@ export default function VehicleManagement() {
             onClose={() => setConfirmDelete(null)}
           />
         )}
+
+        {/* Gorgeous Success Confirmation Modal */}
+        <SuccessModal
+          isOpen={Boolean(successNotice)}
+          onClose={() => setSuccessNotice(null)}
+          title={successNotice?.title || "Vehicle Inventory Updated!"}
+          vehicleTitle={successNotice?.vehicleTitle}
+          message={successNotice?.message || "Changes have been saved successfully to database and updated live on the storefront."}
+          primaryActionText="Dismiss & Continue"
+          onPrimaryAction={() => setSuccessNotice(null)}
+          isLight={isLight}
+          autoCloseMs={3500}
+        />
       </div>
     </CRMLayout>
   );
