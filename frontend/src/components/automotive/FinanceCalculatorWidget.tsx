@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Calculator, DollarSign, CheckCircle2, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Calculator, CheckCircle2, ArrowRight, ShieldCheck, DollarSign } from 'lucide-react';
 
 interface FinanceCalculatorProps {
   vehiclePrice: number;
@@ -30,38 +30,40 @@ export const FinanceCalculatorWidget: React.FC<FinanceCalculatorProps> = ({ vehi
 
   const handleApplyPreApproval = (e: React.FormEvent) => {
     e.preventDefault();
-    setAppliedNotice(`Pre-approval request submitted for ${vehicleTitle}! Estimated Monthly: $${Math.round(totalMonthly)}/mo.`);
+    setAppliedNotice(`Pre-approval request submitted for ${vehicleTitle}! Estimated Monthly: $${Math.round(totalMonthly).toLocaleString()}/mo.`);
     setTimeout(() => setAppliedNotice(null), 5000);
   };
 
   return (
-    <div className="glass-panel" style={{ borderRadius: '20px', padding: '28px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-        <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'rgba(59, 130, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3B82F6' }}>
+    <div className="bg-[#0a0a0a] border border-neutral-800 rounded-2xl p-6 shadow-2xl space-y-6">
+      {/* Widget Header */}
+      <div className="flex items-center gap-3 border-b border-neutral-800 pb-4">
+        <div className="w-10 h-10 rounded-xl bg-[#c9a84c]/15 text-[#c9a84c] border border-[#c9a84c]/30 flex items-center justify-center shrink-0">
           <Calculator size={20} />
         </div>
         <div>
-          <h3 style={{ fontSize: '18px', fontWeight: '900', color: 'var(--nexus-text)', margin: 0 }}>
+          <h3 className="text-lg font-black text-white uppercase tracking-tight">
             Automotive Finance & Credit Estimator
           </h3>
-          <div style={{ fontSize: '12px', color: 'var(--nexus-text-muted)' }}>
+          <p className="text-xs text-neutral-400 mt-0.5">
             Real-time monthly repayment breakdown & instant pre-approval.
-          </div>
+          </p>
         </div>
       </div>
 
       {appliedNotice && (
-        <div style={{ padding: '12px 16px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '12px', color: '#10B981', fontSize: '13px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-          <CheckCircle2 size={18} /> {appliedNotice}
+        <div className="p-3.5 bg-emerald-950/60 border border-emerald-500/40 rounded-xl text-emerald-400 text-xs font-bold flex items-center gap-2">
+          <CheckCircle2 size={18} className="shrink-0" />
+          <span>{appliedNotice}</span>
         </div>
       )}
 
-      <form onSubmit={handleApplyPreApproval} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <form onSubmit={handleApplyPreApproval} className="space-y-4">
         {/* Deposit Percentage Slider */}
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: '800', color: 'var(--nexus-text)', marginBottom: '8px' }}>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-xs font-bold text-neutral-300">
             <span>Deposit Downpayment ({depositPercent}%)</span>
-            <span style={{ color: '#3B82F6' }}>${depositAmount.toLocaleString()}</span>
+            <span className="text-[#c9a84c] font-mono text-sm">${Math.round(depositAmount).toLocaleString()}</span>
           </div>
           <input
             type="range"
@@ -70,31 +72,26 @@ export const FinanceCalculatorWidget: React.FC<FinanceCalculatorProps> = ({ vehi
             step="5"
             value={depositPercent}
             onChange={(e) => setDepositPercent(Number(e.target.value))}
-            style={{ width: '100%', accentColor: '#3B82F6' }}
+            className="w-full accent-[#c9a84c] bg-[#121212] rounded-lg cursor-pointer h-2"
           />
         </div>
 
         {/* Loan Term Selector Buttons */}
         <div>
-          <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--nexus-text-dim)', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+          <label className="block text-[11px] font-bold text-neutral-400 uppercase mb-2">
             Loan Term Duration
           </label>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+          <div className="grid grid-cols-4 gap-2">
             {[24, 36, 48, 60].map((months) => (
               <button
                 key={months}
                 type="button"
                 onClick={() => setLoanTermMonths(months)}
-                style={{
-                  padding: '10px',
-                  borderRadius: '10px',
-                  fontSize: '12px',
-                  fontWeight: '800',
-                  background: loanTermMonths === months ? 'rgba(59, 130, 246, 0.2)' : 'var(--nexus-bg)',
-                  border: loanTermMonths === months ? '1px solid #3B82F6' : '1px solid var(--nexus-border)',
-                  color: loanTermMonths === months ? '#3B82F6' : 'var(--nexus-text-muted)',
-                  cursor: 'pointer'
-                }}
+                className={`py-2.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                  loanTermMonths === months
+                    ? 'bg-[#c9a84c]/20 border-[#c9a84c] text-[#e5c158]'
+                    : 'bg-[#121212] border-neutral-800 text-neutral-400 hover:border-neutral-700 hover:text-white'
+                }`}
               >
                 {months} Mos ({months / 12} Yrs)
               </button>
@@ -103,25 +100,25 @@ export const FinanceCalculatorWidget: React.FC<FinanceCalculatorProps> = ({ vehi
         </div>
 
         {/* Interest Rate & Insurance Checkbox */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
           <div>
-            <label style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Interest Rate (APR %)</label>
+            <label className="block text-[11px] font-bold text-neutral-400 uppercase mb-1">Interest Rate (APR %)</label>
             <input
               type="number"
               step="0.1"
               value={interestRate}
               onChange={(e) => setInterestRate(Number(e.target.value))}
-              style={{ width: '100%', background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '8px 12px', color: 'var(--nexus-text)', fontSize: '13px', fontWeight: '800', outline: 'none' }}
+              className="w-full bg-[#121212] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-3.5 py-2.5 text-xs text-white outline-none font-mono font-bold"
             />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', paddingTop: '20px' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'var(--nexus-text-muted)', cursor: 'pointer', fontWeight: '700' }}>
+          <div className="pb-1">
+            <label className="flex items-center gap-2 text-xs text-neutral-300 font-semibold cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={includeInsurance}
                 onChange={(e) => setIncludeInsurance(e.target.checked)}
-                style={{ accentColor: '#3B82F6' }}
+                className="w-4 h-4 accent-[#c9a84c] rounded cursor-pointer"
               />
               Include GAP Insurance ($120/mo)
             </label>
@@ -129,22 +126,23 @@ export const FinanceCalculatorWidget: React.FC<FinanceCalculatorProps> = ({ vehi
         </div>
 
         {/* Financial Repayment Output Box */}
-        <div style={{ background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '16px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="p-4 bg-[#121212] border border-[#c9a84c]/30 rounded-xl flex items-center justify-between flex-wrap gap-3">
           <div>
-            <div style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '800', textTransform: 'uppercase' }}>ESTIMATED MONTHLY PAYMENT</div>
-            <div style={{ fontSize: '32px', fontWeight: '900', color: '#10B981', margin: '4px 0' }}>
+            <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider block">
+              ESTIMATED MONTHLY PAYMENT
+            </span>
+            <div className="text-2xl font-black text-[#c9a84c] mt-0.5">
               ${Math.round(totalMonthly).toLocaleString()}
-              <span style={{ fontSize: '14px', color: 'var(--nexus-text-muted)', fontWeight: '600' }}>/mo</span>
+              <span className="text-xs text-neutral-400 font-semibold">/mo</span>
             </div>
-            <div style={{ fontSize: '11px', color: 'var(--nexus-text-dim)' }}>
-              Principal Amount: ${Math.round(loanPrincipal).toLocaleString()} • Total Loan Cost: ${Math.round(totalPayable).toLocaleString()}
+            <div className="text-[10px] text-neutral-400 mt-1 font-mono">
+              Principal: ${Math.round(loanPrincipal).toLocaleString()} • Total: ${Math.round(totalPayable).toLocaleString()}
             </div>
           </div>
 
           <button
             type="submit"
-            className="nexus-btn-primary"
-            style={{ height: '48px', padding: '0 24px', fontSize: '12px' }}
+            className="px-5 py-3 bg-gradient-to-r from-[#e5c158] to-[#c9a84c] text-black font-extrabold text-xs rounded-xl uppercase tracking-wider hover:opacity-90 transition-all shadow-lg shadow-[#c9a84c]/20 flex items-center gap-2 cursor-pointer"
           >
             Apply Pre-Approval <ArrowRight size={16} />
           </button>

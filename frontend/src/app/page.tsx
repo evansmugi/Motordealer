@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { Search, ShieldCheck, Car, Award, ChevronRight, Star, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
 import PredictiveSelect from '../components/common/PredictiveSelect';
 
+import { useStore } from '../context/StoreContext';
+import { VEHICLES } from '../lib/vehicle-dataset';
+
 const MAKE_OPTIONS = [
   { value: 'Mercedes-Benz', label: 'Mercedes-Benz', badge: 'German' },
   { value: 'BMW', label: 'BMW', badge: 'German' },
@@ -33,38 +36,22 @@ export default function HomePage() {
   const [selectedBody, setSelectedBody] = useState('SUV');
   const [selectedPrice, setSelectedPrice] = useState('20000000');
 
-  const featuredCars = [
-    {
-      id: '1',
-      title: '2024 Mercedes-Benz S 580 4MATIC',
-      price: 'KES 24,500,000',
-      image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop',
-      make: 'Mercedes-Benz',
-      year: '2024',
-      mileage: '8,400 KM',
-      fuel: 'Petrol'
-    },
-    {
-      id: '2',
-      title: '2024 Porsche Cayenne Turbo E-Hybrid',
-      price: 'KES 28,000,000',
-      image: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?w=800&auto=format&fit=crop',
-      make: 'Porsche',
-      year: '2024',
-      mileage: '3,200 KM',
-      fuel: 'PHEV'
-    },
-    {
-      id: '3',
-      title: '2023 Range Rover Autobiography LWB',
-      price: 'KES 32,500,000',
-      image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&auto=format&fit=crop',
-      make: 'Land Rover',
-      year: '2023',
-      mileage: '12,000 KM',
-      fuel: 'Petrol V8'
-    }
-  ];
+  const { vehicles: storeVehicles } = useStore();
+  const rawList = (storeVehicles && storeVehicles.length > 0) ? storeVehicles : VEHICLES;
+  
+  const featuredCars = rawList.slice(0, 6).map((v: any) => ({
+    id: v.id,
+    title: `${v.year || 2024} ${v.make || ''} ${v.model || ''} ${v.trim ? v.trim : ''}`.trim(),
+    make: v.make || 'Mercedes-Benz',
+    model: v.model || 'Luxury Model',
+    price: `KES ${Number(v.pricing?.cashPrice || v.price || 24500000).toLocaleString()}`,
+    image: v.heroImage || (Array.isArray(v.images) && v.images[0] && (v.images[0].url || v.images[0])) || 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop',
+    year: String(v.year || 2024),
+    mileage: v.history?.odometerKm ? `${Number(v.history.odometerKm).toLocaleString()} KM` : (v.mileage || '45 KM'),
+    fuel: typeof v.fuelEnergy === 'object' ? (v.fuelEnergy.fuelType || 'Petrol') : (v.fuel_type || 'Petrol'),
+    transmission: typeof v.transmission === 'object' ? (v.transmission.type || 'Automatic') : (v.transmission || 'Automatic'),
+    features: v.features ? (Array.isArray(v.features) ? v.features.flatMap((f: any) => typeof f === 'string' ? f : (f.items || [])) : []) : ['Burmester 3D Sound', 'Panoramic Sunroof']
+  }));
 
   return (
     <div className="bg-[#080808] text-white min-h-screen">
@@ -193,7 +180,7 @@ export default function HomePage() {
               href="/vehicle"
               className="text-xs font-bold text-[#c9a84c] hover:underline flex items-center gap-1 uppercase tracking-wider"
             >
-              View Full 48 Vehicle Inventory <ChevronRight size={16} />
+              View Full {rawList.length} Vehicle Inventory <ChevronRight size={16} />
             </Link>
           </div>
 
@@ -216,21 +203,36 @@ export default function HomePage() {
 
                 <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                   <div>
-                    <h3 className="text-base font-bold text-white group-hover:text-[#c9a84c] transition-colors">{car.title}</h3>
-                    <div className="flex items-center gap-4 text-xs text-neutral-400 mt-2">
-                      <span>{car.mileage}</span>
-                      <span>•</span>
-                      <span>{car.fuel}</span>
+                    <div className="flex items-center justify-between text-[11px] text-neutral-400 mb-1.5">
+                      <span className="bg-[#c9a84c]/20 text-[#c9a84c] px-2 py-0.5 rounded font-mono font-bold">{car.make}</span>
+                      <span className="text-neutral-500 font-medium">{car.mileage}</span>
                     </div>
+                    <h3 className="text-base font-bold text-white group-hover:text-[#c9a84c] transition-colors">{car.title}</h3>
+                    <div className="flex items-center gap-2 text-xs text-neutral-400 mt-2">
+                      <span>{car.fuel}</span>
+                      <span>•</span>
+                      <span>{car.transmission}</span>
+                    </div>
+
+                    {/* Special Feature Badges */}
+                    {car.features && car.features.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-3">
+                        {car.features.slice(0, 2).map((feat: string, idx: number) => (
+                          <span key={idx} className="bg-neutral-900 border border-neutral-800 text-[10px] text-neutral-300 px-2 py-0.5 rounded-md font-medium">
+                            {feat}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center justify-between border-t border-neutral-900 pt-4">
                     <div>
-                      <span className="text-[10px] text-neutral-500 uppercase">Price</span>
+                      <span className="text-[10px] text-neutral-500 uppercase font-semibold">Price</span>
                       <div className="text-base font-black text-[#c9a84c]">{car.price}</div>
                     </div>
                     <Link
-                      href={`/vehicle/${car.id}`}
+                      href={`/product/${car.id}`}
                       className="px-4 py-2 bg-neutral-900 border border-neutral-800 text-white hover:bg-[#c9a84c] hover:text-black font-bold text-xs rounded-xl transition-all"
                     >
                       Dossier Details

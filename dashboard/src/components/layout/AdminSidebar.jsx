@@ -118,6 +118,7 @@ export default function AdminSidebar({ children }) {
 
   const mainNav = [
     { path: '/admin/dashboard', label: 'Admin Dashboard', icon: LayoutDashboard },
+    { path: '/admin/vehicles',  label: 'Vehicles Management', icon: Car },
     { path: '/add-listing',     label: 'Add Vehicle',     icon: PlusCircle },
     { path: '/brand-identity',  label: 'Brand Identity',  icon: Sparkles },
   ]

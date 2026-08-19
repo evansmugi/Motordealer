@@ -49,6 +49,8 @@ import CampaignMetricsPage from './pages/analytics/CampaignMetricsPage';
 import AdminLogin from './pages/AdminLogin';
 import AddListing from './pages/AddListing';
 import EditListing from './pages/EditListing';
+import ViewListing from './pages/ViewListing';
+import VehicleManagement from './pages/VehicleManagement';
 import BrandIdentity from './pages/BrandIdentity';
 import UserProfile from './pages/UserProfile';
 
@@ -68,8 +70,12 @@ export function App() {
         <Route path="/" element={<AdminDashboard />} />
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/vehicles" element={<VehicleManagement />} />
+        <Route path="/vehicles" element={<VehicleManagement />} />
         <Route path="/add-listing" element={<AddListing />} />
         <Route path="/edit-listing/:id" element={<EditListing />} />
+        <Route path="/view-listing/:id" element={<ViewListing />} />
+        <Route path="/admin/vehicles/view/:id" element={<ViewListing />} />
         <Route path="/brand-identity" element={<BrandIdentity />} />
         <Route path="/profile" element={<UserProfile />} />
 

@@ -16,9 +16,9 @@ start "1. Strapi Backend (Port 1338)" cmd /k "cd /d "%~dp0" && set "PATH=%USERPR
 
 if exist "%~dp0frontend\package.json" (
     echo =========================================================
-    echo  2. Starting Next.js Customer Portal (Port 3001)
+    echo  2. Starting Next.js Customer Portal (Port 3005)
     echo =========================================================
-    start "2. Next.js Public Portal (Port 3001)" cmd /k "cd /d "%~dp0frontend" && set "PATH=%USERPROFILE%\.config\herd\bin\nvm\v22.13.0;%PATH%" && npm run dev"
+    start "2. Next.js Public Portal (Port 3005)" cmd /k "cd /d "%~dp0frontend" && set "PATH=%USERPROFILE%\.config\herd\bin\nvm\v22.13.0;%PATH%" && npm run dev"
 )
 
 if exist "%~dp0dashboard\package.json" (
@@ -32,7 +32,7 @@ echo.
 echo =========================================================
 echo All 3 servers launching in separate terminal windows!
 echo  - Strapi CMS Admin:       http://localhost:1338/admin
-echo  - Next.js Customer Portal: http://localhost:3001
+echo  - Next.js Customer Portal: http://localhost:3005
 echo  - POS/CRM/ERP Dashboard:   http://localhost:5181
 echo =========================================================
 echo.

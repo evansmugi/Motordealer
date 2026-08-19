@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { StoreProvider } from '../context/StoreContext';
+import { Navbar } from '../components/layout/Navbar';
 import ClientChatWidget from '../components/automotive/ClientChatWidget';
+import { TailwindScript } from '../components/layout/TailwindScript';
 
 export const metadata: Metadata = {
   title: 'KnK Automotive Enterprise | Luxury Vehicles & Marketplace',
@@ -9,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'KnK Automotive Enterprise',
     description: 'Premier luxury automotive marketplace & bespoke vehicle imports.',
-    url: 'http://localhost:3000',
+    url: 'http://localhost:3005',
     siteName: 'KnK Automotive',
     type: 'website'
   }
@@ -22,32 +24,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              tailwind.config = {
-                theme: {
-                  extend: {
-                    colors: {
-                      gold: {
-                        50: '#fdfbf7',
-                        100: '#f7f2e6',
-                        400: '#e5c158',
-                        500: '#c9a84c',
-                        600: '#ab8b38',
-                      }
-                    }
-                  }
-                }
-              }
-            `
-          }}
-        />
-      </head>
       <body className="bg-[#080808] text-white min-h-screen flex flex-col font-sans antialiased selection:bg-[#c9a84c] selection:text-black">
+        <TailwindScript />
         <StoreProvider>
+          <Navbar />
           <main className="flex-1">
             {children}
           </main>

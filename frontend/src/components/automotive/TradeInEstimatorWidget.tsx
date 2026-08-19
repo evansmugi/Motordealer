@@ -1,8 +1,29 @@
 'use client';
 
 import React, { useState } from 'react';
-import { RefreshCw, ArrowRightLeft, CheckCircle2, DollarSign } from 'lucide-react';
+import { ArrowRightLeft, CheckCircle2, DollarSign, ShieldCheck, Car } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
+import PredictiveSelect from '../common/PredictiveSelect';
+
+const MAKE_OPTIONS = [
+  { value: 'Toyota', label: 'Toyota' },
+  { value: 'BMW', label: 'BMW' },
+  { value: 'Mercedes-Benz', label: 'Mercedes-Benz' },
+  { value: 'Audi', label: 'Audi' },
+  { value: 'Ford', label: 'Ford' },
+  { value: 'Tesla', label: 'Tesla' },
+  { value: 'Range Rover', label: 'Range Rover' },
+  { value: 'Porsche', label: 'Porsche' },
+  { value: 'Lexus', label: 'Lexus' },
+  { value: 'Land Cruiser', label: 'Land Cruiser' }
+];
+
+const CONDITION_OPTIONS = [
+  { value: 'EXCELLENT', label: 'Excellent (Mint condition, full records)', badge: '+15% Credit' },
+  { value: 'VERY_GOOD', label: 'Very Good (Minor wear, well maintained)', badge: 'Standard' },
+  { value: 'GOOD', label: 'Good (Normal wear, minor scuffs)', badge: '-12% Credit' },
+  { value: 'FAIR', label: 'Fair (Requires reconditioning)', badge: '-25% Credit' }
+];
 
 export const TradeInEstimatorWidget: React.FC<{ targetVehicleId?: string }> = ({ targetVehicleId = 'veh-001' }) => {
   const { submitTradeIn } = useStore();
@@ -43,138 +64,154 @@ export const TradeInEstimatorWidget: React.FC<{ targetVehicleId?: string }> = ({
       status: 'SUBMITTED'
     });
 
-    setSubmittedNotice(`Valuation request submitted! Instant Trade-In Credit Estimate: $${estimatedCredit.toLocaleString()}.`);
-    setTimeout(() => setSubmittedNotice(null), 5000);
+    setSubmittedNotice(`Trade-in valuation request submitted! Instant estimated credit: $${estimatedCredit.toLocaleString()}.`);
+    setTimeout(() => setSubmittedNotice(null), 6000);
   };
 
   return (
-    <div className="glass-panel" style={{ borderRadius: '20px', padding: '28px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-        <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10B981' }}>
+    <div className="bg-[#0a0a0a] border border-neutral-800 rounded-2xl p-6 shadow-2xl space-y-6">
+      {/* Widget Header */}
+      <div className="flex items-center gap-3 border-b border-neutral-800 pb-4">
+        <div className="w-10 h-10 rounded-xl bg-[#c9a84c]/15 text-[#c9a84c] border border-[#c9a84c]/30 flex items-center justify-center shrink-0">
           <ArrowRightLeft size={20} />
         </div>
         <div>
-          <h3 style={{ fontSize: '18px', fontWeight: '900', color: 'var(--nexus-text)', margin: 0 }}>
+          <h3 className="text-lg font-black text-white uppercase tracking-tight">
             Instant Vehicle Trade-In Valuation Engine
           </h3>
-          <div style={{ fontSize: '12px', color: 'var(--nexus-text-muted)' }}>
+          <p className="text-xs text-neutral-400 mt-0.5">
             Trade your current car for instant credit toward your next vehicle purchase.
-          </div>
+          </p>
         </div>
       </div>
 
       {submittedNotice && (
-        <div style={{ padding: '12px 16px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '12px', color: '#10B981', fontSize: '13px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-          <CheckCircle2 size={18} /> {submittedNotice}
+        <div className="p-3.5 bg-emerald-950/60 border border-emerald-500/40 rounded-xl text-emerald-400 text-xs font-bold flex items-center gap-2">
+          <CheckCircle2 size={18} className="shrink-0" />
+          <span>{submittedNotice}</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Row 1: Make, Model, Year */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Make</label>
-            <select
+            <label className="block text-[11px] font-bold text-neutral-400 uppercase mb-1">Vehicle Make</label>
+            <PredictiveSelect
+              options={MAKE_OPTIONS}
               value={make}
-              onChange={(e) => setMake(e.target.value)}
-              style={{ width: '100%', background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '8px 12px', color: 'var(--nexus-text)', fontSize: '12px', fontWeight: '700' }}
-            >
-              <option value="Toyota">Toyota</option>
-              <option value="BMW">BMW</option>
-              <option value="Mercedes-Benz">Mercedes-Benz</option>
-              <option value="Audi">Audi</option>
-              <option value="Ford">Ford</option>
-              <option value="Tesla">Tesla</option>
-              <option value="Range Rover">Range Rover</option>
-            </select>
+              onChange={(val) => setMake(val || 'Toyota')}
+              placeholder="Select Make"
+            />
           </div>
 
           <div>
-            <label style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Model</label>
+            <label className="block text-[11px] font-bold text-neutral-400 uppercase mb-1">Model Name</label>
             <input
               type="text"
               value={model}
               onChange={(e) => setModel(e.target.value)}
-              style={{ width: '100%', background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '8px 12px', color: 'var(--nexus-text)', fontSize: '12px', outline: 'none' }}
+              placeholder="e.g. 3 Series / M3"
+              className="w-full bg-[#121212] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"
             />
           </div>
 
           <div>
-            <label style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Model Year</label>
+            <label className="block text-[11px] font-bold text-neutral-400 uppercase mb-1">Model Year</label>
             <input
               type="number"
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
-              style={{ width: '100%', background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '8px 12px', color: 'var(--nexus-text)', fontSize: '12px', outline: 'none' }}
+              placeholder="2020"
+              className="w-full bg-[#121212] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-3.5 py-2.5 text-xs text-white outline-none font-mono"
             />
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+        {/* Row 2: Odometer & Condition Grade */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Current Odometer (KM)</label>
+            <label className="block text-[11px] font-bold text-neutral-400 uppercase mb-1">Current Odometer (KM)</label>
             <input
               type="number"
               value={mileageKm}
               onChange={(e) => setMileageKm(Number(e.target.value))}
-              style={{ width: '100%', background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '8px 12px', color: 'var(--nexus-text)', fontSize: '12px', outline: 'none' }}
+              placeholder="45000"
+              className="w-full bg-[#121212] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-3.5 py-2.5 text-xs text-white outline-none font-mono"
             />
           </div>
 
           <div>
-            <label style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Condition Grade</label>
-            <select
+            <label className="block text-[11px] font-bold text-neutral-400 uppercase mb-1">Condition Grade</label>
+            <PredictiveSelect
+              options={CONDITION_OPTIONS}
               value={conditionGrade}
-              onChange={(e) => setConditionGrade(e.target.value as any)}
-              style={{ width: '100%', background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '8px 12px', color: 'var(--nexus-text)', fontSize: '12px', fontWeight: '700' }}
-            >
-              <option value="EXCELLENT">Excellent (Mint condition, full records)</option>
-              <option value="VERY_GOOD">Very Good (Minor wear, well maintained)</option>
-              <option value="GOOD">Good (Normal wear, minor scuffs)</option>
-              <option value="FAIR">Fair (Requires reconditioning)</option>
-            </select>
+              onChange={(val) => setConditionGrade((val as any) || 'VERY_GOOD')}
+              placeholder="Select Condition"
+            />
           </div>
         </div>
 
-        {/* Live Estimated Valuation Credit Box */}
-        <div style={{ padding: '16px', background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        {/* Dynamic Estimated Trade-In Valuation Credit Banner */}
+        <div className="p-4 bg-[#121212] border border-[#c9a84c]/30 rounded-xl flex items-center justify-between flex-wrap gap-2">
           <div>
-            <div style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '800', textTransform: 'uppercase' }}>ESTIMATED TRADE-IN CREDIT VALUE</div>
-            <div style={{ fontSize: '24px', fontWeight: '900', color: '#10B981' }}>
+            <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider block">
+              ESTIMATED TRADE-IN CREDIT VALUE
+            </span>
+            <div className="text-2xl font-black text-[#c9a84c] mt-0.5">
               ${estimatedCredit.toLocaleString()}
             </div>
           </div>
-          <span style={{ fontSize: '11px', color: 'var(--nexus-text-muted)', fontWeight: '700' }}>Subject to Physical Inspection</span>
+          <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-medium">
+            <ShieldCheck size={16} className="text-[#c9a84c]" />
+            <span>Subject to Physical Inspection</span>
+          </div>
         </div>
 
-        {/* Contact Info */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-          <input
-            type="text"
-            placeholder="Your Full Name *"
-            required
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
-            style={{ background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '8px 12px', color: 'var(--nexus-text)', fontSize: '12px', outline: 'none' }}
-          />
-          <input
-            type="tel"
-            placeholder="Phone Number *"
-            required
-            value={customerPhone}
-            onChange={(e) => setCustomerPhone(e.target.value)}
-            style={{ background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '8px 12px', color: 'var(--nexus-text)', fontSize: '12px', outline: 'none' }}
-          />
-          <input
-            type="email"
-            placeholder="Email Address *"
-            required
-            value={customerEmail}
-            onChange={(e) => setCustomerEmail(e.target.value)}
-            style={{ background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '8px 12px', color: 'var(--nexus-text)', fontSize: '12px', outline: 'none' }}
-          />
+        {/* Customer Contact Details */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+          <div>
+            <label className="block text-[10px] font-semibold text-neutral-400 mb-1">Full Name *</label>
+            <input
+              type="text"
+              required
+              placeholder="John Doe"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              className="w-full bg-[#121212] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-3.5 py-2 text-xs text-white placeholder-neutral-600 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-semibold text-neutral-400 mb-1">Phone Number *</label>
+            <input
+              type="tel"
+              required
+              placeholder="+254 700 000 000"
+              value={customerPhone}
+              onChange={(e) => setCustomerPhone(e.target.value)}
+              className="w-full bg-[#121212] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-3.5 py-2 text-xs text-white placeholder-neutral-600 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-semibold text-neutral-400 mb-1">Email Address *</label>
+            <input
+              type="email"
+              required
+              placeholder="john@example.com"
+              value={customerEmail}
+              onChange={(e) => setCustomerEmail(e.target.value)}
+              className="w-full bg-[#121212] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-3.5 py-2 text-xs text-white placeholder-neutral-600 outline-none"
+            />
+          </div>
         </div>
 
-        <button type="submit" className="nexus-btn-primary" style={{ height: '44px', width: '100%', fontSize: '12px' }}>
+        {/* Action Submit Button */}
+        <button
+          type="submit"
+          className="w-full py-3 bg-gradient-to-r from-[#e5c158] to-[#c9a84c] text-black font-extrabold text-xs rounded-xl uppercase tracking-wider hover:opacity-90 transition-all shadow-lg shadow-[#c9a84c]/20 cursor-pointer"
+        >
           Submit Trade-In Valuation Request
         </button>
       </form>

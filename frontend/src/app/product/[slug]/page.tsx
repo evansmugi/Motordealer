@@ -11,8 +11,9 @@ import { TestDriveModal } from '../../../components/automotive/TestDriveModal';
 import { ReservationModal } from '../../../components/automotive/ReservationModal';
 import VehicleInquiryModal from '../../../components/automotive/VehicleInquiryModal';
 import VehicleTradeInModal from '../../../components/automotive/VehicleTradeInModal';
-import { Star, ShieldCheck, Truck, ArrowLeft, Heart, Layers, Gauge, Fuel, Sliders, Calendar, Lock, Car, CheckCircle2 } from 'lucide-react';
+import { Star, ShieldCheck, Truck, ArrowLeft, Heart, Layers, Gauge, Fuel, Sliders, Calendar, Lock, Car, CheckCircle2, Video } from 'lucide-react';
 import Link from 'next/link';
+import { getEmbedVideoUrl } from '../../../lib/vehicles';
 
 export default function VehicleDetailPage() {
   const params = useParams();
@@ -278,6 +279,92 @@ export default function VehicleDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* MEDIA 1 EXACT REPLICA: 4 HIGH-CONTRAST PERFORMANCE TELEMETRY CARDS */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+        {/* Telemetry Card 1: Engine Output */}
+        <div className="p-5 bg-[#0e121e] border border-[#1b2336] rounded-2xl flex flex-col justify-between h-32 shadow-xl hover:border-[#c9a84c]/50 transition-all">
+          <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">ENGINE OUTPUT</span>
+          <div>
+            <div className="text-2xl font-black text-white">{(vehicle as any).horsepower || `${vehicle.engine?.powerHp || 204} HP`}</div>
+            <div className="text-xs font-bold text-blue-400 mt-0.5">{(vehicle as any).torque || `${vehicle.engine?.torqueNm || 500} Nm Torque`}</div>
+          </div>
+        </div>
+
+        {/* Telemetry Card 2: 0-100 KM/H Acceleration */}
+        <div className="p-5 bg-[#0e121e] border border-[#1b2336] rounded-2xl flex flex-col justify-between h-32 shadow-xl hover:border-[#c9a84c]/50 transition-all">
+          <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">0–100 KM/H</span>
+          <div>
+            <div className="text-2xl font-black text-white">{(vehicle as any).acceleration || `${vehicle.engine?.zeroToHundredKm || 9.2}s`}</div>
+            <div className="text-xs font-bold text-emerald-400 mt-0.5">Top: {(vehicle as any).top_speed || `${vehicle.engine?.topSpeedKm || 180} km/h`}</div>
+          </div>
+        </div>
+
+        {/* Telemetry Card 3: Transmission */}
+        <div className="p-5 bg-[#0e121e] border border-[#1b2336] rounded-2xl flex flex-col justify-between h-32 shadow-xl hover:border-[#c9a84c]/50 transition-all">
+          <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">TRANSMISSION</span>
+          <div>
+            <div className="text-2xl font-black text-white">
+              {typeof (vehicle as any).transmission === 'string' 
+                ? (vehicle as any).transmission 
+                : (vehicle.transmission?.type || '8-Spd')}
+            </div>
+            <div className="text-xs font-bold text-purple-400 mt-0.5">
+              {typeof (vehicle as any).drivetrain === 'string'
+                ? (vehicle as any).drivetrain
+                : (vehicle.drivetrain?.type || '4WD')}
+            </div>
+          </div>
+        </div>
+
+        {/* Telemetry Card 4: Fuel & Range */}
+        <div className="p-5 bg-[#0e121e] border border-[#1b2336] rounded-2xl flex flex-col justify-between h-32 shadow-xl hover:border-[#c9a84c]/50 transition-all">
+          <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">FUEL & RANGE</span>
+          <div>
+            <div className="text-2xl font-black text-white">{(vehicle as any).fuel_range || `${vehicle.fuelEnergy?.rangeKm || 1390} km`}</div>
+            <div className="text-xs font-black text-amber-500 tracking-wider mt-0.5 uppercase">{vehicle.fuelEnergy?.fuelType || 'DIESEL'}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* DYNAMICALLY GENERATED HIGH-SPECIFICATION EQUIPMENT CHECKLIST */}
+      {vehicle.features && vehicle.features.length > 0 && (
+        <div className="bg-[#0a0a0a] border border-neutral-800 rounded-3xl p-8 space-y-4 mt-8">
+          <h3 className="text-sm font-bold text-[#c9a84c] uppercase tracking-wider flex items-center gap-2">
+            <Sliders size={18} /> High-Specification Equipment & Options Checklist
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs text-neutral-300">
+            {(Array.isArray(vehicle.features) ? (
+              typeof vehicle.features[0] === 'string'
+                ? vehicle.features
+                : vehicle.features.flatMap((f: any) => f.items || [])
+            ) : []).map((ft: string, idx: number) => (
+              <div key={idx} className="flex items-center gap-3 p-3 bg-[#121212] border border-neutral-900 rounded-xl">
+                <CheckCircle2 size={16} className="text-[#c9a84c] shrink-0" />
+                <span>{ft}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* VIDEO WALKTHROUGH PLAYER */}
+      {(vehicle as any).video_url && getEmbedVideoUrl((vehicle as any).video_url) && (
+        <div className="bg-[#0a0a0a] border border-neutral-800 rounded-3xl p-8 space-y-4 mt-8">
+          <h3 className="text-sm font-bold text-[#c9a84c] uppercase tracking-wider flex items-center gap-2">
+            <Video size={18} /> High-Definition Video Walkthrough
+          </h3>
+          <div className="w-full h-96 bg-black rounded-2xl overflow-hidden border border-neutral-800">
+            <iframe
+              src={getEmbedVideoUrl((vehicle as any).video_url) || ''}
+              title="Vehicle Video Tour"
+              className="w-full h-full border-none"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      )}
 
       {/* Dynamic Finance & Trade-In Widgets Section */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', marginTop: '48px' }}>

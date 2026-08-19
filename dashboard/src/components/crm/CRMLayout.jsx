@@ -78,11 +78,25 @@ const campaignMonitorNavItems = [
   { path: '/analytics/campaign-monitor?tab=qr',         label: 'Showroom QR Codes',     icon: QrCode },
 ]
 
-export default function CRMLayout() {
+const vehiclesNavItems = [
+  { path: '/admin/vehicles',       label: 'Inventory Directory', icon: Car },
+  { path: '/add-listing',           label: 'Add Vehicle',         icon: PlusCircle },
+  { path: '/brand-identity',        label: 'Brand Assets',        icon: Sparkles },
+  { path: '/crm/trade-in-requests', label: 'Trade-In Valuations', icon: RefreshCw },
+  { path: '/crm/appointments',      label: 'Test Drive Bookings', icon: Calendar },
+]
+
+export default function CRMLayout({ children = null }) {
   const location = useLocation()
   const navigate = useNavigate()
   const tasks = useCRMStore(state => state.tasks)
   const [isExportModalOpen, setIsExportModalOpen] = useState(false)
+
+  const isVehiclesPage = location.pathname.startsWith('/admin/vehicles') ||
+                         location.pathname.startsWith('/vehicles') ||
+                         location.pathname.startsWith('/add-listing') ||
+                         location.pathname.startsWith('/edit-listing') ||
+                         location.pathname.startsWith('/view-listing')
 
   const isCampaignMonitorPage = location.pathname.startsWith('/analytics/campaign-monitor') ||
                                 location.pathname.startsWith('/analytics/campaign-analytics') ||
@@ -97,13 +111,15 @@ export default function CRMLayout() {
                          location.pathname.startsWith('/crm/sla') ||
                          location.pathname.startsWith('/crm/ai-settings')
 
-  const currentNavItems = isSettingsPage
-    ? settingsNavItems
-    : isCampaignMonitorPage
-      ? campaignMonitorNavItems
-      : isAnalyticsPage
-        ? analyticsNavItems
-        : navItems
+  const currentNavItems = isVehiclesPage
+    ? vehiclesNavItems
+    : isSettingsPage
+      ? settingsNavItems
+      : isCampaignMonitorPage
+        ? campaignMonitorNavItems
+        : isAnalyticsPage
+          ? analyticsNavItems
+          : navItems
 
   const acknowledgeTaskReminder = useCRMStore(state => state.acknowledgeTaskReminder)
   const snoozeTaskReminder = useCRMStore(state => state.snoozeTaskReminder)
@@ -405,30 +421,34 @@ export default function CRMLayout() {
 
             {/* Mobile-Only Clean Module Badge (Hides 2nd duplicate KNK logo on small screens) */}
             <div className="flex sm:hidden items-center">
-              <span className={`text-[10px] tracking-[1.5px] uppercase font-bold px-2.5 py-1 rounded-lg border ${
-                isSettingsPage
-                  ? 'text-purple-400 bg-purple-500/10 border-purple-500/30'
-                  : isCampaignMonitorPage
-                    ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30'
-                    : isAnalyticsPage
-                      ? 'text-[#6366f1] bg-[#6366f1]/10 border-[#6366f1]/30'
-                      : 'text-[#c9a84c] bg-[#c9a84c]/10 border-[#c9a84c]/30'
+              <span className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                isVehiclesPage
+                  ? 'text-[#c9a84c] bg-[#c9a84c]/10 border-[#c9a84c]/30'
+                  : isSettingsPage
+                    ? 'text-purple-400 bg-purple-500/10 border-purple-500/30'
+                    : isCampaignMonitorPage
+                      ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30'
+                      : isAnalyticsPage
+                        ? 'text-[#6366f1] bg-[#6366f1]/10 border-[#6366f1]/30'
+                        : 'text-[#c9a84c] bg-[#c9a84c]/10 border-[#c9a84c]/30'
               }`}>
-                {isSettingsPage ? 'SETTINGS' : isCampaignMonitorPage ? 'CAMPAIGN MONITOR' : isAnalyticsPage ? 'ANALYTICS' : 'CRM'}
+                {isVehiclesPage ? 'VEHICLE MANAGEMENT' : isSettingsPage ? 'SETTINGS' : isCampaignMonitorPage ? 'CAMPAIGN MONITOR' : isAnalyticsPage ? 'ANALYTICS' : 'CRM'}
               </span>
             </div>
 
             <div className={`hidden lg:flex items-center gap-2 px-3 py-1 rounded-full text-[10px] tracking-widest uppercase font-semibold border ${
-              isSettingsPage
-                ? 'bg-purple-500/10 border-purple-500/30 text-purple-400'
-                : isCampaignMonitorPage
-                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                  : isAnalyticsPage
-                    ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400'
-                    : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+              isVehiclesPage
+                ? 'bg-[#c9a84c]/10 border-[#c9a84c]/30 text-[#c9a84c]'
+                : isSettingsPage
+                  ? 'bg-purple-500/10 border-purple-500/30 text-purple-400'
+                  : isCampaignMonitorPage
+                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                    : isAnalyticsPage
+                      ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400'
+                      : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
             }`}>
-              <span className={`w-2 h-2 rounded-full animate-ping ${isSettingsPage ? 'bg-purple-400' : isCampaignMonitorPage ? 'bg-emerald-400' : isAnalyticsPage ? 'bg-cyan-400' : 'bg-emerald-400'}`} />
-              {isSettingsPage ? 'SETTINGS-ACTIVE' : isCampaignMonitorPage ? 'CAMPAIGN-ACTIVE' : isAnalyticsPage ? 'ANALYTICS-ACTIVE' : 'CRM-ACTIVE'}
+              <span className={`w-2 h-2 rounded-full animate-ping ${isVehiclesPage ? 'bg-[#c9a84c]' : isSettingsPage ? 'bg-purple-400' : isCampaignMonitorPage ? 'bg-emerald-400' : isAnalyticsPage ? 'bg-cyan-400' : 'bg-emerald-400'}`} />
+              {isVehiclesPage ? 'VEHICLES-MODULE-ACTIVE' : isSettingsPage ? 'SETTINGS-ACTIVE' : isCampaignMonitorPage ? 'CAMPAIGN-ACTIVE' : isAnalyticsPage ? 'ANALYTICS-ACTIVE' : 'CRM-ACTIVE'}
             </div>
           </div>
 
@@ -594,7 +614,7 @@ export default function CRMLayout() {
       <main className={`w-full px-4 sm:px-6 lg:px-8 py-8 relative min-h-[calc(100vh-120px)] transition-colors duration-300 ${
         adminTheme === 'light' ? 'bg-slate-100 text-slate-900' : 'bg-[#020617] text-slate-100'
       }`}>
-        <Outlet context={{ adminTheme, isLight: adminTheme === 'light' }} />
+        {children ? children : <Outlet context={{ adminTheme, isLight: adminTheme === 'light' }} />}
       </main>
 
       {/* Interactive Task Detail Modal */}

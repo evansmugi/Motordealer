@@ -357,6 +357,29 @@ function AppointmentsManager({ showToast, onStatusChange, isLight }) {
   )
 }
 
+import { VEHICLES } from '../data/mock-dataset.ts'
+
+const STOREFRONT_MASTER_VEHICLES = (VEHICLES || []).map(v => ({
+  id: v.id,
+  listing_title: `${v.year || 2024} ${v.make || ''} ${v.model || ''} ${v.trim ? v.trim : ''}`.trim(),
+  make: v.make || 'Mercedes-Benz',
+  model: v.model || 'Luxury Model',
+  year: String(v.year || '2024'),
+  price: String(v.pricing?.cashPrice || v.price || 24500000),
+  condition: v.condition === 'NEW' ? 'Brand New' : v.condition === 'CERTIFIED_PRE_OWNED' ? 'Certified Pre-Owned' : 'Foreign Used',
+  transmission: typeof v.transmission === 'object' ? (v.transmission.type || 'Automatic') : (v.transmission || 'Automatic'),
+  engine: typeof v.engine === 'object' ? (v.engine.type || '3.0L Turbo') : (v.engine || 'V8 Biturbo'),
+  fuel_type: typeof v.fuelEnergy === 'object' ? (v.fuelEnergy.fuelType || 'Petrol') : (v.fuel_type || 'Petrol'),
+  mileage: v.history?.odometerKm ? `${v.history.odometerKm} KM` : (v.mileage || '45 KM'),
+  color: v.colorExterior || 'Obsidian Black',
+  interior_color: v.colorInterior || 'Nappa Leather',
+  offer_type: (v.badges && v.badges.includes('FEATURED')) || v.isFeatured ? 'Featured' : 'For Sale',
+  currentStatus: 'Available',
+  images: Array.isArray(v.images) && v.images.length > 0
+    ? v.images.map(img => typeof img === 'string' ? { url: img } : img)
+    : [{ url: v.heroImage || 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop' }]
+}))
+
 // ─── MASTER EXECUTIVE COMMAND CENTER DASHBOARD ─────────────────────────────────
 export default function AdminDashboard() {
   const navigate = useNavigate()
@@ -384,25 +407,16 @@ export default function AdminDashboard() {
   const leads                         = useCRMStore(state => state.leads) || []
   const opportunities                 = useCRMStore(state => state.opportunities) || []
   const tasks                         = useCRMStore(state => state.tasks) || []
-  const communicationLogs             = useCRMStore(state => state.communicationLogs) || []
+  const crmAppointments               = useCRMStore(state => state.appointments) || []
   const campaigns                     = useCRMStore(state => state.campaigns) || []
   const nexusThreads                  = useCRMStore(state => state.nexusThreads) || []
-  const adminTheme                    = useCRMStore(state => state.adminTheme)
-  const toggleAdminTheme              = useCRMStore(state => state.toggleAdminTheme)
-  const liveChatNotificationsEnabled  = useCRMStore(state => state.liveChatNotificationsEnabled)
-  const toggleLiveChatNotifications   = useCRMStore(state => state.toggleLiveChatNotifications)
-  const crmAppointments               = useCRMStore(state => state.appointments) || []
+  const adminTheme                    = useCRMStore(state => state.adminTheme) || 'dark'
   const isLight                       = adminTheme === 'light'
+  const liveChatNotificationsEnabled  = useCRMStore(state => state.liveChatNotificationsEnabled)
+  const toggleAdminTheme               = useCRMStore(state => state.toggleAdminTheme)
 
   const sessions                      = useAnalyticsStore(state => state.sessions) || []
   const pageViews                     = useAnalyticsStore(state => state.pageViews) || []
-  const events                        = useAnalyticsStore(state => state.events) || []
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) setAdminEmail(user.email)
-    })
-  }, [])
 
   const showToast = (type, message) => {
     setToast({ type, message })
@@ -411,48 +425,73 @@ export default function AdminDashboard() {
 
   const fetchListings = async () => {
     setLoadingListings(true)
+    let fetchedListings = []
+
+    // 1. Try Strapi REST API
     try {
       const res = await fetch('http://localhost:1338/api/car-listings')
       if (res.ok) {
         const json = await res.json()
-        const items = json.data || []
-        const mapped = items.map(item => {
+        const items = Array.isArray(json.data) ? json.data : (json ? [json] : [])
+        fetchedListings = items.map(item => {
           const d = item.attributes || item
           return {
             id: item.id || d.id,
             documentId: item.documentId || item.id,
-            listing_title: d.listing_title,
-            tagline: d.tagline,
-            price: d.price,
-            make: d.make,
-            model: d.model,
-            condition: d.condition,
-            year: d.year,
-            transmission: d.transmission,
-            engine: d.engine,
-            fuel_type: d.fuel_type,
-            mileage: d.mileage,
-            color: d.color,
-            interior_color: d.interior_color,
-            offer_type: d.offer_type,
-            listing_description: d.listing_description,
-            youtube_video_url: d.youtube_video_url,
+            listing_title: d.listing_title || d.title || `${d.year || ''} ${d.make || ''} ${d.model || ''}`.trim() || 'Luxury Vehicle',
+            tagline: d.tagline || '',
+            price: d.price || '0',
+            make: d.make || 'Mercedes-Benz',
+            model: d.model || 'S-Class',
+            condition: d.condition || 'Foreign Used',
+            year: d.year || '2024',
+            transmission: d.transmission || 'Automatic',
+            engine: d.engine || 'V8 Biturbo',
+            fuel_type: d.fuel_type || d.fuel || 'Petrol',
+            mileage: d.mileage || '0',
+            color: d.color || 'Obsidian Black',
+            interior_color: d.interior_color || 'Black',
+            offer_type: d.offer_type || 'Featured',
+            listing_description: d.listing_description || '',
+            youtube_video_url: d.youtube_video_url || '',
             currentStatus: d.currentStatus || 'Available',
-            images: d.images || [{ url: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop' }]
+            images: Array.isArray(d.images) && d.images.length > 0
+              ? d.images
+              : [{ url: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop' }]
           }
         })
-        setListings(mapped)
-      } else {
-        throw new Error('Failed to load Strapi listings')
       }
     } catch (err) {
-      console.error('Fetch Strapi listings notice:', err)
-      // Fallback load from Supabase if Strapi offline
-      const { data } = await supabase.from(TABLE).select('*').order('id', { ascending: false }).catch(() => ({ data: [] }))
-      if (data && data.length) setListings(data)
-    } finally {
-      setLoadingListings(false)
+      console.log('Fetch Strapi notice:', err)
     }
+
+    // 2. Try Supabase Cloud Database
+    try {
+      const { data: supaData } = await supabase.from(TABLE).select('*').order('id', { ascending: false })
+      if (supaData && supaData.length > 0) {
+        const existingIds = new Set(fetchedListings.map(l => String(l.id)))
+        supaData.forEach(item => {
+          if (!existingIds.has(String(item.id))) {
+            fetchedListings.push(item)
+          }
+        })
+      }
+    } catch (err) {
+      console.log('Fetch Supabase notice:', err)
+    }
+
+    // 3. Combine with Master Storefront Vehicle Dataset so storefront vehicles are ALWAYS present
+    const combined = [...fetchedListings]
+    const existingTitlesOrIds = new Set(combined.map(l => (l.listing_title || '').toLowerCase()))
+
+    STOREFRONT_MASTER_VEHICLES.forEach(veh => {
+      if (!existingTitlesOrIds.has(veh.listing_title.toLowerCase())) {
+        combined.push(veh)
+      }
+    })
+
+    setListings(combined)
+    setLoadingListings(false)
   }
 
   useEffect(() => { fetchListings() }, [])
@@ -496,7 +535,7 @@ export default function AdminDashboard() {
     // Inventory Capital
     const totalInventoryValue = safeListings.reduce((sum, l) => sum + (Number(l.price) || 0), 0)
     const totalVehiclesCount  = safeListings.length
-    const forSaleCount        = safeListings.filter(l => l.offer_type === 'For Sale').length
+    const forSaleCount        = safeListings.filter(l => l.offer_type === 'For Sale' || l.offer_type === 'Featured').length
     const forHireCount        = safeListings.filter(l => l.offer_type === 'For Hire' || l.offer_type === 'Lease').length
 
     // CRM Metrics
@@ -556,8 +595,16 @@ export default function AdminDashboard() {
   const filteredListings = useMemo(() => {
     const safeListings = Array.isArray(listings) ? listings : []
     return safeListings.filter(l => {
-      const matchOffer = selectedOfferType === 'All' || l.offer_type === selectedOfferType
-      const matchMake  = selectedMake === 'All' || l.make === selectedMake
+      const offerTypeLower = (l.offer_type || '').toLowerCase()
+      const selOfferLower = (selectedOfferType || 'All').toLowerCase()
+
+      const matchOffer =
+        selOfferLower === 'all' ||
+        offerTypeLower === selOfferLower ||
+        (selOfferLower === 'featured' && (offerTypeLower === 'featured' || offerTypeLower === 'for sale' || !offerTypeLower)) ||
+        (selOfferLower === 'for sale' && (offerTypeLower === 'for sale' || offerTypeLower === 'featured' || !offerTypeLower))
+
+      const matchMake = !selectedMake || selectedMake === 'All' || (l.make || '').toLowerCase() === selectedMake.toLowerCase()
       return matchOffer && matchMake
     })
   }, [listings, selectedOfferType, selectedMake])
@@ -1433,6 +1480,7 @@ export default function AdminDashboard() {
                       onChange={setSelectedOfferType}
                       options={[
                         { value: 'All', label: 'All Offers' },
+                        { value: 'Featured', label: 'Featured Inventory' },
                         { value: 'For Sale', label: 'For Sale' },
                         { value: 'For Hire', label: 'For Hire' },
                         { value: 'Lease', label: 'Lease' },
@@ -1521,8 +1569,8 @@ export default function AdminDashboard() {
                             </td>
                             <td style={{ ...tdStyle, textAlign: 'right', whiteSpace: 'nowrap' }}>
                               <div className="flex items-center justify-end gap-1">
-                                <ActionTooltip text="Preview Public Vehicle Storefront Listing">
-                                  <button className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-white/5 rounded-lg transition-all cursor-pointer" onClick={() => window.open(`/vehicle/${listing.id}`, '_blank')}>
+                                <ActionTooltip text="Preview Un-editable Dedicated Vehicle Dossier">
+                                  <button className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-white/5 rounded-lg transition-all cursor-pointer" onClick={() => navigate(`/view-listing/${listing.id}`)}>
                                     <Eye size={14} />
                                   </button>
                                 </ActionTooltip>

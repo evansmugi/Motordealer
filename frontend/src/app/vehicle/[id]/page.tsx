@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { Car, Check, ShieldCheck, Calendar, Video, ArrowLeft, Lock, ShoppingBag, Key, MessageCircle, RefreshCw } from 'lucide-react';
+import { Car, Check, ShieldCheck, Calendar, Video, ArrowLeft, Lock, ShoppingBag, Key, MessageCircle, RefreshCw, Zap } from 'lucide-react';
 import VehicleInquiryModal from '../../../components/automotive/VehicleInquiryModal';
 import VehicleTradeInModal from '../../../components/automotive/VehicleTradeInModal';
 import ReservationModal from '../../../components/automotive/ReservationModal';
 import { TestDriveModal } from '../../../components/automotive/TestDriveModal';
 import { useStore } from '../../../context/StoreContext';
+import { getStoredVehicles, getEmbedVideoUrl } from '../../../lib/vehicles';
 
 export default function VehicleDossierPage() {
   const { id } = useParams();
@@ -17,7 +18,7 @@ export default function VehicleDossierPage() {
   const [isTradeInOpen, setIsTradeInOpen] = useState(false);
   const [isReservationOpen, setIsReservationOpen] = useState(false);
 
-  const vehicle = {
+  const [vehicle, setVehicle] = useState<any>({
     id: String(id || '1'),
     title: '2024 Mercedes-Benz S 580 4MATIC Luxury Sedan',
     tagline: 'V8 Biturbo, Rear Executive Seating Package, Burmester 3D Surround',
@@ -26,13 +27,20 @@ export default function VehicleDossierPage() {
     model: 'S 580 4MATIC',
     year: '2024',
     condition: 'Foreign Used',
-    transmission: '9G-TRONIC Automatic',
+    transmission: '8-Spd Automatic',
     engine: '4.0L V8 Biturbo with EQ Boost (496 HP)',
     fuel: 'Petrol',
     mileage: '8,400 KM',
     color: 'Obsidian Black Metallic',
     interior: 'Exclusive Nappa Leather Black',
     youtubeUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+    horsepower: '496 HP',
+    torque: '700 Nm Torque',
+    acceleration: '4.4s',
+    top_speed: '250 km/h',
+    drivetrain: '4MATIC AWD',
+    fuel_range: '850 km',
+    fuel_type: 'PETROL',
     images: [
       'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1000&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1000&auto=format&fit=crop',
@@ -47,9 +55,55 @@ export default function VehicleDossierPage() {
       '360-Degree Surround View Camera Package',
       'AIRMATIC Air Suspension with Adaptive Damping'
     ]
-  };
+  });
 
-  const [activeImage, setActiveImage] = useState(vehicle.images[0]);
+  const [activeImage, setActiveImage] = useState<string>(vehicle.images[0]);
+
+  useEffect(() => {
+    const stored = getStoredVehicles();
+    const match = stored.find(v => String(v.id) === String(id));
+    if (match) {
+      const formattedPrice = match.price && !match.price.includes('KES')
+        ? `KES ${Number(match.price).toLocaleString()}`
+        : (match.price || 'KES 24,500,000');
+
+      const imgs = Array.isArray(match.images) && match.images.length > 0
+        ? match.images.map(i => typeof i === 'string' ? i : (i.url || ''))
+        : vehicle.images;
+
+      const loadedVeh = {
+        id: String(match.id),
+        title: match.listing_title || `${match.year} ${match.make} ${match.model}`,
+        tagline: match.tagline || 'High-Specification Flagship Dossier',
+        price: formattedPrice,
+        make: match.make,
+        model: match.model,
+        year: match.year,
+        condition: match.condition || 'Foreign Used',
+        transmission: match.transmission || 'Automatic',
+        engine: match.engine || 'V8 Biturbo',
+        fuel: match.fuel_type || 'Petrol',
+        mileage: match.mileage || '45 KM',
+        color: match.color || 'Obsidian Black',
+        interior: match.interior_color || 'Nappa Leather',
+        youtubeUrl: match.video_url || 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        horsepower: (match as any).horsepower || '204 HP',
+        torque: (match as any).torque || '500 Nm Torque',
+        acceleration: (match as any).acceleration || '9.2s',
+        top_speed: (match as any).top_speed || '180 km/h',
+        drivetrain: (match as any).drivetrain || '4WD',
+        fuel_range: (match as any).fuel_range || '1390 km',
+        fuel_type: (match.fuel_type || 'DIESEL').toUpperCase(),
+        images: imgs,
+        features: Array.isArray(match.features) && match.features.length > 0 ? match.features : vehicle.features
+      };
+
+      setVehicle(loadedVeh);
+      setActiveImage(imgs[0]);
+    }
+  }, [id]);
+
+  const embedVideoUrl = getEmbedVideoUrl(vehicle.youtubeUrl || vehicle.video_url);
 
   return (
     <div className="bg-[#080808] text-white min-h-screen font-sans">
@@ -72,7 +126,7 @@ export default function VehicleDossierPage() {
             </div>
 
             <div className="grid grid-cols-3 gap-3">
-              {vehicle.images.map((img, idx) => (
+              {vehicle.images.map((img: string, idx: number) => (
                 <button
                   key={idx}
                   onClick={() => setActiveImage(img)}
@@ -116,7 +170,7 @@ export default function VehicleDossierPage() {
                   {/* Action 1: Request Test Drive */}
                   <button
                     onClick={() => openTestDriveModal(vehicle.id)}
-                    className="p-3.5 bg-[#0e1320] border border-[#1e2638] hover:border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28"
+                    className="p-3.5 bg-[#0a0a0a] border border-neutral-800 hover:border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28"
                   >
                     <div>
                       <div className="flex items-center justify-between text-[9px] font-extrabold text-[#c9a84c] uppercase tracking-wider mb-1">
@@ -133,7 +187,7 @@ export default function VehicleDossierPage() {
                   {/* Action 2: Get Best Quote */}
                   <button
                     onClick={() => setIsInquiryOpen(true)}
-                    className="p-3.5 bg-[#0e1320] border-2 border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28 shadow-lg shadow-[#c9a84c]/10"
+                    className="p-3.5 bg-[#0a0a0a] border-2 border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28 shadow-lg shadow-[#c9a84c]/10"
                   >
                     <div>
                       <div className="flex items-center justify-between text-[9px] font-extrabold text-[#c9a84c] uppercase tracking-wider mb-1">
@@ -150,7 +204,7 @@ export default function VehicleDossierPage() {
                   {/* Action 3: Import / Reserve */}
                   <button
                     onClick={() => setIsReservationOpen(true)}
-                    className="p-3.5 bg-[#0e1320] border border-[#1e2638] hover:border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28"
+                    className="p-3.5 bg-[#0a0a0a] border border-neutral-800 hover:border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28"
                   >
                     <div>
                       <div className="flex items-center justify-between text-[9px] font-extrabold text-[#c9a84c] uppercase tracking-wider mb-1">
@@ -168,7 +222,7 @@ export default function VehicleDossierPage() {
                 {/* Bottom 2 Large Full-width Buttons */}
                 <div className="space-y-2.5">
                   <a
-                    href="https://wa.me/254700000000?text=Hello%20KnK%20Automotive,%20I%20am%20interested%20in%20the%202024%20Mercedes-Benz%20S%20580%204MATIC"
+                    href={`https://wa.me/254700000000?text=Hello%20KnK%20Automotive,%20I%20am%20interested%20in%20the%20${encodeURIComponent(vehicle.title)}`}
                     target="_blank"
                     rel="noreferrer"
                     className="w-full py-3.5 border border-[#c9a84c] text-[#c9a84c] hover:bg-[#c9a84c]/10 font-bold rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
@@ -184,6 +238,45 @@ export default function VehicleDossierPage() {
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* MEDIA 1 EXACT REPLICA: 4 HIGH-CONTRAST PERFORMANCE TELEMETRY CARDS */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Telemetry Card 1: Engine Output */}
+          <div className="p-5 bg-[#0a0a0a] border border-neutral-800 rounded-2xl flex flex-col justify-between h-32 shadow-xl hover:border-[#c9a84c] transition-all">
+            <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">ENGINE OUTPUT</span>
+            <div>
+              <div className="text-2xl font-black text-white">{vehicle.horsepower}</div>
+              <div className="text-xs font-bold text-blue-400 mt-0.5">{vehicle.torque}</div>
+            </div>
+          </div>
+
+          {/* Telemetry Card 2: 0-100 KM/H Acceleration */}
+          <div className="p-5 bg-[#0a0a0a] border border-neutral-800 rounded-2xl flex flex-col justify-between h-32 shadow-xl hover:border-[#c9a84c] transition-all">
+            <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">0–100 KM/H</span>
+            <div>
+              <div className="text-2xl font-black text-white">{vehicle.acceleration}</div>
+              <div className="text-xs font-bold text-emerald-400 mt-0.5">Top: {vehicle.top_speed}</div>
+            </div>
+          </div>
+
+          {/* Telemetry Card 3: Transmission */}
+          <div className="p-5 bg-[#0a0a0a] border border-neutral-800 rounded-2xl flex flex-col justify-between h-32 shadow-xl hover:border-[#c9a84c] transition-all">
+            <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">TRANSMISSION</span>
+            <div>
+              <div className="text-2xl font-black text-white">{vehicle.transmission}</div>
+              <div className="text-xs font-bold text-purple-400 mt-0.5">{vehicle.drivetrain}</div>
+            </div>
+          </div>
+
+          {/* Telemetry Card 4: Fuel & Range */}
+          <div className="p-5 bg-[#0a0a0a] border border-neutral-800 rounded-2xl flex flex-col justify-between h-32 shadow-xl hover:border-[#c9a84c] transition-all">
+            <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">FUEL & RANGE</span>
+            <div>
+              <div className="text-2xl font-black text-white">{vehicle.fuel_range}</div>
+              <div className="text-xs font-black text-amber-500 tracking-wider mt-0.5 uppercase">{vehicle.fuel_type}</div>
             </div>
           </div>
         </div>
@@ -221,7 +314,7 @@ export default function VehicleDossierPage() {
         <div className="bg-[#0a0a0a] border border-neutral-800 rounded-3xl p-8 space-y-4">
           <h3 className="text-sm font-bold text-[#c9a84c] uppercase tracking-wider">High-Specification Equipment</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-neutral-300">
-            {vehicle.features.map((ft, idx) => (
+            {vehicle.features.map((ft: string, idx: number) => (
               <div key={idx} className="flex items-center gap-3 p-3 bg-[#121212] border border-neutral-900 rounded-xl">
                 <Check size={16} className="text-[#c9a84c]" />
                 <span>{ft}</span>
@@ -231,19 +324,22 @@ export default function VehicleDossierPage() {
         </div>
 
         {/* Video Tour Embed */}
-        <div className="bg-[#0a0a0a] border border-neutral-800 rounded-3xl p-8 space-y-4">
-          <h3 className="text-sm font-bold text-[#c9a84c] uppercase tracking-wider flex items-center gap-2">
-            <Video size={18} /> High-Definition Video Walkthrough
-          </h3>
-          <div className="w-full h-96 bg-black rounded-2xl overflow-hidden border border-neutral-800">
-            <iframe
-              src={vehicle.youtubeUrl}
-              title="Vehicle Video Tour"
-              className="w-full h-full border-none"
-              allowFullScreen
-            />
+        {embedVideoUrl && (
+          <div className="bg-[#0a0a0a] border border-neutral-800 rounded-3xl p-8 space-y-4">
+            <h3 className="text-sm font-bold text-[#c9a84c] uppercase tracking-wider flex items-center gap-2">
+              <Video size={18} /> High-Definition Video Walkthrough
+            </h3>
+            <div className="w-full h-96 bg-black rounded-2xl overflow-hidden border border-neutral-800">
+              <iframe
+                src={embedVideoUrl}
+                title="Vehicle Video Tour"
+                className="w-full h-full border-none"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Media 1 Telemetry Replica Modals */}

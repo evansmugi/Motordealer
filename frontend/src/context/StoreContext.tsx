@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { VehicleItem, TestDriveBooking, TradeInValuation, VehicleReservation, VEHICLES, SAMPLE_TEST_DRIVES, SAMPLE_TRADE_INS, SAMPLE_RESERVATIONS } from '../lib/vehicle-dataset';
+import { getStoredBrands } from '../lib/brands';
 
 export interface CartItem {
   product: VehicleItem | any;
@@ -43,6 +44,7 @@ interface StoreContextType {
   createReservation: (reservation: Omit<VehicleReservation, 'id' | 'reservationRef' | 'createdAt'>) => void;
 
   vehicles: VehicleItem[];
+  brands: string[];
   refreshVehicles: () => Promise<void>;
   setIsCartOpen: (open: boolean) => void;
   setIsSearchOpen: (open: boolean) => void;
@@ -61,6 +63,23 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<VehicleItem | null>(null);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+  // Dynamic Brands Management
+  const [brands, setBrands] = useState<string[]>([]);
+
+  useEffect(() => {
+    setBrands(getStoredBrands());
+
+    const handleUpdate = () => {
+      setBrands(getStoredBrands());
+    };
+    window.addEventListener('knk_brands_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('knk_brands_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
 
   // Automotive Modal States
   const [testDriveVehicleId, setTestDriveVehicleId] = useState<string | null>(null);
@@ -200,7 +219,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               overviewDescription: attr.listing_description || 'High-specification vehicle listed via KnK Enterprise Admin.'
             };
           });
-          setVehicles(loaded);
+
+          // Merge Strapi API vehicles with master VEHICLES dataset without duplicating IDs
+          const existingIds = new Set(loaded.map(v => v.id));
+          const combined = [...loaded];
+          VEHICLES.forEach(v => {
+            if (!existingIds.has(v.id)) {
+              combined.push(v);
+            }
+          });
+
+          setVehicles(combined);
         }
       }
     } catch (e) {
@@ -355,6 +384,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     <StoreContext.Provider
       value={{
         vehicles,
+        brands,
         refreshVehicles,
         cart,
         wishlist,

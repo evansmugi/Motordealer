@@ -1,255 +1,564 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Car, Upload, Plus, Check, ArrowLeft, DollarSign, Tag, Info, Video } from 'lucide-react';
+import { Car, Plus, ArrowLeft, Upload, Image as ImageIcon, X, Check, Sparkles, Sliders, Video, Zap } from 'lucide-react';
 import CRMLayout from '../components/crm/CRMLayout';
 import PredictiveSelect from '../components/common/PredictiveSelect';
-
-const MAKE_OPTIONS = [
-  { value: 'Mercedes-Benz', label: 'Mercedes-Benz', icon: Car, badge: 'German' },
-  { value: 'BMW', label: 'BMW', icon: Car, badge: 'German' },
-  { value: 'Audi', label: 'Audi', icon: Car, badge: 'German' },
-  { value: 'Porsche', label: 'Porsche', icon: Car, badge: 'German' },
-  { value: 'Land Rover', label: 'Land Rover', icon: Car, badge: 'British' },
-  { value: 'Lexus', label: 'Lexus', icon: Car, badge: 'Japanese' },
-  { value: 'Toyota', label: 'Toyota', icon: Car, badge: 'Japanese' },
-  { value: 'Bentley', label: 'Bentley', icon: Car, badge: 'Luxury' }
-];
+import { getStoredBrands } from '../lib/brands';
+import { upsertStoredVehicle, getEmbedVideoUrl } from '../lib/vehicles';
+import { useCRMStore } from '../context/CRMStore';
 
 const CONDITION_OPTIONS = [
-  { value: 'Brand New', label: 'Brand New', badge: 'Zero KM' },
-  { value: 'Certified Pre-Owned', label: 'Certified Pre-Owned', badge: 'Inspected' },
-  { value: 'Foreign Used', label: 'Foreign Used', badge: 'Imported' },
-  { value: 'Locally Used', label: 'Locally Used', badge: 'Verified' }
+  { value: 'Brand New', label: 'Brand New (Zero KM)' },
+  { value: 'Certified Pre-Owned', label: 'Certified Pre-Owned (Verified inspection)' },
+  { value: 'Foreign Used', label: 'Foreign Used (Fresh Import)' },
+  { value: 'Locally Used', label: 'Locally Used' }
 ];
 
 const TRANSMISSION_OPTIONS = [
   { value: 'Automatic', label: 'Automatic' },
   { value: 'Manual', label: 'Manual' },
-  { value: 'Dual-Clutch (PDK/DSG)', label: 'Dual-Clutch (PDK/DSG)' }
+  { value: 'Dual-Clutch (PDK/DCT)', label: 'Dual-Clutch (PDK/DCT)' }
 ];
 
 const FUEL_OPTIONS = [
-  { value: 'Petrol / Gasoline', label: 'Petrol / Gasoline' },
+  { value: 'Petrol', label: 'Petrol' },
   { value: 'Diesel', label: 'Diesel' },
-  { value: 'Hybrid (PHEV)', label: 'Hybrid (PHEV)' },
+  { value: 'Hybrid (PHEV/MHEV)', label: 'Hybrid (PHEV/MHEV)' },
   { value: 'Electric (EV)', label: 'Electric (EV)' }
 ];
 
-const STATUS_OPTIONS = [
-  { value: 'Available', label: 'Available', badge: 'In Stock' },
-  { value: 'Reserved', label: 'Reserved', badge: 'Hold Deposit' },
-  { value: 'Sold', label: 'Sold', badge: 'Completed' }
+const FEATURE_CATEGORIES = [
+  {
+    category: 'Comfort & Interior Luxury',
+    items: [
+      'Panoramic Sunroof',
+      'Nappa Leather Seats',
+      'Heated & Ventilated Front Seats',
+      'Heated Rear Seats',
+      'Massage Front Seats',
+      'Power Memory Seats',
+      'Ambient Lighting (64 Colors)',
+      'Quad-Zone Automatic Climate Control',
+      'Wireless Smartphone Charging',
+      'Soft-Close Doors'
+    ]
+  },
+  {
+    category: 'Audio, Navigation & Technology',
+    items: [
+      'Burmester 3D Surround Sound',
+      'Head-Up Display (HUD)',
+      '360-Degree Surround View Camera',
+      'Apple CarPlay & Android Auto',
+      'Rear Seat Entertainment Screens',
+      'Keyless Entry & Push Start',
+      'Digital Rearview Mirror',
+      '12.3" Digital Instrument Cluster'
+    ]
+  },
+  {
+    category: 'Safety & Driver Assistance',
+    items: [
+      'Adaptive Cruise Control (Distronic)',
+      'Lane Keep Assist & Centering',
+      'Blind Spot Monitoring',
+      'Night Vision Assist',
+      'Emergency Autonomous Braking',
+      'Park Assist / Self-Parking',
+      'Traffic Sign Recognition'
+    ]
+  },
+  {
+    category: 'Performance & Exterior Equipment',
+    items: [
+      'Adaptive Air Suspension',
+      'Sport Exhaust System',
+      'Carbon Ceramic Brakes',
+      'All-Wheel Drive (AWD/4MATIC/xDrive)',
+      'LED Matrix Laser Headlights',
+      'Hands-Free Power Tailgate',
+      'Towing Package / Tow Hitch',
+      '21" AMG / M Sport Alloy Wheels'
+    ]
+  }
 ];
 
 export default function AddListing() {
   const navigate = useNavigate();
+  const adminTheme = useCRMStore(state => state.adminTheme);
+  const isLight = adminTheme === 'light';
+
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  // Dynamic Brands
+  const [brands, setBrands] = useState([]);
+  useEffect(() => {
+    setBrands(getStoredBrands());
+  }, []);
+
+  const makeOptions = brands.map(b => ({ value: b, label: b }));
 
   const [form, setForm] = useState({
     listing_title: '',
     tagline: '',
-    price: '',
+    price: '24500000',
     make: 'Mercedes-Benz',
     model: '',
-    condition: 'Foreign Used',
-    year: '2024',
+    condition: 'Brand New',
+    year: '2025',
     transmission: 'Automatic',
-    engine: '3.0L V6 Turbo',
-    fuel_type: 'Petrol / Gasoline',
-    mileage: '',
+    engine: 'V8 Biturbo',
+    fuel_type: 'Petrol',
+    mileage: '45',
     color: 'Obsidian Black',
-    interior_color: 'Nappa Leather Black',
+    interior_color: 'Black Nappa',
     offer_type: 'Featured',
     listing_description: '',
-    youtube_video_url: '',
     status: 'Available',
-    features: ['Burmester 3D Sound', 'Panoramic Sunroof', 'Head-Up Display', '360 Camera']
+    features: ['Panoramic Sunroof', 'Nappa Leather Seats', 'Burmester 3D Surround Sound', '360-Degree Surround View Camera'],
+    images: ['https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop'],
+    video_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    horsepower: '204 HP',
+    torque: '500 Nm Torque',
+    acceleration: '9.2s',
+    top_speed: '180 km/h',
+    drivetrain: '4WD',
+    fuel_range: '1390 km'
   });
 
-  const [featureInput, setFeatureInput] = useState('');
+  const [imageUrlInput, setImageUrlInput] = useState('');
+  const [customFeatureInput, setCustomFeatureInput] = useState('');
 
-  const handleAddFeature = () => {
-    if (featureInput.trim() && !form.features.includes(featureInput.trim())) {
-      setForm({ ...form, features: [...form.features, featureInput.trim()] });
-      setFeatureInput('');
-    }
+  // Image Upload Handlers
+  const handleFileUpload = (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => {
+        const result = uploadEvent.target?.result;
+        if (result) {
+          setForm(prev => ({
+            ...prev,
+            images: [...prev.images, result]
+          }));
+        }
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
-  const handleRemoveFeature = (ft) => {
-    setForm({ ...form, features: form.features.filter(f => f !== ft) });
+  const handleAddImageUrl = (e) => {
+    e.preventDefault();
+    const url = imageUrlInput.trim();
+    if (!url) return;
+    setForm(prev => ({
+      ...prev,
+      images: [...prev.images, url]
+    }));
+    setImageUrlInput('');
+  };
+
+  const handleRemoveImage = (indexToRemove) => {
+    setForm(prev => ({
+      ...prev,
+      images: prev.images.filter((_, idx) => idx !== indexToRemove)
+    }));
+  };
+
+  // Toggle Feature Checkbox
+  const toggleFeature = (featureItem) => {
+    setForm(prev => {
+      const exists = prev.features.includes(featureItem);
+      return {
+        ...prev,
+        features: exists
+          ? prev.features.filter(f => f !== featureItem)
+          : [...prev.features, featureItem]
+      };
+    });
+  };
+
+  const handleAddCustomFeature = (e) => {
+    e.preventDefault();
+    const trimmed = customFeatureInput.trim();
+    if (!trimmed) return;
+    if (!form.features.includes(trimmed)) {
+      setForm(prev => ({
+        ...prev,
+        features: [...prev.features, trimmed]
+      }));
+    }
+    setCustomFeatureInput('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const payload = {
-        data: {
-          listing_title: form.listing_title,
-          tagline: form.tagline || form.listing_title,
-          price: String(form.price),
-          make: form.make,
-          model: form.model,
-          condition: form.condition,
-          year: String(form.year),
-          transmission: form.transmission,
-          engine: form.engine,
-          fuel_type: form.fuel_type,
-          mileage: String(form.mileage || '0'),
-          color: form.color,
-          interior_color: form.interior_color,
-          offer_type: form.offer_type,
-          listing_description: form.listing_description,
-          youtube_video_url: form.youtube_video_url,
-          currentStatus: form.status || 'Available',
-          publishedAt: new Date().toISOString()
-        }
+      const newId = `veh-${Date.now().toString().slice(-4)}`;
+      const newVehicle = {
+        id: newId,
+        listing_title: form.listing_title || `${form.year} ${form.make} ${form.model}`,
+        tagline: form.tagline,
+        price: String(form.price),
+        make: form.make,
+        model: form.model,
+        condition: form.condition,
+        year: String(form.year),
+        transmission: form.transmission,
+        engine: form.engine,
+        fuel_type: form.fuel_type,
+        mileage: String(form.mileage),
+        color: form.color,
+        interior_color: form.interior_color,
+        offer_type: form.offer_type,
+        listing_description: form.listing_description,
+        currentStatus: form.status || 'Available',
+        features: form.features,
+        images: form.images.map(url => typeof url === 'string' ? { url } : url),
+        video_url: form.video_url,
+        horsepower: form.horsepower,
+        torque: form.torque,
+        acceleration: form.acceleration,
+        top_speed: form.top_speed,
+        drivetrain: form.drivetrain,
+        fuel_range: form.fuel_range
       };
+
+      // 1. Save to persistent dataset
+      upsertStoredVehicle(newVehicle);
+
+      // 2. Also POST to Strapi API
       await fetch('http://localhost:1338/api/car-listings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+        body: JSON.stringify({ data: newVehicle })
+      }).catch(() => null);
+
       setSuccess(true);
       setTimeout(() => {
-        navigate('/admin/dashboard');
-      }, 1200);
+        navigate('/admin/vehicles');
+      }, 1000);
     } catch (err) {
-      console.error('Failed to create vehicle in Strapi:', err);
+      console.error('Failed to create vehicle:', err);
     } finally {
       setLoading(false);
     }
   };
 
+  const embedVideoPreview = getEmbedVideoUrl(form.video_url);
+
   return (
     <CRMLayout title="Add Vehicle Listing | KnK Automotive">
-      <div className="p-6 max-w-5xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-neutral-800 pb-5">
+      <div className="w-full space-y-6">
+        
+        {/* Header Action Bar */}
+        <div className={`flex items-center justify-between border-b pb-5 ${
+          isLight ? 'border-slate-200' : 'border-neutral-800'
+        }`}>
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate(-1)}
-              className="aq-btn-secondary flex items-center justify-center w-10 h-10 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white"
+              className={`flex items-center justify-center w-10 h-10 rounded-xl border transition-all ${
+                isLight ? 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100' : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
+              }`}
             >
               <ArrowLeft size={18} />
             </button>
             <div>
-              <h1 className="text-xl font-bold text-white uppercase tracking-tight">New Vehicle Dossier</h1>
-              <p className="text-xs text-neutral-400">Publish high-specification vehicle to KnK Storefront & CRM Inventory</p>
+              <h1 className={`text-xl font-bold uppercase tracking-tight ${
+                isLight ? 'text-slate-900' : 'text-white'
+              }`}>Create New Vehicle Inventory Dossier</h1>
+              <p className={`text-xs ${isLight ? 'text-slate-500' : 'text-neutral-400'}`}>
+                Edge-to-edge listing manager, picture uploader, video showcase & feature checklist
+              </p>
             </div>
           </div>
         </div>
 
         {success && (
-          <div className="p-4 bg-emerald-950/40 border border-emerald-500/50 rounded-xl text-emerald-400 text-sm flex items-center gap-2">
-            <Check size={18} /> Listing successfully created and published! Redirecting...
+          <div className={`p-4 border rounded-xl text-sm flex items-center gap-2 font-bold ${
+            isLight ? 'bg-emerald-50 border-emerald-300 text-emerald-800' : 'bg-emerald-950/40 border-emerald-500/50 text-emerald-400'
+          }`}>
+            <Check size={18} /> New vehicle created successfully! Persistent database updated & syncing with storefront...
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          
+          {/* Dynamic Image Upload & Video Gallery */}
+          <div className={`border rounded-2xl p-6 space-y-5 shadow-xl transition-colors ${
+            isLight ? 'bg-white border-slate-200' : 'bg-[#0a0a0a] border-neutral-800'
+          }`}>
+            <div className={`flex items-center justify-between border-b pb-3 ${
+              isLight ? 'border-slate-200' : 'border-neutral-800'
+            }`}>
+              <div className="flex items-center gap-2 text-xs font-bold text-[#c9a84c] uppercase">
+                <ImageIcon size={16} /> Dynamic Vehicle Media & Picture Gallery Uploader
+              </div>
+              <span className={`text-xs font-mono ${isLight ? 'text-slate-500' : 'text-neutral-400'}`}>
+                {form.images.length} Pictures Uploaded
+              </span>
+            </div>
+
+            {/* Drag & Drop Upload Zone */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className={`border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-all group ${
+                isLight 
+                  ? 'bg-slate-50 border-slate-300 hover:border-[#c9a84c]' 
+                  : 'bg-[#121212]/50 border-neutral-800 hover:border-[#c9a84c]'
+              }`}>
+                <Upload size={28} className="text-neutral-500 group-hover:text-[#c9a84c] transition-colors mb-2" />
+                <span className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Click to Upload Local Pictures</span>
+                <span className={`text-[11px] mt-0.5 ${isLight ? 'text-slate-500' : 'text-neutral-500'}`}>Supports PNG, JPG, WEBP formats</span>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+              </label>
+
+              {/* Add Web Image URL Input */}
+              <div className={`border rounded-2xl p-6 flex flex-col justify-between space-y-3 ${
+                isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#121212]/50 border-neutral-800'
+              }`}>
+                <div>
+                  <label className={`block text-xs font-bold mb-1 ${isLight ? 'text-slate-900' : 'text-white'}`}>Add Image via Web URL</label>
+                  <p className={`text-[11px] ${isLight ? 'text-slate-500' : 'text-neutral-500'}`}>Paste direct image link from Unsplash or CDN</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="url"
+                    value={imageUrlInput}
+                    onChange={(e) => setImageUrlInput(e.target.value)}
+                    placeholder="https://images.unsplash.com/photo-..."
+                    className={`flex-1 border rounded-xl px-3 py-2 text-xs outline-none ${
+                      isLight 
+                        ? 'bg-white border-slate-300 text-slate-900 focus:border-[#c9a84c]' 
+                        : 'bg-[#181818] border-neutral-800 text-white focus:border-[#c9a84c]'
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddImageUrl}
+                    className="px-4 py-2 bg-[#c9a84c] text-black font-bold text-xs rounded-xl uppercase hover:opacity-90 transition-all shrink-0 cursor-pointer shadow-md"
+                  >
+                    Add URL
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Gallery Thumbnail Preview Grid */}
+            {form.images.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 pt-2">
+                {form.images.map((imgUrl, idx) => {
+                  const urlStr = typeof imgUrl === 'string' ? imgUrl : (imgUrl?.url || '');
+                  return (
+                    <div key={idx} className={`relative group rounded-xl overflow-hidden border aspect-video shadow-sm ${
+                      isLight ? 'border-slate-300 bg-slate-100' : 'border-neutral-800 bg-neutral-950'
+                    }`}>
+                      <img src={urlStr} alt="" className="w-full h-full object-cover" />
+                      {idx === 0 && (
+                        <span className="absolute top-1.5 left-1.5 bg-black/80 text-[#c9a84c] text-[9px] font-mono font-bold px-2 py-0.5 rounded border border-[#c9a84c]/30">
+                          Cover
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(idx)}
+                        className="absolute top-1.5 right-1.5 bg-rose-950/90 text-rose-400 border border-rose-500/50 p-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                        title="Remove picture"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* DEDICATED VEHICLE VIDEO SHOWCASE / WALKTHROUGH SECTION */}
+            <div className={`p-4 border rounded-2xl space-y-3 ${
+              isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#121212]/70 border-neutral-800'
+            }`}>
+              <div className="flex items-center justify-between">
+                <label className={`block text-xs font-bold flex items-center gap-2 ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                  <Video size={16} className="text-[#c9a84c]" /> Vehicle Video Showcase / Walkthrough URL (YouTube, Vimeo, MP4)
+                </label>
+                <span className={`text-[10px] ${isLight ? 'text-slate-500' : 'text-neutral-400'}`}>Displayed on Storefront Showroom</span>
+              </div>
+              <input
+                type="url"
+                value={form.video_url || ''}
+                onChange={(e) => setForm({ ...form, video_url: e.target.value })}
+                placeholder="e.g. https://www.youtube.com/watch?v=dQw4w9WgXcQ or https://youtu.be/..."
+                className={`w-full border rounded-xl px-3.5 py-2 text-xs outline-none ${
+                  isLight 
+                    ? 'bg-white border-slate-300 text-slate-900 focus:border-[#c9a84c]' 
+                    : 'bg-[#181818] border-neutral-800 text-white focus:border-[#c9a84c]'
+                }`}
+              />
+              
+              {/* Video Embed Admin Live Preview Box */}
+              {form.video_url && embedVideoPreview && (
+                <div className="pt-2">
+                  <div className="text-[11px] font-mono text-[#c9a84c] mb-1.5 font-bold flex items-center gap-1">
+                    <Sparkles size={13} /> Live Store Video Embed Preview:
+                  </div>
+                  <div className="w-full aspect-video rounded-xl overflow-hidden border border-neutral-800 bg-black max-h-72 shadow-md">
+                    <iframe
+                      src={embedVideoPreview}
+                      title="Video Walkthrough Preview"
+                      className="w-full h-full border-none"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Section 1: Overview */}
-          <div className="bg-[#0a0a0a] border border-neutral-800 rounded-2xl p-6 space-y-4">
-            <h2 className="text-sm font-semibold text-[#c9a84c] uppercase tracking-wider flex items-center gap-2">
+          <div className={`border rounded-2xl p-6 space-y-4 shadow-xl transition-colors ${
+            isLight ? 'bg-white border-slate-200' : 'bg-[#0a0a0a] border-neutral-800'
+          }`}>
+            <h2 className={`text-xs font-bold uppercase tracking-wider flex items-center gap-2 border-b pb-3 ${
+              isLight ? 'text-slate-900 border-slate-200' : 'text-[#c9a84c] border-neutral-800'
+            }`}>
               <Car size={16} /> Basic Vehicle Overview
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-neutral-400 mb-1">Listing Title *</label>
+                <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-600' : 'text-neutral-400'}`}>Listing Title *</label>
                 <input
                   type="text"
                   required
+                  placeholder="e.g. 2025 Mercedes-AMG G 63 4.0L V8 Biturbo"
                   value={form.listing_title}
                   onChange={(e) => setForm({ ...form, listing_title: e.target.value })}
-                  placeholder="e.g. 2024 Mercedes-Benz S 580 4MATIC Sedan"
-                  className="w-full bg-[#121212] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none"
+                  className={`w-full border rounded-xl px-4 py-2.5 text-xs outline-none ${
+                    isLight 
+                      ? 'bg-slate-50 border-slate-300 text-slate-900 focus:border-[#c9a84c]' 
+                      : 'bg-[#121212] border-neutral-800 text-white focus:border-[#c9a84c]'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-400 mb-1">Tagline / Subheading</label>
+                <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-600' : 'text-neutral-400'}`}>Tagline</label>
                 <input
                   type="text"
+                  placeholder="e.g. Flagship Luxury Performance SUV with Burmester Audio"
                   value={form.tagline}
                   onChange={(e) => setForm({ ...form, tagline: e.target.value })}
-                  placeholder="e.g. Executive Package, Rear Seat Entertainment, AMG Styling"
-                  className="w-full bg-[#121212] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none"
+                  className={`w-full border rounded-xl px-4 py-2.5 text-xs outline-none ${
+                    isLight 
+                      ? 'bg-slate-50 border-slate-300 text-slate-900 focus:border-[#c9a84c]' 
+                      : 'bg-[#121212] border-neutral-800 text-white focus:border-[#c9a84c]'
+                  }`}
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-neutral-400 mb-1">Make *</label>
+                <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-600' : 'text-neutral-400'}`}>Make *</label>
                 <PredictiveSelect
-                  options={MAKE_OPTIONS}
+                  options={makeOptions}
                   value={form.make}
                   onChange={(val) => setForm({ ...form, make: val })}
-                  placeholder="Select Make"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-400 mb-1">Model *</label>
+                <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-600' : 'text-neutral-400'}`}>Model *</label>
                 <input
                   type="text"
                   required
+                  placeholder="e.g. G 63 AMG / S-Class / Land Cruiser"
                   value={form.model}
                   onChange={(e) => setForm({ ...form, model: e.target.value })}
-                  placeholder="e.g. S 580 4MATIC"
-                  className="w-full bg-[#121212] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none"
+                  className={`w-full border rounded-xl px-4 py-2.5 text-xs outline-none ${
+                    isLight 
+                      ? 'bg-slate-50 border-slate-300 text-slate-900 focus:border-[#c9a84c]' 
+                      : 'bg-[#121212] border-neutral-800 text-white focus:border-[#c9a84c]'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-400 mb-1">Model Year *</label>
+                <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-600' : 'text-neutral-400'}`}>Model Year *</label>
                 <input
-                  type="text"
+                  type="number"
                   required
                   value={form.year}
                   onChange={(e) => setForm({ ...form, year: e.target.value })}
-                  placeholder="2024"
-                  className="w-full bg-[#121212] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none"
+                  className={`w-full border rounded-xl px-4 py-2.5 text-xs outline-none font-mono ${
+                    isLight 
+                      ? 'bg-slate-50 border-slate-300 text-slate-900 focus:border-[#c9a84c]' 
+                      : 'bg-[#121212] border-neutral-800 text-white focus:border-[#c9a84c]'
+                  }`}
                 />
               </div>
             </div>
           </div>
 
-          {/* Section 2: Pricing & Condition */}
-          <div className="bg-[#0a0a0a] border border-neutral-800 rounded-2xl p-6 space-y-4">
-            <h2 className="text-sm font-semibold text-[#c9a84c] uppercase tracking-wider flex items-center gap-2">
-              <DollarSign size={16} /> Pricing, Mileage & Status
+          {/* Section 2: Pricing & Technical Specs */}
+          <div className={`border rounded-2xl p-6 space-y-5 shadow-xl transition-colors ${
+            isLight ? 'bg-white border-slate-200' : 'bg-[#0a0a0a] border-neutral-800'
+          }`}>
+            <h2 className={`text-xs font-bold uppercase tracking-wider border-b pb-3 ${
+              isLight ? 'text-slate-900 border-slate-200' : 'text-[#c9a84c] border-neutral-800'
+            }`}>
+              Pricing, Status & Technical Specs
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-neutral-400 mb-1">Price (KES) *</label>
+                <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-600' : 'text-neutral-400'}`}>Price (KES) *</label>
                 <input
                   type="number"
                   required
                   value={form.price}
                   onChange={(e) => setForm({ ...form, price: e.target.value })}
-                  placeholder="e.g. 24500000"
-                  className="w-full bg-[#121212] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none"
+                  className={`w-full border rounded-xl px-4 py-2.5 text-xs outline-none font-mono font-bold text-[#c9a84c] ${
+                    isLight 
+                      ? 'bg-slate-50 border-slate-300 focus:border-[#c9a84c]' 
+                      : 'bg-[#121212] border-neutral-800 focus:border-[#c9a84c]'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-400 mb-1">Mileage (KM)</label>
+                <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-600' : 'text-neutral-400'}`}>Mileage (KM)</label>
                 <input
-                  type="number"
+                  type="text"
                   value={form.mileage}
                   onChange={(e) => setForm({ ...form, mileage: e.target.value })}
-                  placeholder="e.g. 12500"
-                  className="w-full bg-[#121212] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none"
+                  className={`w-full border rounded-xl px-4 py-2.5 text-xs outline-none font-mono ${
+                    isLight 
+                      ? 'bg-slate-50 border-slate-300 text-slate-900 focus:border-[#c9a84c]' 
+                      : 'bg-[#121212] border-neutral-800 text-white focus:border-[#c9a84c]'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-400 mb-1">Inventory Status</label>
+                <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-600' : 'text-neutral-400'}`}>Inventory Status</label>
                 <PredictiveSelect
-                  options={STATUS_OPTIONS}
+                  options={[
+                    { value: 'Available', label: 'Available (In Stock)' },
+                    { value: 'Reserved', label: 'Reserved (Deposit Paid)' },
+                    { value: 'Sold', label: 'Sold & Delivered' }
+                  ]}
                   value={form.status}
                   onChange={(val) => setForm({ ...form, status: val })}
                 />
@@ -258,7 +567,7 @@ export default function AddListing() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-neutral-400 mb-1">Vehicle Condition</label>
+                <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-600' : 'text-neutral-400'}`}>Vehicle Condition</label>
                 <PredictiveSelect
                   options={CONDITION_OPTIONS}
                   value={form.condition}
@@ -267,7 +576,7 @@ export default function AddListing() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-400 mb-1">Transmission</label>
+                <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-600' : 'text-neutral-400'}`}>Transmission</label>
                 <PredictiveSelect
                   options={TRANSMISSION_OPTIONS}
                   value={form.transmission}
@@ -276,7 +585,7 @@ export default function AddListing() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-400 mb-1">Fuel Type</label>
+                <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-600' : 'text-neutral-400'}`}>Fuel Type</label>
                 <PredictiveSelect
                   options={FUEL_OPTIONS}
                   value={form.fuel_type}
@@ -284,104 +593,256 @@ export default function AddListing() {
                 />
               </div>
             </div>
+
+            {/* Media 1 Exact Telemetry Cards Configuration */}
+            <div className={`p-5 border rounded-2xl space-y-3 mt-4 ${
+              isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#121212]/80 border-neutral-800'
+            }`}>
+              <div className="flex items-center justify-between border-b pb-2.5">
+                <label className={`block text-xs font-bold uppercase tracking-wider flex items-center gap-2 ${
+                  isLight ? 'text-slate-900' : 'text-[#c9a84c]'
+                }`}>
+                  <Zap size={16} /> Performance Telemetry Cards Configuration (Storefront Telemetry)
+                </label>
+                <span className={`text-[10px] font-mono ${isLight ? 'text-slate-500' : 'text-neutral-400'}`}>
+                  Configures 4 Storefront Telemetry Cards
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Card 1: Engine Output */}
+                <div className={`p-3 border rounded-xl space-y-2 ${
+                  isLight ? 'bg-white border-slate-300' : 'bg-[#0a0a0a] border-neutral-800'
+                }`}>
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Card 1: Engine Output</div>
+                  <div>
+                    <label className={`block text-[10px] font-semibold mb-0.5 ${isLight ? 'text-slate-600' : 'text-neutral-500'}`}>Horsepower (HP)</label>
+                    <input
+                      type="text"
+                      value={form.horsepower || ''}
+                      onChange={(e) => setForm({ ...form, horsepower: e.target.value })}
+                      placeholder="e.g. 204 HP"
+                      className={`w-full border rounded-lg px-2.5 py-1.5 text-xs outline-none font-bold ${
+                        isLight ? 'bg-slate-50 border-slate-300 text-slate-900' : 'bg-[#181818] border-neutral-800 text-white'
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-[10px] font-semibold mb-0.5 ${isLight ? 'text-slate-600' : 'text-neutral-500'}`}>Torque (Nm)</label>
+                    <input
+                      type="text"
+                      value={form.torque || ''}
+                      onChange={(e) => setForm({ ...form, torque: e.target.value })}
+                      placeholder="e.g. 500 Nm Torque"
+                      className={`w-full border rounded-lg px-2.5 py-1.5 text-xs outline-none text-blue-400 font-bold ${
+                        isLight ? 'bg-slate-50 border-slate-300 text-blue-700' : 'bg-[#181818] border-neutral-800 text-blue-400'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                {/* Card 2: 0-100 KM/H */}
+                <div className={`p-3 border rounded-xl space-y-2 ${
+                  isLight ? 'bg-white border-slate-300' : 'bg-[#0a0a0a] border-neutral-800'
+                }`}>
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Card 2: 0–100 KM/H</div>
+                  <div>
+                    <label className={`block text-[10px] font-semibold mb-0.5 ${isLight ? 'text-slate-600' : 'text-neutral-500'}`}>0-100 Time (Sec)</label>
+                    <input
+                      type="text"
+                      value={form.acceleration || ''}
+                      onChange={(e) => setForm({ ...form, acceleration: e.target.value })}
+                      placeholder="e.g. 9.2s"
+                      className={`w-full border rounded-lg px-2.5 py-1.5 text-xs outline-none font-bold ${
+                        isLight ? 'bg-slate-50 border-slate-300 text-slate-900' : 'bg-[#181818] border-neutral-800 text-white'
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-[10px] font-semibold mb-0.5 ${isLight ? 'text-slate-600' : 'text-neutral-500'}`}>Top Speed</label>
+                    <input
+                      type="text"
+                      value={form.top_speed || ''}
+                      onChange={(e) => setForm({ ...form, top_speed: e.target.value })}
+                      placeholder="e.g. Top: 180 km/h"
+                      className={`w-full border rounded-lg px-2.5 py-1.5 text-xs outline-none text-emerald-400 font-bold ${
+                        isLight ? 'bg-slate-50 border-slate-300 text-emerald-700' : 'bg-[#181818] border-neutral-800 text-emerald-400'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                {/* Card 3: Transmission */}
+                <div className={`p-3 border rounded-xl space-y-2 ${
+                  isLight ? 'bg-white border-slate-300' : 'bg-[#0a0a0a] border-neutral-800'
+                }`}>
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Card 3: Transmission</div>
+                  <div>
+                    <label className={`block text-[10px] font-semibold mb-0.5 ${isLight ? 'text-slate-600' : 'text-neutral-500'}`}>Short Trans. Name</label>
+                    <input
+                      type="text"
+                      value={form.transmission || ''}
+                      onChange={(e) => setForm({ ...form, transmission: e.target.value })}
+                      placeholder="e.g. 8-Spd"
+                      className={`w-full border rounded-lg px-2.5 py-1.5 text-xs outline-none font-bold ${
+                        isLight ? 'bg-slate-50 border-slate-300 text-slate-900' : 'bg-[#181818] border-neutral-800 text-white'
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-[10px] font-semibold mb-0.5 ${isLight ? 'text-slate-600' : 'text-neutral-500'}`}>Drivetrain</label>
+                    <input
+                      type="text"
+                      value={form.drivetrain || ''}
+                      onChange={(e) => setForm({ ...form, drivetrain: e.target.value })}
+                      placeholder="e.g. 4WD / AWD / RWD"
+                      className={`w-full border rounded-lg px-2.5 py-1.5 text-xs outline-none text-purple-400 font-bold ${
+                        isLight ? 'bg-slate-50 border-slate-300 text-purple-700' : 'bg-[#181818] border-neutral-800 text-purple-400'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                {/* Card 4: Fuel & Range */}
+                <div className={`p-3 border rounded-xl space-y-2 ${
+                  isLight ? 'bg-white border-slate-300' : 'bg-[#0a0a0a] border-neutral-800'
+                }`}>
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Card 4: Fuel & Range</div>
+                  <div>
+                    <label className={`block text-[10px] font-semibold mb-0.5 ${isLight ? 'text-slate-600' : 'text-neutral-500'}`}>Max Range (KM)</label>
+                    <input
+                      type="text"
+                      value={form.fuel_range || ''}
+                      onChange={(e) => setForm({ ...form, fuel_range: e.target.value })}
+                      placeholder="e.g. 1390 km"
+                      className={`w-full border rounded-lg px-2.5 py-1.5 text-xs outline-none font-bold ${
+                        isLight ? 'bg-slate-50 border-slate-300 text-slate-900' : 'bg-[#181818] border-neutral-800 text-white'
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-[10px] font-semibold mb-0.5 ${isLight ? 'text-slate-600' : 'text-neutral-500'}`}>Fuel Type</label>
+                    <input
+                      type="text"
+                      value={form.fuel_type || ''}
+                      onChange={(e) => setForm({ ...form, fuel_type: e.target.value })}
+                      placeholder="e.g. DIESEL / PETROL"
+                      className={`w-full border rounded-lg px-2.5 py-1.5 text-xs outline-none text-amber-500 font-bold ${
+                        isLight ? 'bg-slate-50 border-slate-300 text-amber-700' : 'bg-[#181818] border-neutral-800 text-amber-400'
+                      }`}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Section 3: Media & Features */}
-          <div className="bg-[#0a0a0a] border border-neutral-800 rounded-2xl p-6 space-y-4">
-            <h2 className="text-sm font-semibold text-[#c9a84c] uppercase tracking-wider flex items-center gap-2">
-              <Youtube size={16} /> Media Tour & Features
-            </h2>
+          {/* Section 3: Comprehensive Vehicle Features & Addons Checklist */}
+          <div className={`border rounded-2xl p-6 space-y-5 shadow-xl transition-colors ${
+            isLight ? 'bg-white border-slate-200' : 'bg-[#0a0a0a] border-neutral-800'
+          }`}>
+            <div className={`flex items-center justify-between border-b pb-3 ${
+              isLight ? 'border-slate-200' : 'border-neutral-800'
+            }`}>
+              <div>
+                <h2 className={`text-xs font-bold uppercase tracking-wider flex items-center gap-2 ${
+                  isLight ? 'text-slate-900' : 'text-[#c9a84c]'
+                }`}>
+                  <Sliders size={16} /> Factory Equipment & Luxury Feature Checklist
+                </h2>
+                <p className={`text-[11px] mt-0.5 ${isLight ? 'text-slate-500' : 'text-neutral-400'}`}>
+                  Select all applicable features, options, and packages installed on this vehicle.
+                </p>
+              </div>
+              <span className="text-xs font-mono font-bold text-[#c9a84c]">
+                {form.features.length} Features Selected
+              </span>
+            </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-neutral-400 mb-1">YouTube Video Tour URL</label>
+            {/* Custom Feature Add Input */}
+            <div className="flex items-center gap-2">
               <input
-                type="url"
-                value={form.youtube_video_url}
-                onChange={(e) => setForm({ ...form, youtube_video_url: e.target.value })}
-                placeholder="https://www.youtube.com/watch?v=..."
-                className="w-full bg-[#121212] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none"
+                type="text"
+                value={customFeatureInput}
+                onChange={(e) => setCustomFeatureInput(e.target.value)}
+                placeholder="Type custom feature or addon (e.g. Bespoke Rear Fridge)..."
+                className={`flex-1 border rounded-xl px-3.5 py-2 text-xs outline-none ${
+                  isLight 
+                    ? 'bg-slate-50 border-slate-300 text-slate-900 focus:border-[#c9a84c]' 
+                    : 'bg-[#121212] border-neutral-800 text-white focus:border-[#c9a84c]'
+                }`}
               />
+              <button
+                type="button"
+                onClick={handleAddCustomFeature}
+                className="px-4 py-2 bg-[#c9a84c] text-black font-bold text-xs rounded-xl uppercase hover:opacity-90 transition-all shrink-0 cursor-pointer shadow-md"
+              >
+                + Add Feature
+              </button>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-neutral-400 mb-1">Key Specifications & Features</label>
-              <div className="flex gap-2 mb-3">
-                <input
-                  type="text"
-                  value={featureInput}
-                  onChange={(e) => setFeatureInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddFeature())}
-                  placeholder="Add feature e.g. Night Vision Assist"
-                  className="flex-1 bg-[#121212] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-4 py-2 text-sm text-white focus:outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={handleAddFeature}
-                  className="px-4 py-2 bg-[#c9a84c] text-black font-bold rounded-xl text-xs flex items-center gap-1 hover:bg-[#e5c158]"
-                >
-                  <Plus size={16} /> Add
-                </button>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {form.features.map((ft, idx) => (
-                  <span
-                    key={idx}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-neutral-900 border border-neutral-800 rounded-lg text-xs text-neutral-300"
-                  >
-                    <Check size={12} className="text-[#c9a84c]" />
-                    {ft}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveFeature(ft)}
-                      className="ml-1 text-neutral-500 hover:text-red-400 text-xs font-bold"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-neutral-400 mb-1">Detailed Description</label>
-              <textarea
-                rows={4}
-                value={form.listing_description}
-                onChange={(e) => setForm({ ...form, listing_description: e.target.value })}
-                placeholder="Full vehicle description, warranty details, service history..."
-                className="w-full bg-[#121212] border border-neutral-800 focus:border-[#c9a84c] rounded-xl p-4 text-sm text-white focus:outline-none"
-              />
+            {/* Categorized Checkbox Grid */}
+            <div className="space-y-6 pt-2">
+              {FEATURE_CATEGORIES.map((cat, catIdx) => (
+                <div key={catIdx} className="space-y-3">
+                  <h3 className={`text-xs font-bold uppercase tracking-wider border-b pb-1 font-mono ${
+                    isLight ? 'text-slate-700 border-slate-200' : 'text-neutral-300 border-neutral-800/60'
+                  }`}>
+                    {cat.category}
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                    {cat.items.map((featItem) => {
+                      const isChecked = form.features.includes(featItem);
+                      return (
+                        <label
+                          key={featItem}
+                          onClick={() => toggleFeature(featItem)}
+                          className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none ${
+                            isChecked
+                              ? isLight
+                                ? 'bg-amber-50 border-[#c9a84c] text-slate-950 font-bold'
+                                : 'bg-[#c9a84c]/15 border-[#c9a84c] text-white font-bold'
+                              : isLight
+                                ? 'bg-slate-50 border-slate-200 text-slate-700 hover:border-slate-300'
+                                : 'bg-[#121212] border-neutral-800/80 text-neutral-400 hover:border-neutral-700 hover:text-white'
+                          }`}
+                        >
+                          <div className={`w-4 h-4 rounded flex items-center justify-center border shrink-0 transition-colors ${
+                            isChecked 
+                              ? 'bg-[#c9a84c] border-[#c9a84c] text-black' 
+                              : isLight ? 'border-slate-300 bg-white' : 'border-neutral-600 bg-neutral-900'
+                          }`}>
+                            {isChecked && <Check size={12} strokeWidth={3} />}
+                          </div>
+                          <span className="text-xs truncate">{featItem}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-4 pt-4">
+          <div className="flex items-center justify-between pt-4">
             <button
               type="button"
-              onClick={() => navigate(-1)}
-              className="aq-btn-secondary px-6 py-3 rounded-xl border border-neutral-700 text-neutral-300 font-semibold text-xs"
+              onClick={() => navigate('/admin/vehicles')}
+              className={`px-4 py-2 border rounded-xl text-xs flex items-center gap-2 cursor-pointer ${
+                isLight ? 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200' : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
+              }`}
             >
-              Cancel
+              Cancel & Return
             </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="aq-btn-primary"
-              style={{
-                background: 'linear-gradient(135deg, #e5c158 0%, #c9a84c 100%)',
-                boxShadow: '0 10px 25px -5px rgba(201, 168, 76, 0.4)',
-                padding: '12px 28px',
-                height: '48px',
-                borderRadius: '14px',
-                fontSize: '12px',
-                fontWeight: 950,
-                letterSpacing: '1px',
-                color: '#080808'
-              }}
-            >
-              {loading ? 'Publishing...' : 'SAVE & PUBLISH DOSSIER'}
-            </button>
+            <div className="flex gap-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className="px-8 py-3 bg-gradient-to-r from-[#e5c158] to-[#c9a84c] text-black font-extrabold text-xs rounded-xl uppercase tracking-wider hover:opacity-90 transition-all shadow-lg shadow-[#c9a84c]/20 cursor-pointer"
+              >
+                {loading ? 'Adding Vehicle...' : 'PUBLISH VEHICLE DOSSIER'}
+              </button>
+            </div>
           </div>
         </form>
       </div>
