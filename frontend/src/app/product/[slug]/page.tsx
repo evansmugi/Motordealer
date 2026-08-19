@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useStore } from '../../../context/StoreContext';
 import { PRODUCTS, type ProductItem } from '../../../lib/mock-dataset';
-import { Star, ShieldCheck, ShoppingBag, Truck, ArrowLeft, Check, Heart, Cpu } from 'lucide-react';
+import { Star, ShoppingBag, Truck, ArrowLeft, Check, Heart } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ProductDetailPage() {
@@ -30,7 +30,7 @@ export default function ProductDetailPage() {
   return (
     <div style={{ maxWidth: '1280px', margin: '40px auto 0', padding: '0 40px' }}>
       {/* Back Link */}
-      <Link href="/products" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#64748B', fontSize: '13px', textDecoration: 'none', marginBottom: '24px' }}>
+      <Link href="/products" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--nexus-text-dim)', fontSize: '13px', textDecoration: 'none', marginBottom: '24px' }}>
         <ArrowLeft size={16} /> Back to Catalog Matrix
       </Link>
 
@@ -55,8 +55,8 @@ export default function ProductDetailPage() {
                   height: '80px',
                   borderRadius: '12px',
                   overflow: 'hidden',
-                  border: activeImageIndex === i ? '2px solid #3B82F6' : '1px solid rgba(255,255,255,0.1)',
-                  background: '#000',
+                  border: activeImageIndex === i ? '2px solid #3B82F6' : '1px solid var(--nexus-border)',
+                  background: 'var(--nexus-surface)',
                   cursor: 'pointer',
                   padding: 0
                 }}
@@ -75,38 +75,38 @@ export default function ProductDetailPage() {
             </span>
             <button
               onClick={() => toggleWishlist(product.id)}
-              style={{ background: 'transparent', border: 'none', color: isWishlisted ? '#fb7185' : '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}
+              style={{ background: 'transparent', border: 'none', color: isWishlisted ? '#fb7185' : 'var(--nexus-text-dim)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}
             >
               <Heart size={18} fill={isWishlisted ? '#fb7185' : 'none'} /> Wishlist
             </button>
           </div>
 
-          <h1 style={{ fontSize: '32px', fontWeight: '900', color: '#F8FAFC', marginBottom: '12px', lineHeight: '1.2' }}>
+          <h1 style={{ fontSize: '32px', fontWeight: '900', color: 'var(--nexus-text)', marginBottom: '12px', lineHeight: '1.2' }}>
             {product.name}
           </h1>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
-            <div style={{ fontSize: '28px', fontWeight: '900', color: '#34d399' }}>
+            <div style={{ fontSize: '28px', fontWeight: '900', color: '#10b981' }}>
               ${product.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
             {product.compareAtPrice && (
-              <div style={{ fontSize: '16px', color: '#64748B', textDecoration: 'line-through' }}>
+              <div style={{ fontSize: '16px', color: 'var(--nexus-text-dim)', textDecoration: 'line-through' }}>
                 ${product.compareAtPrice.toLocaleString()}
               </div>
             )}
-            <div style={{ fontSize: '13px', color: '#fbbf24', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '700' }}>
-              <Star size={14} fill="#fbbf24" /> {product.rating} ({product.reviewsCount} verified reviews)
+            <div style={{ fontSize: '13px', color: '#d97706', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '700' }}>
+              <Star size={14} fill="#d97706" /> {product.rating} ({product.reviewsCount} verified reviews)
             </div>
           </div>
 
-          <p style={{ fontSize: '14px', color: '#94A3B8', lineHeight: '1.7', marginBottom: '24px' }}>
+          <p style={{ fontSize: '14px', color: 'var(--nexus-text-muted)', lineHeight: '1.7', marginBottom: '24px' }}>
             {product.description}
           </p>
 
           {/* Variant Selector */}
           {product.variants.length > 0 && (
             <div style={{ marginBottom: '24px' }}>
-              <label style={{ fontSize: '12px', color: '#64748B', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+              <label style={{ fontSize: '12px', color: 'var(--nexus-text-dim)', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
                 SELECT VARIANT SPECIFICATION
               </label>
               <div style={{ display: 'flex', gap: '10px' }}>
@@ -119,9 +119,9 @@ export default function ProductDetailPage() {
                       borderRadius: '8px',
                       fontSize: '13px',
                       fontWeight: '700',
-                      background: selectedVariant === v.color ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-                      border: selectedVariant === v.color ? '1px solid #3B82F6' : '1px solid rgba(255, 255, 255, 0.1)',
-                      color: selectedVariant === v.color ? '#60A5FA' : '#94A3B8',
+                      background: selectedVariant === v.color ? 'rgba(59, 130, 246, 0.2)' : 'var(--nexus-bg)',
+                      border: selectedVariant === v.color ? '1px solid #3B82F6' : '1px solid var(--nexus-border)',
+                      color: selectedVariant === v.color ? '#3B82F6' : 'var(--nexus-text-muted)',
                       cursor: 'pointer'
                     }}
                   >
@@ -133,17 +133,17 @@ export default function ProductDetailPage() {
           )}
 
           {/* Stock Delivery Status */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '10px', color: '#34d399', fontSize: '13px', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '10px', color: '#10b981', fontSize: '13px', marginBottom: '24px' }}>
             <Truck size={18} />
             <span>In-Stock ({product.stock} units) • Next-Day Express Air Dispatch Available</span>
           </div>
 
           {/* Action Buttons */}
           <div style={{ display: 'flex', gap: '16px', marginBottom: '32px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '0 12px' }}>
-              <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '18px', cursor: 'pointer', padding: '8px' }}>-</button>
-              <span style={{ fontSize: '14px', fontWeight: '800', padding: '0 12px' }}>{quantity}</span>
-              <button onClick={() => setQuantity(quantity + 1)} style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '18px', cursor: 'pointer', padding: '8px' }}>+</button>
+            <div style={{ display: 'flex', alignItems: 'center', background: 'var(--nexus-surface)', border: '1px solid var(--nexus-border)', borderRadius: '12px', padding: '0 12px' }}>
+              <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ background: 'transparent', border: 'none', color: 'var(--nexus-text)', fontSize: '18px', cursor: 'pointer', padding: '8px' }}>-</button>
+              <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--nexus-text)', padding: '0 12px' }}>{quantity}</span>
+              <button onClick={() => setQuantity(quantity + 1)} style={{ background: 'transparent', border: 'none', color: 'var(--nexus-text)', fontSize: '18px', cursor: 'pointer', padding: '8px' }}>+</button>
             </div>
 
             <button
@@ -161,14 +161,14 @@ export default function ProductDetailPage() {
 
           {/* Technical Specifications Matrix */}
           <div className="glass-panel" style={{ borderRadius: '16px', padding: '20px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: '800', color: '#F8FAFC', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+            <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--nexus-text)', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '1px' }}>
               Technical Specification Matrix
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {Object.entries(product.specifications).map(([key, val], idx) => (
-                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: '6px' }}>
-                  <span style={{ color: '#64748B' }}>{key}</span>
-                  <span style={{ color: '#F8FAFC', fontWeight: '700', fontFamily: 'var(--font-mono)' }}>{val}</span>
+                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', borderBottom: '1px solid var(--nexus-border)', paddingBottom: '6px' }}>
+                  <span style={{ color: 'var(--nexus-text-dim)' }}>{key}</span>
+                  <span style={{ color: 'var(--nexus-text)', fontWeight: '700', fontFamily: 'var(--font-mono)' }}>{val}</span>
                 </div>
               ))}
             </div>
