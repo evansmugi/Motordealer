@@ -13,12 +13,40 @@ import {
 } from 'lucide-react'
 
 export default function BookedAppointments() {
-  const appointments = useCRMStore(state => state.appointments || [])
+  const storeAppointments = useCRMStore(state => state.appointments || [])
   const leads = useCRMStore(state => state.leads || [])
   const adminTheme = useCRMStore(state => state.adminTheme)
   const updateAppointmentStatus = useCRMStore(state => state.updateAppointmentStatus)
   const deleteAppointment = useCRMStore(state => state.deleteAppointment)
   const addAppointment = useCRMStore(state => state.addAppointment)
+
+  const [appointments, setAppointments] = useState(storeAppointments)
+
+  React.useEffect(() => {
+    fetch('http://localhost:1338/api/appointments')
+      .then(res => res.json())
+      .then(data => {
+        if (data && Array.isArray(data.data) && data.data.length > 0) {
+          const fetched = data.data.map(item => {
+            const d = item.attributes || item
+            return {
+              id: item.id || d.id,
+              lead_name: d.client_name || d.lead_name || 'VIP Client',
+              phone: d.client_phone || d.phone || 'N/A',
+              email: d.client_email || d.email || 'N/A',
+              vehicle_name: d.vehicle_title || d.vehicle_name || '2024 Mercedes-Benz S 580',
+              appointment_date: d.appointment_date || d.preferredDate || new Date().toISOString().split('T')[0],
+              appointment_time: d.time_slot || d.appointment_time || '10:00 AM',
+              location_type: d.branch_name || d.location_type || 'Nairobi Showroom',
+              status: d.status || 'Scheduled',
+              notes: d.notes || d.appointment_type || 'Showroom Viewing'
+            }
+          })
+          setAppointments(fetched)
+        }
+      })
+      .catch(err => console.warn('Strapi appointments fetch notice:', err))
+  }, [])
 
   const isLight = adminTheme === 'light'
 

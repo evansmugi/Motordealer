@@ -80,16 +80,46 @@ export default function AddListing() {
     setForm({ ...form, features: form.features.filter(f => f !== ft) });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const payload = {
+        data: {
+          listing_title: form.listing_title,
+          tagline: form.tagline || form.listing_title,
+          price: String(form.price),
+          make: form.make,
+          model: form.model,
+          condition: form.condition,
+          year: String(form.year),
+          transmission: form.transmission,
+          engine: form.engine,
+          fuel_type: form.fuel_type,
+          mileage: String(form.mileage || '0'),
+          color: form.color,
+          interior_color: form.interior_color,
+          offer_type: form.offer_type,
+          listing_description: form.listing_description,
+          youtube_video_url: form.youtube_video_url,
+          currentStatus: form.status || 'Available',
+          publishedAt: new Date().toISOString()
+        }
+      };
+      await fetch('http://localhost:1338/api/car-listings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
       setSuccess(true);
       setTimeout(() => {
-        navigate('/crm');
+        navigate('/admin/dashboard');
       }, 1200);
-    }, 800);
+    } catch (err) {
+      console.error('Failed to create vehicle in Strapi:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

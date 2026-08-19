@@ -7,9 +7,9 @@ import { VEHICLES, VehicleItem } from '../../lib/vehicle-dataset';
 import { Layers, ArrowLeft, X, Check, ShieldCheck, Zap } from 'lucide-react';
 
 export default function VehicleComparePage() {
-  const { compareList, toggleCompare, openTestDriveModal, openReservationModal } = useStore();
+  const { vehicles, compareList, toggleCompare, openTestDriveModal, openReservationModal } = useStore();
 
-  const comparedVehicles = VEHICLES.filter((v) => compareList.includes(v.id));
+  const comparedVehicles = (vehicles.length > 0 ? vehicles : VEHICLES).filter((v) => compareList.includes(v.id));
 
   return (
     <div style={{ maxWidth: '1280px', margin: '40px auto 0', padding: '0 40px 80px' }}>

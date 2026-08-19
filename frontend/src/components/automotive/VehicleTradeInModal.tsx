@@ -1,13 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Check, RefreshCw, Car, DollarSign, ArrowRight, Upload } from 'lucide-react';
+import { X, CheckCircle2, User, Phone, Mail, Sparkles, Send, Sun, Lock, RefreshCw, Car } from 'lucide-react';
 import PredictiveSelect from '../common/PredictiveSelect';
+import { sendCrmLead } from '../../lib/crmLeadHelper';
 
 interface VehicleTradeInModalProps {
   isOpen: boolean;
   onClose: () => void;
   targetVehicleName?: string;
+  targetVehiclePrice?: string;
+  targetVehicleImage?: string;
 }
 
 const MAKE_OPTIONS = [
@@ -28,16 +31,17 @@ const CONDITION_OPTIONS = [
 export default function VehicleTradeInModal({
   isOpen,
   onClose,
-  targetVehicleName = '2024 Mercedes-Benz S 580 4MATIC'
+  targetVehicleName = '2024 Mercedes-Benz S 580 4MATIC',
+  targetVehiclePrice = 'KES 24,500,000',
+  targetVehicleImage = 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop'
 }: VehicleTradeInModalProps) {
-  const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
-    clientName: '',
-    clientPhone: '',
-    clientEmail: '',
+    clientName: 'James Mwangi',
+    clientPhone: '+254 712 345 678',
+    clientEmail: 'james@domain.com',
     tradeMake: 'Mercedes-Benz',
     tradeModel: 'E 300 Coupe',
     tradeYear: '2021',
@@ -49,182 +53,184 @@ export default function VehicleTradeInModal({
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const payload = {
+        data: {
+          client_name: form.clientName,
+          client_phone: form.clientPhone,
+          client_email: form.clientEmail,
+          trade_make: form.tradeMake,
+          trade_model: form.tradeModel,
+          trade_year: form.tradeYear,
+          trade_mileage: String(form.tradeMileage),
+          trade_condition: form.tradeCondition,
+          expected_value: String(form.expectedValue),
+          target_vehicle: targetVehicleName,
+          notes: form.notes || `Trade-in request for ${targetVehicleName}`,
+          publishedAt: new Date().toISOString()
+        }
+      };
+      await fetch('http://localhost:1338/api/trade-in-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(err => console.warn('Strapi trade-in API warning:', err));
+
+      // Feed lead directly into Strapi CRM Leads database
+      await sendCrmLead({
+        name: form.clientName,
+        phone: form.clientPhone,
+        email: form.clientEmail,
+        source: 'Trade-In Vehicle Assessment Modal',
+        notes: `Trade-in assessment requested: ${form.tradeYear} ${form.tradeMake} ${form.tradeModel} (${form.tradeMileage} KM) trading towards ${targetVehicleName}`,
+        intentScore: 85,
+        intentTier: 'HOT'
+      });
+    } catch (err) {
+      console.error('Failed to post trade-in request:', err);
+    } finally {
       setLoading(false);
       setSubmitted(true);
       setTimeout(() => {
         setSubmitted(false);
-        setStep(1);
         onClose();
-      }, 2000);
-    }, 800);
+      }, 2200);
+    }
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 font-sans">
-      <div className="w-full max-w-xl bg-[#0d0d0d] border border-[#c9a84c]/30 rounded-2xl p-6 shadow-2xl space-y-5 relative">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-neutral-400 hover:text-white p-1 rounded-lg hover:bg-neutral-800"
-        >
-          <X size={20} />
-        </button>
-
-        <div className="border-b border-neutral-800 pb-4">
-          <div className="flex items-center gap-2 text-xs font-bold text-[#c9a84c] uppercase tracking-widest">
-            <RefreshCw size={16} /> Instant Trade-In Valuation Request
+    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 font-sans">
+      <div className="w-full max-w-lg bg-[#090d16] border border-[#c9a84c]/40 rounded-3xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.9)] space-y-5 relative">
+        {/* Top Header Bar */}
+        <div className="flex items-center justify-between border-b border-[#1e2638] pb-4">
+          <div>
+            <div className="flex items-center gap-1.5 text-[10px] font-extrabold text-[#c9a84c] uppercase tracking-widest">
+              <Sparkles size={14} className="text-[#c9a84c]" /> VEHICLE DIRECT TELEMETRY
+            </div>
+            <h2 className="text-lg font-bold text-white mt-1">Trade-In Vehicle Assessment</h2>
           </div>
-          <h2 className="text-sm font-bold text-white mt-1">Trading towards: <span className="text-[#c9a84c]">{targetVehicleName}</span></h2>
+          <div className="flex items-center gap-2">
+            <button className="text-neutral-400 hover:text-[#c9a84c] p-1.5 rounded-full hover:bg-[#121622] transition-colors">
+              <Sun size={16} />
+            </button>
+            <button
+              onClick={onClose}
+              className="text-neutral-400 hover:text-white p-1.5 rounded-full hover:bg-[#121622] transition-colors"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {submitted ? (
-          <div className="p-6 text-center space-y-3">
-            <div className="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500 text-emerald-400 mx-auto flex items-center justify-center">
-              <Check size={24} />
+          <div className="py-8 text-center space-y-3">
+            <div className="w-14 h-14 rounded-full bg-emerald-500/20 border border-emerald-500 text-emerald-400 mx-auto flex items-center justify-center">
+              <CheckCircle2 size={32} />
             </div>
-            <h3 className="text-base font-bold text-white uppercase">Valuation Request Submitted</h3>
-            <p className="text-xs text-neutral-400">Our chief auto assessor will review your vehicle specs and issue a binding trade-in valuation within 2 hours.</p>
+            <h3 className="text-base font-bold text-white uppercase tracking-wide">Trade-In Telemetry Transmitted</h3>
+            <p className="text-xs text-neutral-400 max-w-sm mx-auto">
+              Our chief master assessor will review your <strong className="text-white">{form.tradeYear} {form.tradeMake} {form.tradeModel}</strong> specs and issue a binding valuation within 2 hours.
+            </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            {step === 1 ? (
-              <div className="space-y-4">
-                <h4 className="text-xs font-bold text-neutral-300 uppercase tracking-wider">Step 1: Your Current Vehicle Specs</h4>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-400 mb-1">Make *</label>
-                    <PredictiveSelect
-                      options={MAKE_OPTIONS}
-                      value={form.tradeMake}
-                      onChange={(val) => setForm({ ...form, tradeMake: val })}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-400 mb-1">Model *</label>
-                    <input
-                      type="text"
-                      required
-                      value={form.tradeModel}
-                      onChange={(e) => setForm({ ...form, tradeModel: e.target.value })}
-                      className="w-full bg-[#141414] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-3 py-2 text-xs text-white outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-400 mb-1">Year</label>
-                    <input
-                      type="text"
-                      value={form.tradeYear}
-                      onChange={(e) => setForm({ ...form, tradeYear: e.target.value })}
-                      className="w-full bg-[#141414] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-3 py-2 text-xs text-white outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-400 mb-1">Mileage (KM)</label>
-                    <input
-                      type="number"
-                      value={form.tradeMileage}
-                      onChange={(e) => setForm({ ...form, tradeMileage: e.target.value })}
-                      className="w-full bg-[#141414] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-3 py-2 text-xs text-white outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-400 mb-1">Condition</label>
-                    <PredictiveSelect
-                      options={CONDITION_OPTIONS}
-                      value={form.tradeCondition}
-                      onChange={(val) => setForm({ ...form, tradeCondition: val })}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-neutral-400 mb-1">Expected Trade-In Value (KES)</label>
-                  <input
-                    type="number"
-                    value={form.expectedValue}
-                    onChange={(e) => setForm({ ...form, expectedValue: e.target.value })}
-                    placeholder="e.g. 7,500,000"
-                    className="w-full bg-[#141414] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-3 py-2 text-xs text-white outline-none"
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setStep(2)}
-                  className="w-full py-3 bg-[#c9a84c] text-black font-bold rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#e5c158]"
-                >
-                  NEXT: CONTACT DETAILS <ArrowRight size={16} />
-                </button>
+            {/* Target Vehicle Preview Card (Media 1 Replica) */}
+            <div className="bg-[#121622] border border-[#1e2638] rounded-2xl p-3 flex items-center gap-3">
+              <img src={targetVehicleImage} alt={targetVehicleName} className="w-16 h-12 rounded-xl object-cover border border-[#1e2638]" />
+              <div className="flex-1 min-w-0">
+                <div className="text-[9px] text-[#c9a84c] font-bold uppercase tracking-wider">Trading towards target:</div>
+                <h4 className="text-xs font-black text-white uppercase tracking-wide truncate">{targetVehicleName}</h4>
+                <div className="text-[11px] font-extrabold text-[#c9a84c]">{targetVehiclePrice}</div>
               </div>
-            ) : (
-              <div className="space-y-4">
-                <h4 className="text-xs font-bold text-neutral-300 uppercase tracking-wider">Step 2: Client Contact Information</h4>
+            </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-neutral-400 mb-1">Your Full Name *</label>
+            {/* Client Info */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">FULL NAME *</label>
+                <div className="relative">
+                  <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
                   <input
                     type="text"
                     required
                     value={form.clientName}
                     onChange={(e) => setForm({ ...form, clientName: e.target.value })}
-                    placeholder="e.g. David Croft"
-                    className="w-full bg-[#141414] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-3 py-2 text-xs text-white outline-none"
+                    className="w-full bg-[#121622] border border-[#1e2638] focus:border-[#c9a84c] rounded-xl pl-9 pr-3 py-2.5 text-xs text-white outline-none"
                   />
                 </div>
+              </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-400 mb-1">Phone / WhatsApp *</label>
-                    <input
-                      type="tel"
-                      required
-                      value={form.clientPhone}
-                      onChange={(e) => setForm({ ...form, clientPhone: e.target.value })}
-                      placeholder="+254 700 000 000"
-                      className="w-full bg-[#141414] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-3 py-2 text-xs text-white outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-400 mb-1">Email Address</label>
-                    <input
-                      type="email"
-                      value={form.clientEmail}
-                      onChange={(e) => setForm({ ...form, clientEmail: e.target.value })}
-                      placeholder="david@example.com"
-                      className="w-full bg-[#141414] border border-neutral-800 focus:border-[#c9a84c] rounded-xl px-3 py-2 text-xs text-white outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setStep(1)}
-                    className="w-1/3 py-3 border border-neutral-700 text-neutral-300 font-semibold rounded-xl text-xs"
-                  >
-                    Back
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-2/3 py-3 bg-gradient-to-r from-[#e5c158] to-[#c9a84c] text-black font-bold rounded-xl text-xs uppercase tracking-wider hover:opacity-90"
-                  >
-                    {loading ? 'Submitting...' : 'SUBMIT TRADE-IN DOSSIER'}
-                  </button>
+              <div>
+                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">PHONE NUMBER *</label>
+                <div className="relative">
+                  <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
+                  <input
+                    type="tel"
+                    required
+                    value={form.clientPhone}
+                    onChange={(e) => setForm({ ...form, clientPhone: e.target.value })}
+                    className="w-full bg-[#121622] border border-[#1e2638] focus:border-[#c9a84c] rounded-xl pl-9 pr-3 py-2.5 text-xs text-white outline-none"
+                  />
                 </div>
               </div>
-            )}
+            </div>
+
+            {/* Current Vehicle Specs */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">TRADE MAKE *</label>
+                <PredictiveSelect
+                  options={MAKE_OPTIONS}
+                  value={form.tradeMake}
+                  onChange={(val) => setForm({ ...form, tradeMake: val })}
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">MODEL *</label>
+                <input
+                  type="text"
+                  required
+                  value={form.tradeModel}
+                  onChange={(e) => setForm({ ...form, tradeModel: e.target.value })}
+                  className="w-full bg-[#121622] border border-[#1e2638] focus:border-[#c9a84c] rounded-xl px-3 py-2.5 text-xs text-white outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">YEAR / KM</label>
+                <input
+                  type="text"
+                  value={`${form.tradeYear} • ${form.tradeMileage} KM`}
+                  onChange={(e) => setForm({ ...form, tradeYear: e.target.value })}
+                  className="w-full bg-[#121622] border border-[#1e2638] focus:border-[#c9a84c] rounded-xl px-3 py-2.5 text-xs text-white outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">EXPECTED TRADE-IN VALUE (KES)</label>
+              <input
+                type="number"
+                value={form.expectedValue}
+                onChange={(e) => setForm({ ...form, expectedValue: e.target.value })}
+                placeholder="e.g. 7,500,000"
+                className="w-full bg-[#121622] border border-[#1e2638] focus:border-[#c9a84c] rounded-xl p-3 text-xs text-white outline-none"
+              />
+            </div>
+
+            {/* Media 1 Gold Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 bg-gradient-to-r from-[#e5c158] to-[#c9a84c] text-black font-extrabold rounded-full text-xs uppercase tracking-wider hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#c9a84c]/20"
+            >
+              <Send size={14} />
+              <span>{loading ? 'Submitting Assessment...' : 'SUBMIT TRADE-IN TELEMETRY'}</span>
+            </button>
           </form>
         )}
       </div>

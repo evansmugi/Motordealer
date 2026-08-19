@@ -81,11 +81,39 @@ export default function TradeInsManager() {
         throw new Error('Supabase failed')
       }
 
+      const fetchStrapiData = async () => {
+        const res = await fetch('http://localhost:1338/api/trade-in-requests')
+        if (res.ok) {
+          const json = await res.json()
+          if (json && Array.isArray(json.data) && json.data.length > 0) {
+            return json.data.map(item => {
+              const d = item.attributes || item
+              return {
+                id: item.id || d.id,
+                client_name: d.client_name || d.clientName || 'Anonymous Client',
+                client_phone: d.client_phone || d.clientPhone || 'N/A',
+                client_email: d.client_email || d.clientEmail || 'N/A',
+                trade_make: d.trade_make || d.tradeMake || 'N/A',
+                trade_model: d.trade_model || d.tradeModel || 'N/A',
+                trade_year: d.trade_year || d.tradeYear || '2022',
+                trade_mileage: d.trade_mileage || d.tradeMileage || '0',
+                trade_condition: d.trade_condition || d.tradeCondition || 'Good Condition',
+                expected_value: d.expected_value || d.expectedValue || '0',
+                target_vehicle: d.target_vehicle || d.targetVehicle || 'Mercedes-Benz S 580',
+                status: d.status || 'Pending',
+                created_at: d.createdAt || d.created_at || new Date().toISOString()
+              }
+            })
+          }
+        }
+        throw new Error('Strapi empty or unreachable')
+      }
+
       let freshData = null
       try {
-        freshData = await Promise.any([fetchSupabaseData(), fetchApiData()])
+        freshData = await Promise.any([fetchStrapiData(), fetchSupabaseData(), fetchApiData()])
       } catch {
-        const results = await Promise.allSettled([fetchSupabaseData(), fetchApiData()])
+        const results = await Promise.allSettled([fetchStrapiData(), fetchSupabaseData(), fetchApiData()])
         for (const res of results) {
           if (res.status === 'fulfilled' && Array.isArray(res.value)) {
             freshData = res.value

@@ -3,11 +3,13 @@
 import React from 'react';
 import Link from 'next/link';
 import { FinanceCalculatorWidget } from '../../components/automotive/FinanceCalculatorWidget';
+import { useStore } from '../../context/StoreContext';
 import { VEHICLES } from '../../lib/vehicle-dataset';
 import { Calculator, ArrowLeft, ShieldCheck, CheckCircle2, Zap } from 'lucide-react';
 
 export default function FinancePage() {
-  const featuredVehicle = VEHICLES[0];
+  const { vehicles } = useStore();
+  const featuredVehicle = vehicles[0] || VEHICLES[0];
 
   return (
     <div style={{ maxWidth: '1280px', margin: '40px auto 0', padding: '0 40px 80px' }}>

@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { MessageSquare, X, Send, User, Phone, Mail, ShieldCheck, Sparkles } from 'lucide-react';
+import { MessageSquare, X, Send, User, Phone, Mail, Sparkles } from 'lucide-react';
+import { generateAIConciergeReply } from '../../lib/aiConcierge';
+import { sendCrmLead } from '../../lib/crmLeadHelper';
 
 export default function ClientChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,6 +26,7 @@ export default function ClientChatWidget() {
 
   const [inputMsg, setInputMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [aiTyping, setAiTyping] = useState(false);
 
   const handleStartChat = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +34,7 @@ export default function ClientChatWidget() {
 
     try {
       // Dispatch to Strapi CRM support API
-      await fetch('http://localhost:1337/api/crm-support-threads/chat', {
+      await fetch('http://localhost:1338/api/crm-support-threads/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -41,13 +44,34 @@ export default function ClientChatWidget() {
           message: form.initialMessage || 'Started chat session',
           pageUrl: typeof window !== 'undefined' ? window.location.href : ''
         })
-      }).catch(() => {}); // Fallback gracefully if API not ready
+      }).catch(() => {});
+
+      // Feed lead directly into Strapi CRM Leads API
+      await sendCrmLead({
+        name: form.name || 'Anonymous Storefront Visitor',
+        phone: form.phone,
+        email: form.email,
+        source: 'Live AI Concierge Chat Widget',
+        notes: form.initialMessage || 'Initiated live chat consultation session',
+        intentScore: 75,
+        intentTier: 'HIGH'
+      });
 
       if (form.initialMessage) {
+        const initialText = form.initialMessage;
         setMessages((prev) => [
           ...prev,
-          { sender: form.name || 'Client', text: form.initialMessage, time: 'Just now' }
+          { sender: form.name || 'Client', text: initialText, time: 'Just now' }
         ]);
+
+        setAiTyping(true);
+        generateAIConciergeReply(initialText, []).then((aiReply) => {
+          setAiTyping(false);
+          setMessages((prev) => [
+            ...prev,
+            { sender: 'KnK Concierge', text: aiReply, time: 'Just now' }
+          ]);
+        });
       }
 
       setStep('chat');
@@ -58,29 +82,35 @@ export default function ClientChatWidget() {
     }
   };
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputMsg.trim()) return;
 
     const userText = inputMsg.trim();
     setInputMsg('');
 
-    setMessages((prev) => [
-      ...prev,
-      { sender: form.name || 'Client', text: userText, time: 'Just now' }
-    ]);
+    const currentHistory = [...messages, { sender: form.name || 'Client', text: userText, time: 'Just now' }];
+    setMessages(currentHistory);
 
-    // Simulated instant executive concierge reply
-    setTimeout(() => {
+    setAiTyping(true);
+    try {
+      const aiReply = await generateAIConciergeReply(userText, currentHistory);
+      setMessages((prev) => [
+        ...prev,
+        { sender: 'KnK Concierge', text: aiReply, time: 'Just now' }
+      ]);
+    } catch (err) {
       setMessages((prev) => [
         ...prev,
         {
           sender: 'KnK Concierge',
-          text: 'Thank you. An executive advisor has received your request and will reach out shortly.',
+          text: 'Thank you for your inquiry. An executive sales advisor has received your request and will follow up directly.',
           time: 'Just now'
         }
       ]);
-    }, 1000);
+    } finally {
+      setAiTyping(false);
+    }
   };
 
   return (
@@ -215,6 +245,12 @@ export default function ClientChatWidget() {
                     <span className="text-[9px] text-neutral-600 mt-1">{msg.time}</span>
                   </div>
                 ))}
+                {aiTyping && (
+                  <div className="flex items-center gap-1.5 text-[11px] text-[#c9a84c] font-semibold bg-[#181818] p-2.5 rounded-xl border border-[#c9a84c]/30 animate-pulse w-fit">
+                    <Sparkles size={14} className="animate-spin text-[#c9a84c]" />
+                    <span>KnK Executive AI Concierge is typing...</span>
+                  </div>
+                )}
               </div>
 
               {/* Message Input */}

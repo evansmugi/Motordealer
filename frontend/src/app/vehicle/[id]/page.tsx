@@ -3,19 +3,22 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { Car, Check, ShieldCheck, DollarSign, RefreshCw, Calendar, Video, ArrowLeft, Lock } from 'lucide-react';
+import { Car, Check, ShieldCheck, Calendar, Video, ArrowLeft, Lock, ShoppingBag, Key, MessageCircle, RefreshCw } from 'lucide-react';
 import VehicleInquiryModal from '../../../components/automotive/VehicleInquiryModal';
 import VehicleTradeInModal from '../../../components/automotive/VehicleTradeInModal';
 import ReservationModal from '../../../components/automotive/ReservationModal';
+import { TestDriveModal } from '../../../components/automotive/TestDriveModal';
+import { useStore } from '../../../context/StoreContext';
 
 export default function VehicleDossierPage() {
   const { id } = useParams();
+  const { openTestDriveModal } = useStore();
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
   const [isTradeInOpen, setIsTradeInOpen] = useState(false);
   const [isReservationOpen, setIsReservationOpen] = useState(false);
 
   const vehicle = {
-    id: id || '1',
+    id: String(id || '1'),
     title: '2024 Mercedes-Benz S 580 4MATIC Luxury Sedan',
     tagline: 'V8 Biturbo, Rear Executive Seating Package, Burmester 3D Surround',
     price: 'KES 24,500,000',
@@ -55,7 +58,7 @@ export default function VehicleDossierPage() {
           <Link href="/vehicle" className="flex items-center gap-2 text-xs font-bold text-neutral-400 hover:text-white uppercase">
             <ArrowLeft size={16} /> Back to Showroom
           </Link>
-          <span className="text-sm font-bold text-[#c9a84c] uppercase">KnK Dossier #{id || '101'}</span>
+          <span className="text-sm font-bold text-[#c9a84c] uppercase">KnK Dossier #{id || '1'}</span>
         </div>
       </header>
 
@@ -83,7 +86,7 @@ export default function VehicleDossierPage() {
             </div>
           </div>
 
-          {/* Pricing & CTA Column */}
+          {/* Pricing & Media 2 DIRECT CRM ACTIONS Column */}
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-[#0a0a0a] border border-neutral-800 rounded-3xl p-6 space-y-6">
               <div>
@@ -104,37 +107,82 @@ export default function VehicleDossierPage() {
                 </span>
               </div>
 
-              {/* Action Buttons */}
-              <div className="space-y-3">
-                <button
-                  onClick={() => setIsInquiryOpen(true)}
-                  className="w-full py-3.5 bg-gradient-to-r from-[#e5c158] to-[#c9a84c] text-black font-extrabold rounded-xl text-xs uppercase tracking-wider hover:opacity-90 transition-opacity shadow-lg shadow-[#c9a84c]/20"
-                >
-                  INQUIRE / GET PRICE QUOTE
-                </button>
+              {/* MEDIA 2 EXACT REPLICA: DIRECT CRM ACTIONS */}
+              <div className="space-y-4 pt-2">
+                <div className="text-xs font-bold text-[#c9a84c] uppercase tracking-widest">DIRECT CRM ACTIONS</div>
 
-                <div className="grid grid-cols-2 gap-3">
+                {/* Top 3 Action Cards */}
+                <div className="grid grid-cols-3 gap-3">
+                  {/* Action 1: Request Test Drive */}
                   <button
-                    onClick={() => setIsTradeInOpen(true)}
-                    className="py-3 bg-neutral-900 border border-neutral-800 hover:border-[#c9a84c] text-neutral-300 font-bold rounded-xl text-xs flex items-center justify-center gap-2"
+                    onClick={() => openTestDriveModal(vehicle.id)}
+                    className="p-3.5 bg-[#0e1320] border border-[#1e2638] hover:border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28"
                   >
-                    <RefreshCw size={14} className="text-[#c9a84c]" /> TRADE-IN
+                    <div>
+                      <div className="flex items-center justify-between text-[9px] font-extrabold text-[#c9a84c] uppercase tracking-wider mb-1">
+                        <span>ACTION 1</span>
+                        <Calendar size={14} />
+                      </div>
+                      <div className="text-xs font-black text-white group-hover:text-[#c9a84c] transition-colors leading-tight">
+                        Request Test Drive
+                      </div>
+                    </div>
+                    <div className="text-[10px] text-neutral-400">Pre-fill schedule viewing</div>
                   </button>
 
+                  {/* Action 2: Get Best Quote */}
+                  <button
+                    onClick={() => setIsInquiryOpen(true)}
+                    className="p-3.5 bg-[#0e1320] border-2 border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28 shadow-lg shadow-[#c9a84c]/10"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between text-[9px] font-extrabold text-[#c9a84c] uppercase tracking-wider mb-1">
+                        <span>ACTION 2</span>
+                        <ShoppingBag size={14} />
+                      </div>
+                      <div className="text-xs font-black text-[#e5c158] leading-tight">
+                        Get Best Quote
+                      </div>
+                    </div>
+                    <div className="text-[10px] text-neutral-400">Custom location pricing</div>
+                  </button>
+
+                  {/* Action 3: Import / Reserve */}
                   <button
                     onClick={() => setIsReservationOpen(true)}
-                    className="py-3 bg-neutral-900 border border-neutral-800 hover:border-[#c9a84c] text-neutral-300 font-bold rounded-xl text-xs flex items-center justify-center gap-2"
+                    className="p-3.5 bg-[#0e1320] border border-[#1e2638] hover:border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28"
                   >
-                    <Lock size={14} className="text-[#c9a84c]" /> RESERVE DEPOSIT
+                    <div>
+                      <div className="flex items-center justify-between text-[9px] font-extrabold text-[#c9a84c] uppercase tracking-wider mb-1">
+                        <span>ACTION 3</span>
+                        <Key size={14} />
+                      </div>
+                      <div className="text-xs font-black text-white group-hover:text-[#c9a84c] transition-colors leading-tight">
+                        Import / Reserve
+                      </div>
+                    </div>
+                    <div className="text-[10px] text-neutral-400">Bespoke luxury specs</div>
                   </button>
                 </div>
 
-                <Link
-                  href="/book-test-drive"
-                  className="w-full py-3 border border-neutral-800 hover:bg-neutral-800 text-neutral-300 font-bold rounded-xl text-xs flex items-center justify-center gap-2 text-center"
-                >
-                  <Calendar size={14} className="text-[#c9a84c]" /> BOOK SHOWROOM VIEWING
-                </Link>
+                {/* Bottom 2 Large Full-width Buttons */}
+                <div className="space-y-2.5">
+                  <a
+                    href="https://wa.me/254700000000?text=Hello%20KnK%20Automotive,%20I%20am%20interested%20in%20the%202024%20Mercedes-Benz%20S%20580%204MATIC"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-3.5 border border-[#c9a84c] text-[#c9a84c] hover:bg-[#c9a84c]/10 font-bold rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
+                  >
+                    <MessageCircle size={16} /> WHATSAPP DIRECT
+                  </a>
+
+                  <button
+                    onClick={() => setIsTradeInOpen(true)}
+                    className="w-full py-3.5 bg-gradient-to-r from-[#3d3113] to-[#261f0a] border border-[#c9a84c]/60 hover:border-[#c9a84c] text-[#e5c158] font-extrabold rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg"
+                  >
+                    <Car size={16} className="text-[#c9a84c]" /> TRADE-IN YOUR CURRENT VEHICLE
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -198,24 +246,29 @@ export default function VehicleDossierPage() {
         </div>
       </div>
 
-      {/* Modals */}
+      {/* Media 1 Telemetry Replica Modals */}
       <VehicleInquiryModal
         isOpen={isInquiryOpen}
         onClose={() => setIsInquiryOpen(false)}
         vehicleTitle={vehicle.title}
         vehiclePrice={vehicle.price}
+        vehicleImage={activeImage}
       />
       <VehicleTradeInModal
         isOpen={isTradeInOpen}
         onClose={() => setIsTradeInOpen(false)}
         targetVehicleName={vehicle.title}
+        targetVehiclePrice={vehicle.price}
+        targetVehicleImage={activeImage}
       />
       <ReservationModal
         isOpen={isReservationOpen}
         onClose={() => setIsReservationOpen(false)}
         vehicleTitle={vehicle.title}
         vehiclePrice={vehicle.price}
+        vehicleImage={activeImage}
       />
+      <TestDriveModal />
     </div>
   );
 }

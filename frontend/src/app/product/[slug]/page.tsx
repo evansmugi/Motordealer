@@ -9,18 +9,22 @@ import { FinanceCalculatorWidget } from '../../../components/automotive/FinanceC
 import { TradeInEstimatorWidget } from '../../../components/automotive/TradeInEstimatorWidget';
 import { TestDriveModal } from '../../../components/automotive/TestDriveModal';
 import { ReservationModal } from '../../../components/automotive/ReservationModal';
+import VehicleInquiryModal from '../../../components/automotive/VehicleInquiryModal';
+import VehicleTradeInModal from '../../../components/automotive/VehicleTradeInModal';
 import { Star, ShieldCheck, Truck, ArrowLeft, Heart, Layers, Gauge, Fuel, Sliders, Calendar, Lock, Car, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function VehicleDetailPage() {
   const params = useParams();
   const slug = params?.slug as string;
+  const { vehicles, wishlist, toggleWishlist, compareList, toggleCompare, openTestDriveModal, openReservationModal } = useStore();
 
-  const vehicle = VEHICLES.find(v => v.id === slug || v.stockNumber.toLowerCase() === slug?.toLowerCase()) || VEHICLES[0];
-  const { wishlist, toggleWishlist, compareList, toggleCompare, openTestDriveModal, openReservationModal } = useStore();
+  const vehicle = vehicles.find(v => v.id === slug || v.stockNumber.toLowerCase() === slug?.toLowerCase()) || vehicles[0] || VEHICLES[0];
 
   const [activeTab, setActiveTab] = useState<'360' | 'GALLERY'>('360');
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isInquiryOpen, setIsInquiryOpen] = useState(false);
+  const [isTradeInOpen, setIsTradeInOpen] = useState(false);
 
   const isWishlisted = wishlist.includes(vehicle.id);
   const isCompared = compareList.includes(vehicle.id);
@@ -179,23 +183,82 @@ export default function VehicleDetailPage() {
             </div>
           </div>
 
-          {/* Sticky CTAs */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
-            <button
-              onClick={() => openReservationModal(vehicle.id)}
-              className="nexus-btn-primary"
-              style={{ height: '52px', fontSize: '13px', fontWeight: '900' }}
-            >
-              <Lock size={18} /> Reserve Vehicle ($500)
-            </button>
+          {/* MEDIA 2 EXACT REPLICA: DIRECT CRM ACTIONS */}
+          <div className="space-y-4 pt-2 mb-6">
+            <div className="text-xs font-bold text-[#c9a84c] uppercase tracking-widest">DIRECT CRM ACTIONS</div>
 
-            <button
-              onClick={() => openTestDriveModal(vehicle.id)}
-              className="nexus-btn-secondary"
-              style={{ height: '52px', fontSize: '13px', fontWeight: '800' }}
-            >
-              <Car size={18} /> Book Test Drive
-            </button>
+            {/* Top 3 Action Cards */}
+            <div className="grid grid-cols-3 gap-3">
+              {/* Action 1: Request Test Drive */}
+              <button
+                onClick={() => openTestDriveModal(vehicle.id)}
+                className="p-3.5 bg-[#0e1320] border border-[#1e2638] hover:border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28 cursor-pointer"
+              >
+                <div>
+                  <div className="flex items-center justify-between text-[9px] font-extrabold text-[#c9a84c] uppercase tracking-wider mb-1">
+                    <span>ACTION 1</span>
+                    <Calendar size={14} />
+                  </div>
+                  <div className="text-xs font-black text-white group-hover:text-[#c9a84c] transition-colors leading-tight">
+                    Request Test Drive
+                  </div>
+                </div>
+                <div className="text-[10px] text-neutral-400">Pre-fill schedule viewing</div>
+              </button>
+
+              {/* Action 2: Get Best Quote */}
+              <button
+                onClick={() => setIsInquiryOpen(true)}
+                className="p-3.5 bg-[#0e1320] border-2 border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28 shadow-lg shadow-[#c9a84c]/10 cursor-pointer"
+              >
+                <div>
+                  <div className="flex items-center justify-between text-[9px] font-extrabold text-[#c9a84c] uppercase tracking-wider mb-1">
+                    <span>ACTION 2</span>
+                    <Sliders size={14} />
+                  </div>
+                  <div className="text-xs font-black text-[#e5c158] leading-tight">
+                    Get Best Quote
+                  </div>
+                </div>
+                <div className="text-[10px] text-neutral-400">Custom location pricing</div>
+              </button>
+
+              {/* Action 3: Import / Reserve */}
+              <button
+                onClick={() => openReservationModal(vehicle.id)}
+                className="p-3.5 bg-[#0e1320] border border-[#1e2638] hover:border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28 cursor-pointer"
+              >
+                <div>
+                  <div className="flex items-center justify-between text-[9px] font-extrabold text-[#c9a84c] uppercase tracking-wider mb-1">
+                    <span>ACTION 3</span>
+                    <Car size={14} />
+                  </div>
+                  <div className="text-xs font-black text-white group-hover:text-[#c9a84c] transition-colors leading-tight">
+                    Import / Reserve
+                  </div>
+                </div>
+                <div className="text-[10px] text-neutral-400">Bespoke luxury specs</div>
+              </button>
+            </div>
+
+            {/* Bottom 2 Large Full-width Buttons */}
+            <div className="space-y-2.5">
+              <a
+                href={`https://wa.me/254700000000?text=Hello%20KnK%20Automotive,%20I%20am%20interested%20in%20the%20${encodeURIComponent(vehicle.make + ' ' + vehicle.model)}`}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full py-3.5 border border-[#c9a84c] text-[#c9a84c] hover:bg-[#c9a84c]/10 font-bold rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all no-underline"
+              >
+                <Truck size={16} /> WHATSAPP DIRECT
+              </a>
+
+              <button
+                onClick={() => setIsTradeInOpen(true)}
+                className="w-full py-3.5 bg-gradient-to-r from-[#3d3113] to-[#261f0a] border border-[#c9a84c]/60 hover:border-[#c9a84c] text-[#e5c158] font-extrabold rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg cursor-pointer"
+              >
+                <Car size={16} className="text-[#c9a84c]" /> TRADE-IN YOUR CURRENT VEHICLE
+              </button>
+            </div>
           </div>
 
           {/* 150-Point Certified Inspection Badge */}
@@ -225,6 +288,20 @@ export default function VehicleDetailPage() {
       {/* Automotive Modals */}
       <TestDriveModal />
       <ReservationModal />
+      <VehicleInquiryModal
+        isOpen={isInquiryOpen}
+        onClose={() => setIsInquiryOpen(false)}
+        vehicleTitle={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+        vehiclePrice={vehicle.pricing?.cashPrice ? `KES ${Number(vehicle.pricing.cashPrice).toLocaleString()}` : 'KES 24,500,000'}
+        vehicleImage={vehicle.images?.[0]}
+      />
+      <VehicleTradeInModal
+        isOpen={isTradeInOpen}
+        onClose={() => setIsTradeInOpen(false)}
+        targetVehicleName={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+        targetVehiclePrice={vehicle.pricing?.cashPrice ? `KES ${Number(vehicle.pricing.cashPrice).toLocaleString()}` : 'KES 24,500,000'}
+        targetVehicleImage={vehicle.images?.[0]}
+      />
     </div>
   );
 }

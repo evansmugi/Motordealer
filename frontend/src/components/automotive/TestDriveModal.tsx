@@ -3,200 +3,236 @@
 import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { VEHICLES, BRANCHES } from '../../lib/vehicle-dataset';
-import { Calendar, Clock, MapPin, X, CheckCircle2, Car } from 'lucide-react';
+import { X, CheckCircle2, User, Phone, Mail, MapPin, Calendar, Sparkles, Send, Sun, Lock } from 'lucide-react';
+import { sendCrmLead } from '../../lib/crmLeadHelper';
 
 export const TestDriveModal: React.FC = () => {
-  const { testDriveVehicleId, openTestDriveModal, bookTestDrive } = useStore();
+  const { vehicles, testDriveVehicleId, openTestDriveModal, bookTestDrive } = useStore();
 
-  const [customerName, setCustomerName] = useState('');
-  const [customerPhone, setCustomerPhone] = useState('');
-  const [customerEmail, setCustomerEmail] = useState('');
-  const [branchId, setBranchId] = useState('br-central');
+  const [customerName, setCustomerName] = useState('James Mwangi');
+  const [customerPhone, setCustomerPhone] = useState('+254 712 345 678');
+  const [customerEmail, setCustomerEmail] = useState('james@domain.com');
+  const [location, setLocation] = useState('Nairobi Showroom [HQ]');
   const [preferredDate, setPreferredDate] = useState('2026-08-22');
-  const [preferredTimeSlot, setPreferredTimeSlot] = useState('10:30 AM');
-  const [driveType, setDriveType] = useState<'SHOWROOM' | 'HOME_DELIVERY'>('SHOWROOM');
+  const [requests, setRequests] = useState('');
   const [confirmed, setConfirmed] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   if (!testDriveVehicleId) return null;
 
-  const vehicle = VEHICLES.find((v) => v.id === testDriveVehicleId) || VEHICLES[0];
-  const selectedBranch = BRANCHES.find((b) => b.id === branchId) || BRANCHES[0];
+  const vehicle = (vehicles.length > 0 ? vehicles : VEHICLES).find((v) => v.id === testDriveVehicleId) || vehicles[0] || VEHICLES[0];
+  const vehicleTitle = `${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.trim || ''}`.trim();
+  const vehiclePriceFormatted = vehicle.pricing?.cashPrice
+    ? `KES ${Number(vehicle.pricing.cashPrice).toLocaleString()}`
+    : ((vehicle as any).price || 'KES 24,500,000');
+  const vehicleImage = vehicle.heroImage || (vehicle.images && vehicle.images[0]) || 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customerName || !customerPhone || !customerEmail) return;
+    if (!customerName || !customerPhone) return;
 
+    setLoading(true);
     bookTestDrive({
       vehicleId: vehicle.id,
-      vehicleName: `${vehicle.year} ${vehicle.make} ${vehicle.model} (${vehicle.trim})`,
+      vehicleName: vehicleTitle,
       customerName,
       customerPhone,
       customerEmail,
-      branchId: selectedBranch.id,
-      branchName: selectedBranch.name,
+      branchId: 'nairobi-hq',
+      branchName: location,
       preferredDate,
-      preferredTimeSlot,
-      driveType,
-      salespersonName: 'Assigned Senior Consultant',
+      preferredTimeSlot: '10:30 AM',
+      driveType: location.includes('Home') ? 'HOME_DELIVERY' : 'SHOWROOM',
+      salespersonName: 'Senior Concierge Advisor',
       status: 'SCHEDULED'
     });
 
-    setConfirmed(true);
-    setTimeout(() => {
-      setConfirmed(false);
-      openTestDriveModal(null);
-    }, 2500);
+    try {
+      const payload = {
+        data: {
+          client_name: customerName,
+          client_phone: customerPhone,
+          client_email: customerEmail,
+          vehicle_title: vehicleTitle,
+          appointment_date: preferredDate,
+          time_slot: '10:30 AM',
+          branch_name: location,
+          appointment_type: 'Request Test Drive',
+          notes: requests || `Test Drive telemetry booking for ${vehicleTitle}`,
+          publishedAt: new Date().toISOString()
+        }
+      };
+      await fetch('http://localhost:1338/api/appointments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(err => console.warn('Strapi test drive API warning:', err));
+
+      // Feed lead directly into Strapi CRM Leads database
+      await sendCrmLead({
+        name: customerName,
+        phone: customerPhone,
+        email: customerEmail,
+        source: 'Request Test Drive Modal',
+        notes: `Test Drive telemetry booking for ${vehicleTitle} at ${location}`,
+        intentScore: 90,
+        intentTier: 'HOT'
+      });
+    } catch (err) {
+      console.error('Failed to post test drive booking:', err);
+    } finally {
+      setLoading(false);
+      setConfirmed(true);
+      setTimeout(() => {
+        setConfirmed(false);
+        openTestDriveModal(null);
+      }, 2200);
+    }
   };
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: '20px' }}>
-      <div className="glass-panel" style={{ borderRadius: '24px', padding: '32px', width: '500px', maxWidth: '100%', position: 'relative' }}>
-        <button
-          onClick={() => openTestDriveModal(null)}
-          style={{ position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: 'var(--nexus-text-muted)', fontSize: '20px', cursor: 'pointer' }}
-        >
-          <X size={20} />
-        </button>
+    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 font-sans">
+      <div className="w-full max-w-lg bg-[#090d16] border border-[#c9a84c]/40 rounded-3xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.9)] space-y-5 relative">
+        {/* Top Header Bar */}
+        <div className="flex items-center justify-between border-b border-[#1e2638] pb-4">
+          <div>
+            <div className="flex items-center gap-1.5 text-[10px] font-extrabold text-[#c9a84c] uppercase tracking-widest">
+              <Sparkles size={14} className="text-[#c9a84c]" /> VEHICLE DIRECT TELEMETRY
+            </div>
+            <h2 className="text-lg font-bold text-white mt-1">Request Test Drive</h2>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="text-neutral-400 hover:text-[#c9a84c] p-1.5 rounded-full hover:bg-[#121622] transition-colors">
+              <Sun size={16} />
+            </button>
+            <button
+              onClick={() => openTestDriveModal(null)}
+              className="text-neutral-400 hover:text-white p-1.5 rounded-full hover:bg-[#121622] transition-colors"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </div>
 
         {confirmed ? (
-          <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.2)', border: '2px solid #10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#10B981' }}>
+          <div className="py-8 text-center space-y-3">
+            <div className="w-14 h-14 rounded-full bg-emerald-500/20 border border-emerald-500 text-emerald-400 mx-auto flex items-center justify-center">
               <CheckCircle2 size={32} />
             </div>
-            <h3 style={{ fontSize: '20px', fontWeight: '900', color: 'var(--nexus-text)', marginBottom: '8px' }}>Test Drive Scheduled!</h3>
-            <p style={{ fontSize: '13px', color: 'var(--nexus-text-muted)' }}>
-              Your test drive for the <strong>{vehicle.make} {vehicle.model}</strong> at {selectedBranch.name} is confirmed for {preferredDate} at {preferredTimeSlot}.
+            <h3 className="text-base font-bold text-white uppercase tracking-wide">Telemetry Inquiry Submitted</h3>
+            <p className="text-xs text-neutral-400 max-w-sm mx-auto">
+              Your test drive viewing for <strong className="text-white">{vehicleTitle}</strong> has been logged in KnK CRM. An advisor will reach out shortly.
             </p>
           </div>
         ) : (
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(59, 130, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3B82F6' }}>
-                <Car size={22} />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Vehicle Preview Card (Media 1 replica) */}
+            <div className="bg-[#121622] border border-[#1e2638] rounded-2xl p-3 flex items-center gap-3">
+              <img src={vehicleImage} alt={vehicleTitle} className="w-16 h-12 rounded-xl object-cover border border-[#1e2638]" />
+              <div className="flex-1 min-w-0">
+                <h4 className="text-xs font-black text-white uppercase tracking-wide truncate">{vehicleTitle}</h4>
+                <div className="text-[11px] font-extrabold text-[#c9a84c] mt-0.5">{vehiclePriceFormatted}</div>
               </div>
+            </div>
+
+            {/* Form Fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <h3 style={{ fontSize: '18px', fontWeight: '900', color: 'var(--nexus-text)', margin: 0 }}>Book VIP Test Drive</h3>
-                <div style={{ fontSize: '12px', color: '#3B82F6', fontWeight: '800' }}>
-                  {vehicle.year} {vehicle.make} {vehicle.model} • Stock #{vehicle.stockNumber}
+                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">FULL NAME *</label>
+                <div className="relative">
+                  <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
+                  <input
+                    type="text"
+                    required
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    className="w-full bg-[#121622] border border-[#1e2638] focus:border-[#c9a84c] rounded-xl pl-9 pr-3 py-2.5 text-xs text-white outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">PHONE NUMBER *</label>
+                <div className="relative">
+                  <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
+                  <input
+                    type="tel"
+                    required
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    className="w-full bg-[#121622] border border-[#1e2638] focus:border-[#c9a84c] rounded-xl pl-9 pr-3 py-2.5 text-xs text-white outline-none"
+                  />
                 </div>
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {/* Drive Location Selection */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Select Dealership Branch</label>
-                <select
-                  value={branchId}
-                  onChange={(e) => setBranchId(e.target.value)}
-                  style={{ width: '100%', background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '10px 12px', color: 'var(--nexus-text)', fontSize: '12px', fontWeight: '700' }}
-                >
-                  {BRANCHES.map((b) => (
-                    <option key={b.id} value={b.id}>{b.name} ({b.city})</option>
-                  ))}
-                </select>
+                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">EMAIL ADDRESS</label>
+                <div className="relative">
+                  <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
+                  <input
+                    type="email"
+                    value={customerEmail}
+                    onChange={(e) => setCustomerEmail(e.target.value)}
+                    className="w-full bg-[#121622] border border-[#1e2638] focus:border-[#c9a84c] rounded-xl pl-9 pr-8 py-2.5 text-xs text-white outline-none"
+                  />
+                  <Lock size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-rose-500" />
+                </div>
               </div>
 
-              {/* Date & Time Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div>
-                  <label style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Preferred Date</label>
-                  <input
-                    type="date"
-                    value={preferredDate}
-                    onChange={(e) => setPreferredDate(e.target.value)}
-                    style={{ width: '100%', background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '8px 12px', color: 'var(--nexus-text)', fontSize: '12px', outline: 'none' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Time Slot</label>
+              <div>
+                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Delivery Location</label>
+                <div className="relative">
+                  <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 pointer-events-none" />
                   <select
-                    value={preferredTimeSlot}
-                    onChange={(e) => setPreferredTimeSlot(e.target.value)}
-                    style={{ width: '100%', background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '8px 12px', color: 'var(--nexus-text)', fontSize: '12px', fontWeight: '700' }}
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="w-full bg-[#121622] border border-[#1e2638] focus:border-[#c9a84c] rounded-xl pl-9 pr-3 py-2.5 text-xs text-white outline-none appearance-none"
                   >
-                    <option value="09:00 AM">09:00 AM</option>
-                    <option value="10:30 AM">10:30 AM</option>
-                    <option value="01:30 PM">01:30 PM</option>
-                    <option value="03:30 PM">03:30 PM</option>
+                    <option value="Nairobi Showroom [HQ]">Nairobi Showroom [HQ]</option>
+                    <option value="Mombasa Showroom">Mombasa Showroom</option>
+                    <option value="Home / Office Delivery">Home / Office Delivery</option>
                   </select>
                 </div>
               </div>
+            </div>
 
-              {/* Drive Type Radio */}
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <button
-                  type="button"
-                  onClick={() => setDriveType('SHOWROOM')}
-                  style={{
-                    flex: 1,
-                    padding: '8px',
-                    borderRadius: '8px',
-                    fontSize: '12px',
-                    fontWeight: '800',
-                    background: driveType === 'SHOWROOM' ? 'rgba(59, 130, 246, 0.2)' : 'var(--nexus-bg)',
-                    border: driveType === 'SHOWROOM' ? '1px solid #3B82F6' : '1px solid var(--nexus-border)',
-                    color: driveType === 'SHOWROOM' ? '#3B82F6' : 'var(--nexus-text-muted)',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Showroom Visit
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDriveType('HOME_DELIVERY')}
-                  style={{
-                    flex: 1,
-                    padding: '8px',
-                    borderRadius: '8px',
-                    fontSize: '12px',
-                    fontWeight: '800',
-                    background: driveType === 'HOME_DELIVERY' ? 'rgba(59, 130, 246, 0.2)' : 'var(--nexus-bg)',
-                    border: driveType === 'HOME_DELIVERY' ? '1px solid #3B82F6' : '1px solid var(--nexus-border)',
-                    color: driveType === 'HOME_DELIVERY' ? '#3B82F6' : 'var(--nexus-text-muted)',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Home / Office Delivery
-                </button>
-              </div>
-
-              {/* Customer Contact Information */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '4px' }}>
+            <div>
+              <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">PREFERRED VIEWING DATE *</label>
+              <div className="relative">
+                <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
                 <input
-                  type="text"
-                  placeholder="Full Name *"
+                  type="date"
                   required
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  style={{ background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '10px 12px', color: 'var(--nexus-text)', fontSize: '12px', outline: 'none' }}
+                  value={preferredDate}
+                  onChange={(e) => setPreferredDate(e.target.value)}
+                  className="w-full bg-[#121622] border border-[#1e2638] focus:border-[#c9a84c] rounded-xl pl-9 pr-3 py-2.5 text-xs text-white outline-none"
                 />
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                  <input
-                    type="tel"
-                    placeholder="Phone Number *"
-                    required
-                    value={customerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
-                    style={{ background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '10px 12px', color: 'var(--nexus-text)', fontSize: '12px', outline: 'none' }}
-                  />
-                  <input
-                    type="email"
-                    placeholder="Email Address *"
-                    required
-                    value={customerEmail}
-                    onChange={(e) => setCustomerEmail(e.target.value)}
-                    style={{ background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '10px 12px', color: 'var(--nexus-text)', fontSize: '12px', outline: 'none' }}
-                  />
-                </div>
               </div>
+            </div>
 
-              <button type="submit" className="nexus-btn-primary" style={{ height: '48px', width: '100%', fontSize: '13px', marginTop: '8px' }}>
-                Confirm VIP Test Drive Appointment
-              </button>
-            </form>
-          </div>
+            <div>
+              <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">SPECIFIC REQUESTS / CUSTOM SPECS</label>
+              <textarea
+                rows={2}
+                value={requests}
+                onChange={(e) => setRequests(e.target.value)}
+                placeholder="Mention trade-in valuation, custom options, or financing requirements..."
+                className="w-full bg-[#121622] border border-[#1e2638] focus:border-[#c9a84c] rounded-xl p-3 text-xs text-white outline-none resize-none"
+              />
+            </div>
+
+            {/* Media 1 Gold Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 bg-gradient-to-r from-[#e5c158] to-[#c9a84c] text-black font-extrabold rounded-full text-xs uppercase tracking-wider hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#c9a84c]/20"
+            >
+              <Send size={14} />
+              <span>{loading ? 'Transmitting Telemetry...' : 'SUBMIT TELEMETRY INQUIRY'}</span>
+            </button>
+          </form>
         )}
       </div>
     </div>

@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { VEHICLES, VehicleItem } from '../../lib/vehicle-dataset';
+import { VehicleItem } from '../../lib/vehicle-dataset';
+import { useStore } from '../../context/StoreContext';
 import { VehicleCard } from '../../components/automotive/VehicleCard';
 import { TestDriveModal } from '../../components/automotive/TestDriveModal';
 import { ReservationModal } from '../../components/automotive/ReservationModal';
@@ -9,14 +10,15 @@ import { SearchModal } from '../../components/storefront/SearchModal';
 import { Filter, SlidersHorizontal, Car, Search } from 'lucide-react';
 
 export default function ProductsPage() {
+  const { vehicles: storeVehicles } = useStore();
   const [selectedMake, setSelectedMake] = useState('ALL');
   const [selectedBody, setSelectedBody] = useState('ALL');
   const [selectedCondition, setSelectedCondition] = useState('ALL');
-  const [maxPrice, setMaxPrice] = useState(150000);
+  const [maxPrice, setMaxPrice] = useState(50000000);
   const [sortBy, setSortBy] = useState('featured');
   const [searchQuery, setSearchQuery] = useState('');
 
-  let filtered = VEHICLES.filter((v: VehicleItem) => {
+  let filtered = storeVehicles.filter((v: VehicleItem) => {
     const matchMake = selectedMake === 'ALL' || v.make === selectedMake;
     const matchBody = selectedBody === 'ALL' || v.bodyType === selectedBody;
     const matchCondition = selectedCondition === 'ALL' || v.condition === selectedCondition;
@@ -29,7 +31,7 @@ export default function ProductsPage() {
   if (sortBy === 'price-high') filtered.sort((a, b) => b.pricing.cashPrice - a.pricing.cashPrice);
   if (sortBy === 'power') filtered.sort((a, b) => b.engine.powerHp - a.engine.powerHp);
 
-  const makesList = Array.from(new Set(VEHICLES.map(v => v.make)));
+  const makesList = Array.from(new Set(storeVehicles.map(v => v.make)));
 
   return (
     <div style={{ maxWidth: '1280px', margin: '40px auto 0', padding: '0 40px 80px' }}>

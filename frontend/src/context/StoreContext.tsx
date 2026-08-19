@@ -42,6 +42,8 @@ interface StoreContextType {
   submitTradeIn: (valuation: Omit<TradeInValuation, 'id' | 'valuationRef' | 'createdAt'>) => void;
   createReservation: (reservation: Omit<VehicleReservation, 'id' | 'reservationRef' | 'createdAt'>) => void;
 
+  vehicles: VehicleItem[];
+  refreshVehicles: () => Promise<void>;
   setIsCartOpen: (open: boolean) => void;
   setIsSearchOpen: (open: boolean) => void;
   setQuickViewProduct: (product: any | null) => void;
@@ -66,9 +68,149 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [reservationVehicleId, setReservationVehicleId] = useState<string | null>(null);
 
   // Dynamic Datasets
+  const [vehicles, setVehicles] = useState<VehicleItem[]>(VEHICLES);
   const [testDrives, setTestDrives] = useState<TestDriveBooking[]>(SAMPLE_TEST_DRIVES);
   const [tradeInValuations, setTradeInValuations] = useState<TradeInValuation[]>(SAMPLE_TRADE_INS);
   const [reservations, setReservations] = useState<VehicleReservation[]>(SAMPLE_RESERVATIONS);
+
+  const refreshVehicles = async () => {
+    try {
+      const res = await fetch('http://localhost:1338/api/car-listings');
+      if (res.ok) {
+        const json = await res.json();
+        if (json && Array.isArray(json.data) && json.data.length > 0) {
+          const loaded: VehicleItem[] = json.data.map((item: any, idx: number) => {
+            const attr = item.attributes || item;
+            const id = String(item.id || attr.id || `strapi-${idx}`);
+            const priceNum = Number(attr.price) || 24500000;
+            return {
+              id,
+              stockNumber: attr.stockNumber || `KNK-${1000 + Number(item.id || idx)}`,
+              vin: attr.vin || `W1K2230${100000 + Number(item.id || idx)}`,
+              registrationNumber: attr.registrationNumber || 'KDG 001A',
+              make: attr.make || 'Mercedes-Benz',
+              model: attr.model || 'S-Class',
+              generation: attr.generation || 'W223',
+              trim: attr.trim || attr.listing_title || 'S 580 4MATIC',
+              variant: attr.variant || 'V8 Biturbo',
+              year: Number(attr.year) || 2024,
+              registrationYear: Number(attr.registrationYear) || 2024,
+              condition: (attr.condition as any) || 'CERTIFIED_PRE_OWNED',
+              bodyType: (attr.bodyType as any) || 'SEDAN',
+              segment: attr.segment || 'Luxury Flagship',
+              colorExterior: attr.color || 'Obsidian Black',
+              colorInterior: attr.interior_color || 'Nappa Leather',
+              interiorMaterial: 'Nappa Leather',
+              engine: {
+                type: attr.engine || '3.0L V6 Turbo',
+                displacementCc: 2999,
+                litres: 3.0,
+                cylinders: 6,
+                configuration: 'V6',
+                aspiration: 'TURBOCHARGED',
+                powerHp: 429,
+                powerKw: 320,
+                torqueNm: 520,
+                zeroToHundredKm: 4.9,
+                topSpeedKm: 250
+              },
+              fuelEnergy: {
+                fuelType: (attr.fuel_type?.toUpperCase().includes('HYBRID') ? 'HYBRID' : attr.fuel_type?.toUpperCase().includes('DIESEL') ? 'DIESEL' : 'PETROL') as any,
+                consumptionL100km: 8.5,
+                co2EmissionsGkm: 195,
+                rangeKm: 750
+              },
+              transmission: {
+                type: (attr.transmission?.toUpperCase().includes('MANUAL') ? 'MANUAL' : 'AUTOMATIC') as any,
+                gears: 9,
+                paddleShifters: true,
+                driveModes: ['Comfort', 'Sport', 'Eco']
+              },
+              drivetrain: {
+                type: 'AWD',
+                diffLock: false,
+                lowRange: false,
+                terrainModes: ['Road', 'Sport']
+              },
+              dimensions: {
+                lengthMm: 5179,
+                widthMm: 1954,
+                heightMm: 1503,
+                wheelbaseMm: 3106,
+                groundClearanceMm: 130,
+                kerbWeightKg: 2065,
+                bootCapacityLiters: 550,
+                seats: 5,
+                doors: 4,
+                towingCapacityKg: 2100
+              },
+              features: [
+                {
+                  category: 'INTERIOR_COMFORT',
+                  title: 'Executive Comfort',
+                  items: Array.isArray(attr.features) ? attr.features : ['Burmester 3D Sound', 'Panoramic Sunroof', 'Head-Up Display', '360 Camera']
+                }
+              ],
+              inspection: {
+                score: 98,
+                inspectionDate: '2026-08-01',
+                inspectorName: 'KnK Senior Master Technician',
+                centerLocation: 'Nairobi HQ Complex',
+                breakdown: {
+                  mechanical: 'PASS',
+                  exteriorBody: 'PASS',
+                  interiorComfort: 'PASS',
+                  electricalElectronics: 'PASS',
+                  suspensionSteering: 'PASS',
+                  brakesTyres: 'PASS'
+                },
+                notes: 'Vehicle inspected and passed 150-point KnK Quality Certification.'
+              },
+              history: {
+                previousOwners: 1,
+                serviceHistory: 'FULL_DEALER_SERVICE_HISTORY',
+                accidentStatus: 'ACCIDENT_FREE_VERIFIED',
+                mileageVerified: true,
+                odometerKm: Number(attr.mileage) || 8400,
+                lastServiceDate: '2026-07-15',
+                lastServiceKm: Number(attr.mileage) || 8400,
+                importStatus: 'DIRECT_UK_IMPORT'
+              },
+              pricing: {
+                cashPrice: priceNum,
+                originalPrice: Math.round(priceNum * 1.08),
+                costPrice: Math.round(priceNum * 0.85),
+                minDepositPercent: 20,
+                estimatedMonthlyPayment: Math.round((priceNum * 0.8) / 48),
+                vatIncluded: true,
+                dutyPaid: true
+              },
+              availability: attr.currentStatus === 'Sold' ? 'SOLD' : attr.currentStatus === 'Reserved' ? 'RESERVED' : 'AVAILABLE',
+              daysInStock: 12,
+              branchId: 'nairobi-hq',
+              branchName: 'KnK Executive Showroom - Nairobi HQ',
+              heroImage: (attr.images && attr.images[0] && (attr.images[0].url || attr.images[0])) || 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop',
+              images: Array.isArray(attr.images) && attr.images.length > 0
+                ? attr.images.map((img: any) => typeof img === 'string' ? img : img.url)
+                : ['https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop'],
+              frames360: [],
+              badges: [attr.offer_type || 'Featured', attr.condition || 'Foreign Used'],
+              isFeatured: true,
+              shortTagline: attr.tagline || attr.listing_title || 'Luxury Flagship',
+              overviewDescription: attr.listing_description || 'High-specification vehicle listed via KnK Enterprise Admin.'
+            };
+          });
+          setVehicles(loaded);
+        }
+      }
+    } catch (e) {
+      console.warn('Could not load vehicles from Strapi backend, using dataset fallback:', e);
+    }
+  };
+
+  useEffect(() => {
+    refreshVehicles();
+  }, []);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -212,6 +354,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <StoreContext.Provider
       value={{
+        vehicles,
+        refreshVehicles,
         cart,
         wishlist,
         compareList,

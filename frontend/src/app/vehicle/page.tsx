@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, Filter, Car, ChevronRight, Check } from 'lucide-react';
+import { Filter } from 'lucide-react';
 import PredictiveSelect from '../../components/common/PredictiveSelect';
 
 const MAKE_OPTIONS = [
@@ -42,8 +42,7 @@ export default function VehicleInventoryPage() {
   const [transmission, setTransmission] = useState('');
   const [fuel, setFuel] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-
-  const vehicles = [
+  const [vehicles, setVehicles] = useState([
     {
       id: '1',
       title: '2024 Mercedes-Benz S 580 4MATIC',
@@ -67,32 +66,36 @@ export default function VehicleInventoryPage() {
       transmission: 'Automatic',
       fuel: 'Hybrid',
       mileage: '0 KM'
-    },
-    {
-      id: '3',
-      title: '2023 Range Rover Autobiography LWB',
-      price: 'KES 32,500,000',
-      image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&auto=format&fit=crop',
-      make: 'Land Rover',
-      year: '2023',
-      condition: 'Certified Pre-Owned',
-      transmission: 'Automatic',
-      fuel: 'Petrol',
-      mileage: '12,000 KM'
-    },
-    {
-      id: '4',
-      title: '2024 BMW M8 Competition Gran Coupe',
-      price: 'KES 26,000,000',
-      image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&auto=format&fit=crop',
-      make: 'BMW',
-      year: '2024',
-      condition: 'Foreign Used',
-      transmission: 'Automatic',
-      fuel: 'Petrol',
-      mileage: '4,500 KM'
     }
-  ];
+  ]);
+
+  useEffect(() => {
+    fetch('http://localhost:1338/api/car-listings')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && Array.isArray(data.data) && data.data.length > 0) {
+          const fetched = data.data.map((item: { id?: string | number; attributes?: Record<string, unknown> }) => {
+            const attr = item.attributes || (item as Record<string, unknown>);
+            return {
+              id: String(item.id || attr.id),
+              title: String(attr.listing_title || `${attr.year || ''} ${attr.make || ''} ${attr.model || ''}`),
+              price: attr.price ? `KES ${Number(attr.price).toLocaleString()}` : 'KES 24,500,000',
+              image: Array.isArray(attr.images) && attr.images[0] && typeof attr.images[0] === 'object' && attr.images[0] !== null && 'url' in attr.images[0]
+                ? String(attr.images[0].url)
+                : 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop',
+              make: String(attr.make || 'Mercedes-Benz'),
+              year: String(attr.year || '2024'),
+              condition: String(attr.condition || 'Foreign Used'),
+              transmission: String(attr.transmission || 'Automatic'),
+              fuel: String(attr.fuel_type || 'Petrol'),
+              mileage: attr.mileage ? `${attr.mileage} KM` : '8,400 KM'
+            };
+          });
+          setVehicles(fetched);
+        }
+      })
+      .catch(() => null);
+  }, []);
 
   const filteredVehicles = vehicles.filter((v) => {
     if (make && v.make !== make) return false;
@@ -111,9 +114,13 @@ export default function VehicleInventoryPage() {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#e5c158] to-[#c9a84c] text-black font-extrabold flex items-center justify-center text-base">
               KnK
             </div>
-            <span className="text-lg font-black text-white uppercase tracking-wider">KnK <span className="text-[#c9a84c]">Automotive</span></span>
+            <span className="text-lg font-black text-white uppercase tracking-wider">
+              KnK <span className="text-[#c9a84c]">Automotive</span>
+            </span>
           </Link>
-          <Link href="/book-test-drive" className="px-4 py-2 bg-[#c9a84c] text-black font-bold text-xs rounded-xl uppercase">Book Viewing</Link>
+          <Link href="/book-test-drive" className="px-4 py-2 bg-[#c9a84c] text-black font-bold text-xs rounded-xl uppercase">
+            Book Viewing
+          </Link>
         </div>
       </header>
 
@@ -182,7 +189,9 @@ export default function VehicleInventoryPage() {
 
                 <div className="flex items-center justify-between border-t border-neutral-900 pt-3">
                   <div className="text-base font-extrabold text-[#c9a84c]">{car.price}</div>
-                  <Link href={`/vehicle/${car.id}`} className="px-4 py-2 bg-[#c9a84c] text-black font-bold text-xs rounded-xl">View Dossier</Link>
+                  <Link href={`/product/${car.id}`} className="px-4 py-2 bg-[#c9a84c] text-black font-bold text-xs rounded-xl">
+                    View Dossier
+                  </Link>
                 </div>
               </div>
             </div>

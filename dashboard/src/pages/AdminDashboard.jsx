@@ -412,23 +412,44 @@ export default function AdminDashboard() {
   const fetchListings = async () => {
     setLoadingListings(true)
     try {
-      const { data, error } = await supabase
-        .from(TABLE)
-        .select('*')
-        .order('id', { ascending: false })
-      if (error) throw error
-      const rows = data || []
-      const uniqueMap = new Map()
-      rows.forEach(r => {
-        if (r.listing_title && !uniqueMap.has(r.listing_title)) {
-          uniqueMap.set(r.listing_title, r)
-        }
-      })
-      const uniqueListings = Array.from(uniqueMap.values())
-      setListings(uniqueListings)
+      const res = await fetch('http://localhost:1338/api/car-listings')
+      if (res.ok) {
+        const json = await res.json()
+        const items = json.data || []
+        const mapped = items.map(item => {
+          const d = item.attributes || item
+          return {
+            id: item.id || d.id,
+            documentId: item.documentId || item.id,
+            listing_title: d.listing_title,
+            tagline: d.tagline,
+            price: d.price,
+            make: d.make,
+            model: d.model,
+            condition: d.condition,
+            year: d.year,
+            transmission: d.transmission,
+            engine: d.engine,
+            fuel_type: d.fuel_type,
+            mileage: d.mileage,
+            color: d.color,
+            interior_color: d.interior_color,
+            offer_type: d.offer_type,
+            listing_description: d.listing_description,
+            youtube_video_url: d.youtube_video_url,
+            currentStatus: d.currentStatus || 'Available',
+            images: d.images || [{ url: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop' }]
+          }
+        })
+        setListings(mapped)
+      } else {
+        throw new Error('Failed to load Strapi listings')
+      }
     } catch (err) {
-      console.error('Fetch error:', err)
-      showToast('error', 'Could not load listings.')
+      console.error('Fetch Strapi listings notice:', err)
+      // Fallback load from Supabase if Strapi offline
+      const { data } = await supabase.from(TABLE).select('*').order('id', { ascending: false }).catch(() => ({ data: [] }))
+      if (data && data.length) setListings(data)
     } finally {
       setLoadingListings(false)
     }
@@ -447,20 +468,9 @@ export default function AdminDashboard() {
     setDeletingId(target.id)
     setConfirmDelete(null)
     try {
-      if (Array.isArray(target.images) && target.images.length) {
-        const paths = target.images.map(img => img.path).filter(Boolean)
-        if (paths.length) await supabase.storage.from(BUCKET).remove(paths)
-      }
-      // 1st delete from Local PostgreSQL via backend API server
-      try {
-        await fetch(`http://localhost:3001/api/listings/${target.id}`, { method: 'DELETE' })
-      } catch (pgErr) {
-        console.warn('PostgreSQL API delete notice:', pgErr.message)
-      }
-
-      // Sync/Fallback delete from Supabase Cloud directly
-      const { error } = await supabase.from(TABLE).delete().eq('id', target.id)
-      if (error) throw error
+      const docId = target.documentId || target.id
+      await fetch(`http://localhost:1338/api/car-listings/${docId}`, { method: 'DELETE' }).catch(() => null)
+      await supabase.from(TABLE).delete().eq('id', target.id).catch(() => null)
       setListings(prev => prev.filter(l => l.id !== target.id))
       showToast('success', 'Listing deleted successfully.')
     } catch (_err) {

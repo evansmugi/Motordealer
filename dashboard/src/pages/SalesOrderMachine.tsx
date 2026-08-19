@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HeaderButton } from '../components/common/HeaderButton';
 import { ORDERS as initialOrders, type OrderItem } from '../data/mock-dataset';
 import { Plus, CheckCircle2, ChevronRight, Printer } from 'lucide-react';
@@ -7,6 +7,65 @@ export const SalesOrderMachine: React.FC = () => {
   const [orders, setOrders] = useState<OrderItem[]>(initialOrders);
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchReservations = async () => {
+      try {
+        const res = await fetch('http://localhost:1338/api/appointments');
+        if (res.ok) {
+          const json = await res.json();
+          if (json && Array.isArray(json.data) && json.data.length > 0) {
+            const reservationOrders: OrderItem[] = json.data
+              .filter((item: any) => {
+                const attr = item.attributes || item;
+                return (attr.appointment_type || attr.appointmentType || '').includes('Reserve');
+              })
+              .map((item: any, idx: number) => {
+                const attr = item.attributes || item;
+                return {
+                  id: `res-order-${item.id}`,
+                  orderNumber: `RES-2026-${1000 + item.id}`,
+                  customerName: attr.client_name || attr.clientName || 'Storefront Client',
+                  customerEmail: attr.client_email || attr.clientEmail || 'client@motordealer.co.ke',
+                  items: [
+                    {
+                      id: `item-${item.id}`,
+                      name: attr.vehicle_title || 'Vehicle Holding Deposit',
+                      sku: 'SKU-RESERVE-01',
+                      quantity: 1,
+                      unitPrice: Number(attr.deposit_amount || attr.depositAmount || 500000)
+                    }
+                  ],
+                  totalAmount: Number(attr.deposit_amount || attr.depositAmount || 500000),
+                  paymentStatus: 'PAID',
+                  orderStatus: 'PROCESSING',
+                  createdDate: attr.publishedAt || new Date().toISOString(),
+                  timeline: [
+                    {
+                      status: 'PROCESSING',
+                      timestamp: attr.publishedAt || new Date().toISOString(),
+                      note: `Holding deposit received for ${attr.vehicle_title || 'Vehicle'}`
+                    }
+                  ]
+                };
+              });
+
+            if (reservationOrders.length > 0) {
+              setOrders(prev => {
+                const existingIds = new Set(prev.map(o => o.id));
+                const newOnly = reservationOrders.filter(o => !existingIds.has(o.id));
+                return [...newOnly, ...prev];
+              });
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to fetch Strapi reservations for orders:', err);
+      }
+    };
+
+    fetchReservations();
+  }, []);
 
   const stateTransitions: Record<OrderItem['orderStatus'], OrderItem['orderStatus'] | null> = {
     PENDING: 'PAID',

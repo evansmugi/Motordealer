@@ -906,6 +906,28 @@ export const useCRMStore = create((set, get) => ({
 
   syncLeads: async () => {
     try {
+      let strapiLeads = []
+      try {
+        const sRes = await fetch('http://localhost:1338/api/crm-leads').then(r => r.ok ? r.json() : null)
+        if (sRes && Array.isArray(sRes.data)) {
+          strapiLeads = sRes.data.map(item => {
+            const attr = item.attributes || item
+            return {
+              id: `strapi-lead-${item.id}`,
+              name: attr.name || 'Storefront Visitor',
+              email: attr.email || '',
+              phone: attr.phone || '',
+              source: attr.source || 'Storefront Digital Matrix',
+              status: attr.currentStatus || 'new',
+              notes: attr.notes || '',
+              intent_score: attr.intent_score || 85,
+              intent_tier: attr.intent_tier || 'HOT',
+              created_at: attr.publishedAt || new Date().toISOString()
+            }
+          })
+        }
+      } catch { /* ignore */ }
+
       const [apiRes, supaRes] = await Promise.allSettled([
         api.get('/crm/leads'),
         supabase.from('crm_leads').select('*').order('created_at', { ascending: false })
@@ -915,6 +937,7 @@ export const useCRMStore = create((set, get) => ({
       const supaLeads = supaRes.status === 'fulfilled' && Array.isArray(supaRes.value?.data) ? supaRes.value.data : []
 
       const leadMap = new Map()
+      strapiLeads.forEach(l => leadMap.set(l.id, l))
       supaLeads.forEach(l => leadMap.set(l.id, l))
       apiLeads.forEach(l => {
         if (!leadMap.has(l.id)) leadMap.set(l.id, l)
