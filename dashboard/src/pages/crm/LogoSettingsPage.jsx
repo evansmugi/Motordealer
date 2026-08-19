@@ -233,7 +233,11 @@ export default function LogoSettingsPage() {
       <div className="w-full space-y-8">
         
         {/* Header Banner */}
-        <div className="bg-gradient-to-r from-slate-900 via-[#0b0e14] to-slate-950 p-6 sm:p-8 rounded-3xl border border-[#c9a84c]/30 shadow-2xl relative overflow-hidden">
+        <div className={`p-6 sm:p-8 rounded-3xl border shadow-2xl relative overflow-hidden transition-all ${
+          isLight
+            ? 'bg-gradient-to-r from-white via-slate-50 to-slate-100 border-slate-300 text-slate-900 shadow-xl'
+            : 'bg-gradient-to-r from-slate-900 via-[#0b0e14] to-slate-950 border-[#c9a84c]/30 text-white shadow-2xl'
+        }`}>
           <div className="absolute top-0 right-0 w-96 h-96 bg-[#c9a84c]/10 rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
@@ -241,12 +245,12 @@ export default function LogoSettingsPage() {
                 <span className="px-3 py-1 bg-[#c9a84c]/20 text-[#c9a84c] border border-[#c9a84c]/40 rounded-full text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5">
                   <Sparkles size={13} /> Enterprise Brand & Currency Engine
                 </span>
-                <span className="text-xs text-slate-400 font-mono">ID: SETTINGS-BRAND-CURRENCY</span>
+                <span className={`text-xs font-mono ${isLight ? 'text-slate-600 font-bold' : 'text-slate-400'}`}>ID: SETTINGS-BRAND-CURRENCY</span>
               </div>
-              <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+              <h1 className={`text-2xl sm:text-4xl font-extrabold tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
                 Logo & Multi-Currency Settings
               </h1>
-              <p className="text-slate-400 text-sm mt-1 max-w-2xl">
+              <p className={`text-sm mt-1 max-w-2xl ${isLight ? 'text-slate-600 font-medium' : 'text-slate-400'}`}>
                 Configure dynamic logos for Admin Portal & Client Storefront while setting up real-time multi-currency exchange rates and base currencies.
               </p>
             </div>
@@ -255,7 +259,11 @@ export default function LogoSettingsPage() {
               <button
                 type="button"
                 onClick={handleResetDefaults}
-                className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold uppercase tracking-wider rounded-xl border border-slate-700 transition-all flex items-center gap-2"
+                className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl border transition-all flex items-center gap-2 ${
+                  isLight
+                    ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300'
+                    : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                }`}
               >
                 <RotateCcw size={14} /> Reset Defaults
               </button>
@@ -302,7 +310,9 @@ export default function LogoSettingsPage() {
               </div>
 
               {/* Preview Window */}
-              <div className="bg-[#080808] border border-slate-800 rounded-xl p-6 flex flex-col items-center justify-center min-h-[140px] relative group overflow-hidden">
+              <div className={`border rounded-xl p-6 flex flex-col items-center justify-center min-h-[140px] relative group overflow-hidden ${
+                isLight ? 'bg-slate-100 border-slate-300' : 'bg-[#080808] border-slate-800'
+              }`}>
                 <div className="text-[10px] text-slate-500 uppercase tracking-widest absolute top-2 left-3 font-mono">
                   Sidebar Left Header Preview
                 </div>
@@ -320,7 +330,7 @@ export default function LogoSettingsPage() {
               {/* Input Controls */}
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">
+                  <label className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
                     Logo Image URL
                   </label>
                   <input
@@ -328,12 +338,16 @@ export default function LogoSettingsPage() {
                     value={adminSidebarLogoUrl}
                     onChange={(e) => setAdminSidebarLogoUrl(e.target.value)}
                     placeholder="https://... or /images/logo.png"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:border-[#c9a84c] outline-none font-mono"
+                    className={`w-full border rounded-xl px-3 py-2 text-xs focus:border-[#c9a84c] outline-none font-mono ${
+                      isLight ? 'bg-slate-50 border-slate-300 text-slate-900' : 'bg-slate-950 border-slate-800 text-slate-200'
+                    }`}
                   />
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <label className="flex-1 px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold rounded-xl text-center cursor-pointer transition-colors flex items-center justify-center gap-2">
+                  <label className={`flex-1 px-3 py-2 border text-xs font-bold rounded-xl text-center cursor-pointer transition-colors flex items-center justify-center gap-2 ${
+                    isLight ? 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-900' : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-200'
+                  }`}>
                     <Upload size={14} className="text-amber-400" />
                     <span>Upload File</span>
                     <input
@@ -747,6 +761,7 @@ export default function LogoSettingsPage() {
           description={modalDetails.message}
           actionLabel="View Storefront"
           onAction={() => window.open('http://localhost:3005', '_blank')}
+          isLight={isLight}
         />
       )}
     </CRMLayout>

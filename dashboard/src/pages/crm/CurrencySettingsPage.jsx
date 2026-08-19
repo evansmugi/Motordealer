@@ -456,6 +456,7 @@ export default function CurrencySettingsPage() {
           description="Your multi-currency configuration and adjustable exchange rates have been updated and synchronized across all storefront showrooms."
           actionLabel="View Storefront"
           onAction={() => window.open('http://localhost:3005', '_blank')}
+          isLight={isLight}
         />
       )}
     </CRMLayout>

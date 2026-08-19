@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
-import { supabase } from '../lib/superbaseClient.js'
+import { supabase } from '../lib/superbaseClient'
 import { useCRMStore } from '../context/CRMStore'
 import { useAnalyticsStore } from '../context/AnalyticsStore'
 
@@ -31,7 +31,7 @@ import {
 } from 'recharts'
 
 import BlogManager        from '../components/Blog/BlogManager'
-import AccessoriesManager from '../components/accessories/AccessoriesManager.jsx'
+import AccessoriesManager from '../components/accessories/AccessoriesManager'
 import AdminSidebar       from '../components/Layout/AdminSidebar'
 import BrandLogo          from '../components/common/BrandLogo'
 import { VEHICLES }       from '../data/mock-dataset'

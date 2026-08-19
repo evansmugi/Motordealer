@@ -401,9 +401,7 @@ export default function CRMLayout({ children = null }) {
 
 
       {/* Responsive Header */}
-      <header className={`sticky top-0 z-40 backdrop-blur-xl border-b transition-colors duration-300 ${
-        adminTheme === 'light' ? 'bg-white/95 border-slate-200 text-slate-900 shadow-sm' : 'bg-[#020617]/95 border-white/10 shadow-2xl'
-      }`}>
+      <header className="sticky top-0 z-40 backdrop-blur-xl bg-[#020617]/95 border-b border-white/10 shadow-2xl">
         <div className="w-full px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3.5 flex items-center justify-between gap-2">
           
           {/* Brand & Status Pill (Desktop Logo / Mobile Pill Only) */}
@@ -561,20 +559,16 @@ export default function CRMLayout({ children = null }) {
         />
 
         {/* Navigation Ribbon & Mobile Select Box */}
-        <div className={`border-t backdrop-blur-md ${
-          adminTheme === 'light' ? 'border-slate-200 bg-slate-100/90' : 'border-white/5 bg-slate-950/60'
-        }`}>
+        <div className="border-t border-white/5 bg-slate-950/60 backdrop-blur-md">
           <div className="w-full px-3 sm:px-6 lg:px-8 py-1.5 sm:py-2">
             
             {/* Mobile Dropdown Menu Selector (< sm) */}
             <div className="sm:hidden flex items-center gap-2">
-              <span className={`text-[10px] font-mono uppercase tracking-wider flex-shrink-0 ${adminTheme === 'light' ? 'text-slate-600 font-bold' : 'text-slate-400'}`}>Jump To:</span>
+              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 flex-shrink-0">Jump To:</span>
               <select
                 value={currentNavItems.find(i => location.pathname === i.path || (i.path !== '/crm' && i.path !== '/analytics/dashboard' && location.pathname.startsWith(i.path)))?.path || currentNavItems[0]?.path}
                 onChange={e => navigate(e.target.value)}
-                className={`w-full border rounded-lg px-3 py-1.5 text-xs font-mono outline-none focus:border-[#c9a84c] transition-all cursor-pointer ${
-                  adminTheme === 'light' ? 'bg-white border-slate-300 text-slate-900 font-semibold' : 'bg-slate-900 border-white/10 text-slate-200'
-                }`}
+                className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-slate-200 font-mono outline-none focus:border-[#c9a84c] transition-all cursor-pointer"
               >
                 {currentNavItems.map(item => (
                   <option key={item.path} value={item.path}>
@@ -604,9 +598,7 @@ export default function CRMLayout({ children = null }) {
                           : isAnalyticsPage
                             ? 'bg-gradient-to-r from-[#6366f1] to-indigo-400 text-white border border-indigo-300 shadow-indigo-500/25 font-black scale-[1.02]'
                             : 'bg-gradient-to-r from-[#c9a84c] to-[#eab308] text-slate-950 border border-[#fef08a] shadow-[#c9a84c]/25 font-black scale-[1.02]'
-                        : adminTheme === 'light'
-                          ? 'bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 hover:text-slate-950 shadow-sm'
-                          : 'bg-slate-900/90 border border-slate-700/80 text-slate-100 hover:text-white hover:bg-slate-800 hover:border-[#c9a84c]/50 hover:shadow-[#c9a84c]/10'
+                        : 'bg-slate-900/90 border border-slate-700/80 text-slate-100 hover:text-white hover:bg-slate-800 hover:border-[#c9a84c]/50 hover:shadow-[#c9a84c]/10'
                     }`}
                   >
                     <Icon size={14} className={isActive ? (isCampaignMonitorPage ? 'text-slate-950' : isAnalyticsPage ? 'text-white' : 'text-slate-950') : 'text-amber-400/80 group-hover:text-amber-300 transition-colors'} />

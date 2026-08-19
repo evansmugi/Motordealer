@@ -52,7 +52,7 @@ export default function AdminSidebar({ children }) {
   const [showSignOutModal, setShowSignOutModal] = useState(false)
   const [showAlertsModal, setShowAlertsModal] = useState(false)
 
-  // Synchronize open accordions dynamically whenever location changes
+  // Synchronize open accordions safely upon route navigation
   useEffect(() => {
     if (isVehiclesRoute) setVehiclesOpen(true)
     if (isCrmRoute) setCrmOpen(true)
@@ -61,8 +61,8 @@ export default function AdminSidebar({ children }) {
     if (isSettingsRoute) setSettingsOpen(true)
   }, [location.pathname, isVehiclesRoute, isCrmRoute, isAnalyticsRoute, isCampaignRoute, isSettingsRoute])
 
-  const tasks = useCRMStore(state => state.tasks)
-  const adminTheme = useCRMStore(state => state.adminTheme)
+  const tasks = useCRMStore(state => state.tasks) || []
+  const adminTheme = useCRMStore(state => state.adminTheme) || 'dark'
   const liveChatNotificationsEnabled = useCRMStore(state => state.liveChatNotificationsEnabled)
   const urgentTasksCount = tasks.filter(t => t.priority === 'urgent' && t.status !== 'completed').length
 
@@ -137,12 +137,8 @@ export default function AdminSidebar({ children }) {
     { path: '/admin/dashboard', label: 'Admin Dashboard', icon: LayoutDashboard },
   ]
 
-  const isLight = adminTheme === 'light'
-
   const sidebarContent = (
-    <div className={`h-full flex flex-col justify-between border-r p-4 font-sans select-none transition-colors duration-300 ${
-      isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-[#080808] border-[#c9a84c]/20 text-slate-300'
-    }`}>
+    <div className="h-full flex flex-col justify-between bg-[#080808] border-r border-[#c9a84c]/20 p-4 font-sans text-slate-300 select-none">
       
       {/* Brand Header */}
       <div>
@@ -290,76 +286,75 @@ export default function AdminSidebar({ children }) {
           </div>
 
           {/* Fuse Analytics Accordion Menu */}
+          <div className="pt-3">
+            <button
+              onClick={() => setAnalyticsOpen(!analyticsOpen)}
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all shadow-sm group ${
+                location.pathname.startsWith('/analytics')
+                  ? 'bg-[#6366f1]/20 text-[#6366f1] border-[#6366f1]/50 font-black shadow-md'
+                  : 'bg-slate-900/80 border-slate-800 text-slate-100 hover:text-indigo-300 hover:bg-slate-800 hover:border-[#6366f1]/50'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span>Fuse Analytics</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#06b6d4] animate-pulse shadow-cyan-500/50" />
+              </div>
 
-            <div className="pt-3">
-              <button
-                onClick={() => setAnalyticsOpen(!analyticsOpen)}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all shadow-sm group ${
-                  location.pathname.startsWith('/analytics')
-                    ? 'bg-[#6366f1]/20 text-[#6366f1] border-[#6366f1]/50 font-black shadow-md'
-                    : 'bg-slate-900/80 border-slate-800 text-slate-100 hover:text-indigo-300 hover:bg-slate-800 hover:border-[#6366f1]/50'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <span>Fuse Analytics</span>
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#06b6d4] animate-pulse shadow-cyan-500/50" />
-                </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-[#6366f1]/20 text-[#6366f1] border border-[#6366f1]/30">{analyticsSubItems.length}</span>
+                {analyticsOpen ? <ChevronDown size={14} className="text-indigo-400" /> : <ChevronRight size={14} className="text-indigo-400/80 group-hover:text-indigo-300" />}
+              </div>
+            </button>
 
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-[#6366f1]/20 text-[#6366f1] border border-[#6366f1]/30">{analyticsSubItems.length}</span>
-                  {analyticsOpen ? <ChevronDown size={14} className="text-indigo-400" /> : <ChevronRight size={14} className="text-indigo-400/80 group-hover:text-indigo-300" />}
-                </div>
-              </button>
+            {/* Analytics Sub-menu Items */}
+            {analyticsOpen && (
+              <div className="mt-2 ml-2 pl-3 border-l-2 border-l-[#6366f1]/50 space-y-1.5">
+                {analyticsSubItems.map(sub => {
+                  const SubIcon = sub.icon
+                  const isSubActive = location.pathname === sub.path
 
-              {/* Analytics Sub-menu Items */}
-              {analyticsOpen && (
-                <div className="mt-2 ml-2 pl-3 border-l-2 border-l-[#6366f1]/50 space-y-1.5">
-                  {analyticsSubItems.map(sub => {
-                    const SubIcon = sub.icon
-                    const isSubActive = location.pathname === sub.path
+                  return (
+                    <Link
+                      key={sub.path}
+                      to={sub.path}
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex items-center justify-between px-3 py-2 rounded-lg text-[11px] font-bold tracking-wider uppercase transition-all shadow-sm group ${
+                        isSubActive
+                          ? 'bg-gradient-to-r from-[#6366f1] to-indigo-400 text-white font-black border border-indigo-300 shadow-md scale-[1.01]'
+                          : 'bg-slate-900/90 border border-slate-800 text-slate-100 hover:text-white hover:bg-slate-800 hover:border-[#6366f1]/50'
+                      }`}
+                    >
+                      <span>{sub.label}</span>
+                      <SubIcon size={14} className={isSubActive ? 'text-white' : 'text-indigo-400/80 group-hover:text-indigo-300 transition-colors'} />
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
+          </div>
 
-                    return (
-                      <Link
-                        key={sub.path}
-                        to={sub.path}
-                        onClick={() => setMobileOpen(false)}
-                        className={`flex items-center justify-between px-3 py-2 rounded-lg text-[11px] font-bold tracking-wider uppercase transition-all shadow-sm group ${
-                          isSubActive
-                            ? 'bg-gradient-to-r from-[#6366f1] to-indigo-500 text-white font-black border border-indigo-300 shadow-md scale-[1.01]'
-                            : 'bg-slate-900/90 border border-slate-800 text-slate-100 hover:text-white hover:bg-slate-800 hover:border-[#6366f1]/50'
-                        }`}
-                      >
-                        <span>{sub.label}</span>
-                        <SubIcon size={14} className={isSubActive ? 'text-white' : 'text-indigo-400/80 group-hover:text-indigo-300 transition-colors'} />
-                      </Link>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-
-          {/* Campaign Monitor Parent Accordion Menu */}
+          {/* Campaign Monitor & Attribution Accordion Menu */}
           <div className="pt-3">
             <button
               onClick={() => setCampaignOpen(!campaignOpen)}
               className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all shadow-sm group ${
-                location.pathname.startsWith('/analytics/campaign-monitor')
-                  ? 'bg-gradient-to-r from-[#6366f1]/25 to-[#c9a84c]/25 text-white border-[#6366f1]/60 shadow-lg font-black'
+                isCampaignRoute
+                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50 font-black shadow-md'
                   : 'bg-slate-900/80 border-slate-800 text-slate-100 hover:text-emerald-300 hover:bg-slate-800 hover:border-emerald-500/50'
               }`}
             >
               <div className="flex items-center gap-2">
                 <span>Campaign Monitor</span>
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping shadow-emerald-500/50" />
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping shadow-emerald-500/50" />
               </div>
 
               <div className="flex items-center gap-1.5">
-                <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-[#6366f1]/20 text-[#6366f1] border border-[#6366f1]/30">{campaignMonitorSubItems.length}</span>
+                <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">{campaignMonitorSubItems.length}</span>
                 {campaignOpen ? <ChevronDown size={14} className="text-emerald-400" /> : <ChevronRight size={14} className="text-emerald-400/80 group-hover:text-emerald-300" />}
               </div>
             </button>
 
-            {/* Campaign Monitor Sub-menu Items */}
+            {/* Campaign Sub-menu Items */}
             {campaignOpen && (
               <div className="mt-2 ml-2 pl-3 border-l-2 border-l-[#c9a84c]/50 space-y-1.5">
                 {campaignMonitorSubItems.map(sub => {
@@ -458,7 +453,7 @@ export default function AdminSidebar({ children }) {
 
             <ActionTooltip text="Open Public Customer Storefront in New Window" className="w-full">
               <a
-                href="/"
+                href="http://localhost:3005"
                 target="_blank"
                 rel="noreferrer"
                 className="w-full flex items-center justify-between px-3.5 py-2 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 uppercase tracking-wider"
@@ -493,21 +488,21 @@ export default function AdminSidebar({ children }) {
         isOpen={showSignOutModal}
         onClose={() => setShowSignOutModal(false)}
         onConfirm={handleLogout}
-        isLight={adminTheme === 'light'}
+        isLight={false}
       />
 
       {/* Notification Control Modal */}
       <NotificationSettingsModal
         isOpen={showAlertsModal}
         onClose={() => setShowAlertsModal(false)}
-        isLight={adminTheme === 'light'}
+        isLight={false}
       />
     </div>
   )
 
   return (
     <div className={`min-h-screen flex flex-col lg:flex-row transition-colors duration-300 ${
-      adminTheme === 'light' ? 'bg-slate-100 text-slate-900' : 'bg-[#0a0a0a] text-slate-100'
+      adminTheme === 'light' ? 'bg-slate-100' : 'bg-[#0a0a0a]'
     }`}>
       
       {/* Mobile Top Bar */}
@@ -518,7 +513,7 @@ export default function AdminSidebar({ children }) {
           </button>
 
           <Link to="/admin/dashboard">
-            <BrandLogo variant="admin" size="sm" showSubtitle={false} />
+            <BrandLogo location="sidebar" size="sm" />
           </Link>
         </div>
       </div>
