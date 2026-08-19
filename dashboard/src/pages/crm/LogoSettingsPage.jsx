@@ -229,10 +229,9 @@ export default function LogoSettingsPage() {
   };
 
   return (
-    <CRMLayout title="Dynamic Logos & Multi-Currency Exchange Rates | KnK Enterprise Settings">
-      <div className="w-full space-y-8">
-        
-        {/* Header Banner */}
+    <div className="w-full space-y-8">
+      
+      {/* Header Banner */}
         <div className={`p-6 sm:p-8 rounded-3xl border shadow-2xl relative overflow-hidden transition-all ${
           isLight
             ? 'bg-gradient-to-r from-white via-slate-50 to-slate-100 border-slate-300 text-slate-900 shadow-xl'
@@ -749,8 +748,6 @@ export default function LogoSettingsPage() {
           </div>
         </div>
 
-      </div>
-
       {/* Success Modal Confirmation */}
       {showSuccessModal && (
         <SuccessModal
@@ -764,6 +761,6 @@ export default function LogoSettingsPage() {
           isLight={isLight}
         />
       )}
-    </CRMLayout>
+    </div>
   );
 }
