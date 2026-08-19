@@ -77,6 +77,15 @@ export function saveStoredVehicles(vehicles: VehicleListing[]) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(vehicles));
     window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: vehicles }));
+    if ('BroadcastChannel' in window) {
+      try {
+        const bc = new BroadcastChannel('knk_enterprise_sync_channel');
+        bc.postMessage({ type: 'VEHICLES_UPDATED', timestamp: Date.now(), payload: vehicles });
+        bc.close();
+      } catch (err) {
+        // ignore broadcast errors
+      }
+    }
   } catch (e) {
     console.error('Error saving vehicles:', e);
   }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { VehicleItem, TestDriveBooking, TradeInValuation, VehicleReservation, VEHICLES, SAMPLE_TEST_DRIVES, SAMPLE_TRADE_INS, SAMPLE_RESERVATIONS } from '../lib/vehicle-dataset';
 import { getStoredBrands } from '../lib/brands';
 
@@ -88,6 +88,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Dynamic Datasets
   const [vehicles, setVehicles] = useState<VehicleItem[]>(VEHICLES);
+  const lastStateFingerprint = useRef<string>('');
   const [testDrives, setTestDrives] = useState<TestDriveBooking[]>(SAMPLE_TEST_DRIVES);
   const [tradeInValuations, setTradeInValuations] = useState<TradeInValuation[]>(SAMPLE_TRADE_INS);
   const [reservations, setReservations] = useState<VehicleReservation[]>(SAMPLE_RESERVATIONS);
@@ -301,9 +302,40 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     window.addEventListener('knk_vehicles_updated', handleVehiclesUpdated);
     window.addEventListener('storage', handleVehiclesUpdated);
+
+    let bc: BroadcastChannel | null = null;
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      try {
+        bc = new BroadcastChannel('knk_enterprise_sync_channel');
+        bc.onmessage = (event) => {
+          if (event.data?.type === 'VEHICLES_UPDATED' || event.data?.type === 'DATA_SYNC') {
+            refreshVehicles();
+          }
+        };
+      } catch {
+        // ignore
+      }
+    }
+
+    // Auto-detect asynchronous delta changes (Heartbeat polling every 1200ms)
+    const intervalId = setInterval(() => {
+      try {
+        const rawLocal = localStorage.getItem('knk_custom_car_listings') || '';
+        const currentFingerprint = `${rawLocal.length}-${rawLocal.slice(0, 60)}-${rawLocal.slice(-60)}`;
+        if (lastStateFingerprint.current && lastStateFingerprint.current !== currentFingerprint) {
+          refreshVehicles();
+        }
+        lastStateFingerprint.current = currentFingerprint;
+      } catch {
+        // ignore
+      }
+    }, 1200);
+
     return () => {
       window.removeEventListener('knk_vehicles_updated', handleVehiclesUpdated);
       window.removeEventListener('storage', handleVehiclesUpdated);
+      if (bc) bc.close();
+      clearInterval(intervalId);
     };
   }, []);
 

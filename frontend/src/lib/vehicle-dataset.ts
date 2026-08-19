@@ -352,11 +352,11 @@ export const VEHICLES: VehicleItem[] = [
       importStatus: 'LOCAL_NEW'
     },
     pricing: {
-      cashPrice: 98500,
-      originalPrice: 105000,
-      costPrice: 79000,
+      cashPrice: 8850000,
+      originalPrice: 9500000,
+      costPrice: 7900000,
       minDepositPercent: 15,
-      estimatedMonthlyPayment: 1480,
+      estimatedMonthlyPayment: 148000,
       vatIncluded: true,
       dutyPaid: true
     },
@@ -488,11 +488,11 @@ export const VEHICLES: VehicleItem[] = [
       importStatus: 'DIRECT_UK_IMPORT'
     },
     pricing: {
-      cashPrice: 118000,
-      originalPrice: 135000,
-      costPrice: 94000,
+      cashPrice: 11800000,
+      originalPrice: 13500000,
+      costPrice: 9400000,
       minDepositPercent: 20,
-      estimatedMonthlyPayment: 1780,
+      estimatedMonthlyPayment: 178000,
       vatIncluded: true,
       dutyPaid: true
     },
@@ -619,11 +619,11 @@ export const VEHICLES: VehicleItem[] = [
       importStatus: 'LOCAL_NEW'
     },
     pricing: {
-      cashPrice: 129000,
-      originalPrice: 140000,
-      costPrice: 102000,
+      cashPrice: 12900000,
+      originalPrice: 14000000,
+      costPrice: 10200000,
       minDepositPercent: 15,
-      estimatedMonthlyPayment: 1920,
+      estimatedMonthlyPayment: 192000,
       vatIncluded: true,
       dutyPaid: true
     },
@@ -748,11 +748,11 @@ export const VEHICLES: VehicleItem[] = [
       importStatus: 'DIRECT_UK_IMPORT'
     },
     pricing: {
-      cashPrice: 145000,
-      originalPrice: 168000,
-      costPrice: 119000,
+      cashPrice: 14500000,
+      originalPrice: 16800000,
+      costPrice: 11900000,
       minDepositPercent: 20,
-      estimatedMonthlyPayment: 2150,
+      estimatedMonthlyPayment: 215000,
       vatIncluded: true,
       dutyPaid: true
     },
