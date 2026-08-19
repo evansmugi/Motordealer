@@ -5,7 +5,7 @@ import {
   DollarSign, Gauge, Fuel, Wrench, ChevronRight, Share2, Printer, Lock, Check
 } from 'lucide-react';
 import CRMLayout from '../components/crm/CRMLayout';
-import { VEHICLES } from '../data/mock-dataset.ts';
+import { VEHICLES } from '../data/mock-dataset';
 import { useCRMStore } from '../context/CRMStore';
 
 export default function ViewListing() {

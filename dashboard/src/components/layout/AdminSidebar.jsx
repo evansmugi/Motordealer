@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useCRMStore } from '../../context/CRMStore'
 import {
@@ -6,7 +6,7 @@ import {
   Megaphone, MessageSquare, CheckSquare, LifeBuoy, Sliders, ShieldCheck,
   BookOpen, Package, Calendar, ChevronDown, ChevronRight, Power, Menu, X,
   Sparkles, ExternalLink, Bell, BellOff, Eye, Globe, Share2, QrCode,
-  ShoppingCart, Video, PhoneCall, Zap, Layers, Trophy, Settings
+  ShoppingCart, Video, PhoneCall, Zap, Layers, Trophy, Settings, Image, DollarSign
 } from 'lucide-react'
 
 import { supabase } from '../../lib/superbaseClient'
@@ -27,9 +27,15 @@ export default function AdminSidebar({ children }) {
   const isAnalyticsRoute = location.pathname.startsWith('/analytics') && !isCampaignRoute
   const isSettingsRoute = location.pathname.startsWith('/crm/team') ||
                           location.pathname.startsWith('/crm/sources') ||
+                          location.pathname.startsWith('/crm/lead-sources') ||
                           location.pathname.startsWith('/crm/scoring-rules') ||
                           location.pathname.startsWith('/crm/sla') ||
-                          location.pathname.startsWith('/crm/ai-settings')
+                          location.pathname.startsWith('/crm/ai-settings') ||
+                          location.pathname.startsWith('/crm/logo-settings') ||
+                          location.pathname.startsWith('/crm/currency-settings') ||
+                          location.pathname.startsWith('/brand-identity') ||
+                          location.pathname.startsWith('/brand-settings') ||
+                          location.pathname.startsWith('/brand-logo')
   const isCrmRoute = (location.pathname.startsWith('/crm') || location.pathname === '/crm') && !isCampaignRoute && !isSettingsRoute
 
   const isVehiclesRoute = location.pathname.startsWith('/admin/vehicles') ||
@@ -43,19 +49,17 @@ export default function AdminSidebar({ children }) {
   const [analyticsOpen, setAnalyticsOpen] = useState(isAnalyticsRoute)
   const [campaignOpen, setCampaignOpen] = useState(isCampaignRoute)
   const [settingsOpen, setSettingsOpen] = useState(isSettingsRoute)
-  const [prevPath, setPrevPath] = useState(location.pathname)
   const [showSignOutModal, setShowSignOutModal] = useState(false)
   const [showAlertsModal, setShowAlertsModal] = useState(false)
 
-  // Synchronize open accordions upon route navigation
-  if (prevPath !== location.pathname) {
-    setPrevPath(location.pathname)
-    setVehiclesOpen(isVehiclesRoute)
-    setCrmOpen(isCrmRoute)
-    setAnalyticsOpen(isAnalyticsRoute)
-    setCampaignOpen(isCampaignRoute)
-    setSettingsOpen(isSettingsRoute)
-  }
+  // Synchronize open accordions dynamically whenever location changes
+  useEffect(() => {
+    if (isVehiclesRoute) setVehiclesOpen(true)
+    if (isCrmRoute) setCrmOpen(true)
+    if (isAnalyticsRoute) setAnalyticsOpen(true)
+    if (isCampaignRoute) setCampaignOpen(true)
+    if (isSettingsRoute) setSettingsOpen(true)
+  }, [location.pathname, isVehiclesRoute, isCrmRoute, isAnalyticsRoute, isCampaignRoute, isSettingsRoute])
 
   const tasks = useCRMStore(state => state.tasks)
   const adminTheme = useCRMStore(state => state.adminTheme)
@@ -87,11 +91,13 @@ export default function AdminSidebar({ children }) {
   ]
 
   const settingsSubItems = [
-    { path: '/crm/team',          label: 'User & Team Hub',     icon: Users },
-    { path: '/crm/sources',       label: 'Lead Sources',        icon: Sliders },
-    { path: '/crm/scoring-rules', label: 'Scoring Rules',      icon: Sparkles },
-    { path: '/crm/sla',           label: 'Service Standards',   icon: ShieldCheck },
-    { path: '/crm/ai-settings',  label: 'AI & API Settings',   icon: Settings },
+    { path: '/brand-identity',        label: 'Logo & Brand Identity', icon: Sparkles },
+    { path: '/crm/currency-settings', label: 'Multi-Currency & Rates', icon: DollarSign },
+    { path: '/crm/team',              label: 'User & Team Hub',       icon: Users },
+    { path: '/crm/sources',           label: 'Lead Sources',          icon: Sliders },
+    { path: '/crm/scoring-rules',     label: 'Scoring Rules',        icon: Sparkles },
+    { path: '/crm/sla',               label: 'Service Standards',     icon: ShieldCheck },
+    { path: '/crm/ai-settings',       label: 'AI & API Settings',     icon: Settings },
   ]
 
   const analyticsSubItems = [
@@ -131,14 +137,18 @@ export default function AdminSidebar({ children }) {
     { path: '/admin/dashboard', label: 'Admin Dashboard', icon: LayoutDashboard },
   ]
 
+  const isLight = adminTheme === 'light'
+
   const sidebarContent = (
-    <div className="h-full flex flex-col justify-between bg-[#080808] border-r border-[#c9a84c]/20 p-4 font-sans text-slate-300 select-none">
+    <div className={`h-full flex flex-col justify-between border-r p-4 font-sans select-none transition-colors duration-300 ${
+      isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-[#080808] border-[#c9a84c]/20 text-slate-300'
+    }`}>
       
       {/* Brand Header */}
       <div>
         <div className="flex items-center justify-between pb-6 mb-6 border-b border-white/10">
           <Link to="/admin/dashboard" className="flex items-center gap-2.5">
-            <BrandLogo variant="admin" size="md" showSubtitle={true} />
+            <BrandLogo location="sidebar" size="md" />
           </Link>
 
           {/* Close button on mobile */}
@@ -220,20 +230,6 @@ export default function AdminSidebar({ children }) {
               </div>
             )}
           </div>
-
-          {/* Brand Identity Link */}
-          <Link
-            to="/brand-identity"
-            onClick={() => setMobileOpen(false)}
-            className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm group ${
-              location.pathname === '/brand-identity'
-                ? 'bg-gradient-to-r from-[#c9a84c] to-[#eab308] text-slate-950 border border-[#fef08a] font-black shadow-md'
-                : 'bg-slate-900/80 border border-slate-800 text-slate-100 hover:text-white hover:bg-slate-800 hover:border-[#c9a84c]/50'
-            }`}
-          >
-            <span>Brand Identity</span>
-            <Sparkles size={16} className={location.pathname === '/brand-identity' ? 'text-slate-950' : 'text-amber-400/80 group-hover:text-amber-300 transition-colors'} />
-          </Link>
 
           {/* Fuse CRM Suite Accordion Menu */}
           <div className="pt-3">

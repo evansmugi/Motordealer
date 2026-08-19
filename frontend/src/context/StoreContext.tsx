@@ -11,6 +11,32 @@ export interface CartItem {
   quantity: number;
 }
 
+export interface CurrencyConfig {
+  code: string;
+  symbol: string;
+  name: string;
+  rate: number;
+  isBase: boolean;
+  active: boolean;
+}
+
+export interface SiteSettings {
+  adminSidebarLogoUrl?: string;
+  adminTopNavLogoUrl?: string;
+  storefrontHeaderLogoUrl?: string;
+  logoUrl?: string;
+  currencies?: CurrencyConfig[];
+  baseCurrencyCode?: string;
+}
+
+const DEFAULT_CURRENCIES: CurrencyConfig[] = [
+  { code: 'KES', symbol: 'KES', name: 'Kenyan Shilling', rate: 1.0, isBase: true, active: true },
+  { code: 'USD', symbol: '$', name: 'US Dollar', rate: 0.00775, isBase: false, active: true },
+  { code: 'EUR', symbol: '€', name: 'Euro', rate: 0.00714, isBase: false, active: true },
+  { code: 'GBP', symbol: '£', name: 'British Pound', rate: 0.00606, isBase: false, active: true },
+  { code: 'AED', symbol: 'AED', name: 'Emirati Dirham', rate: 0.0284, isBase: false, active: true }
+];
+
 interface StoreContextType {
   cart: CartItem[];
   wishlist: string[];
@@ -51,6 +77,13 @@ interface StoreContextType {
   setQuickViewProduct: (product: any | null) => void;
   cartTotal: number;
   cartCount: number;
+
+  // Multi-Currency & Site Settings
+  siteSettings: SiteSettings;
+  currencies: CurrencyConfig[];
+  selectedCurrencyCode: string;
+  setSelectedCurrencyCode: (code: string) => void;
+  formatPrice: (amountInBaseCurrency: number, targetCode?: string) => string;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -66,6 +99,81 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Dynamic Brands Management
   const [brands, setBrands] = useState<string[]>([]);
+
+  // Site Settings & Multi-Currency State
+  const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('fuse_site_settings') || localStorage.getItem('knk_site_settings');
+        if (stored) return JSON.parse(stored);
+      } catch {}
+    }
+    return { logoUrl: '/images/knk-logo-horizontal.png', currencies: DEFAULT_CURRENCIES, baseCurrencyCode: 'KES' };
+  });
+
+  const [selectedCurrencyCode, setSelectedCurrencyCode] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('knk_selected_currency');
+        if (saved) return saved;
+      } catch {}
+    }
+    return 'KES';
+  });
+
+  const currencies = siteSettings.currencies && siteSettings.currencies.length > 0
+    ? siteSettings.currencies
+    : DEFAULT_CURRENCIES;
+
+  const refreshSiteSettings = () => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('fuse_site_settings') || localStorage.getItem('knk_site_settings');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          setSiteSettings(parsed);
+        }
+      } catch {}
+    }
+  };
+
+  useEffect(() => {
+    refreshSiteSettings();
+    const handleSettingsUpdate = (e: any) => {
+      if (e.detail) {
+        setSiteSettings(e.detail);
+      } else {
+        refreshSiteSettings();
+      }
+    };
+
+    window.addEventListener('knk_settings_updated', handleSettingsUpdate);
+    window.addEventListener('storage', handleSettingsUpdate);
+    return () => {
+      window.removeEventListener('knk_settings_updated', handleSettingsUpdate);
+      window.removeEventListener('storage', handleSettingsUpdate);
+    };
+  }, []);
+
+  const handleSelectCurrency = (code: string) => {
+    setSelectedCurrencyCode(code);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('knk_selected_currency', code);
+      } catch {}
+    }
+  };
+
+  const formatPrice = (amountInBase: number, targetCode?: string) => {
+    const activeCode = targetCode || selectedCurrencyCode;
+    const curr = currencies.find(c => c.code === activeCode) || currencies.find(c => c.isBase) || { symbol: 'KES', rate: 1.0, code: 'KES' };
+    const converted = Math.round((Number(amountInBase) || 0) * (curr.rate || 1.0));
+
+    if (curr.code === 'USD' || curr.code === 'EUR' || curr.code === 'GBP') {
+      return `${curr.symbol}${converted.toLocaleString('en-US')}`;
+    }
+    return `${curr.symbol} ${converted.toLocaleString('en-US')}`;
+  };
 
   useEffect(() => {
     setBrands(getStoredBrands());
@@ -514,7 +622,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setIsSearchOpen,
         setQuickViewProduct,
         cartTotal,
-        cartCount
+        cartCount,
+        siteSettings,
+        currencies,
+        selectedCurrencyCode,
+        setSelectedCurrencyCode: handleSelectCurrency,
+        formatPrice
       }}
     >
       {children}

@@ -4,7 +4,7 @@ import { Car, Plus, ArrowLeft, Trash2, Check, Upload, Image as ImageIcon, X, Sli
 import CRMLayout from '../components/crm/CRMLayout';
 import PredictiveSelect from '../components/common/PredictiveSelect';
 import SuccessModal from '../components/common/SuccessModal';
-import { VEHICLES } from '../data/mock-dataset.ts';
+import { VEHICLES } from '../data/mock-dataset';
 import { getStoredBrands } from '../lib/brands';
 import { getStoredVehicles, upsertStoredVehicle, getEmbedVideoUrl } from '../lib/vehicles';
 import { useCRMStore } from '../context/CRMStore';

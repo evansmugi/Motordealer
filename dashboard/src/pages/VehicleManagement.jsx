@@ -11,7 +11,7 @@ import UniversalPagination from '../components/common/UniversalPagination';
 import ActionTooltip from '../components/common/ActionTooltip';
 import ActionConfirmModal from '../components/common/ActionConfirmModal';
 import SuccessModal from '../components/common/SuccessModal';
-import { VEHICLES } from '../data/mock-dataset.ts';
+import { VEHICLES } from '../data/mock-dataset';
 import { getStoredBrands, saveStoredBrands } from '../lib/brands';
 import { getStoredVehicles, upsertStoredVehicle } from '../lib/vehicles';
 import { useCRMStore } from '../context/CRMStore';

@@ -34,6 +34,7 @@ import BlogManager        from '../components/Blog/BlogManager'
 import AccessoriesManager from '../components/accessories/AccessoriesManager.jsx'
 import AdminSidebar       from '../components/Layout/AdminSidebar'
 import BrandLogo          from '../components/common/BrandLogo'
+import { VEHICLES }       from '../data/mock-dataset'
 
 const TABLE  = 'car_listings'
 const BUCKET = 'car-images'
@@ -356,8 +357,6 @@ function AppointmentsManager({ showToast, onStatusChange, isLight }) {
     </div>
   )
 }
-
-import { VEHICLES } from '../data/mock-dataset.ts'
 
 const STOREFRONT_MASTER_VEHICLES = (VEHICLES || []).map(v => ({
   id: v.id,

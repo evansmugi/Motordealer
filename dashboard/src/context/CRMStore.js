@@ -1928,6 +1928,48 @@ export const useCRMStore = create((set, get) => ({
     supabase.from('crm_activity_logs').delete().eq('id', logId).then().catch(console.error)
   },
 
+  // --- Dynamic Site Settings & Multi-Currency Engine ---
+  siteSettings: (function() {
+    try {
+      const stored = localStorage.getItem('fuse_site_settings') || localStorage.getItem('knk_site_settings')
+      if (stored) return JSON.parse(stored)
+    } catch {}
+    return {
+      adminSidebarLogoUrl: '/logo.svg',
+      adminTopNavLogoUrl: '/logo.svg',
+      storefrontHeaderLogoUrl: '/logo.svg',
+      baseCurrencyCode: 'KES',
+      currencies: [
+        { code: 'KES', symbol: 'KES', name: 'Kenyan Shilling', rate: 1.0, isBase: true, active: true },
+        { code: 'USD', symbol: '$', name: 'US Dollar', rate: 0.00775, isBase: false, active: true },
+        { code: 'EUR', symbol: '€', name: 'Euro', rate: 0.00714, isBase: false, active: true },
+        { code: 'GBP', symbol: '£', name: 'British Pound', rate: 0.00606, isBase: false, active: true },
+        { code: 'AED', symbol: 'AED', name: 'Emirati Dirham', rate: 0.0284, isBase: false, active: true }
+      ]
+    }
+  })(),
+
+  setSiteSettings: (newSettings) => {
+    set({ siteSettings: newSettings })
+    try {
+      localStorage.setItem('fuse_site_settings', JSON.stringify(newSettings))
+      localStorage.setItem('knk_site_settings', JSON.stringify(newSettings))
+      window.dispatchEvent(new CustomEvent('knk_settings_updated', { detail: newSettings }))
+    } catch {}
+  },
+
+  getCurrencySymbol: () => {
+    const code = get().siteSettings?.baseCurrencyCode || 'KES'
+    const curr = get().siteSettings?.currencies?.find(c => c.code === code)
+    return curr ? curr.symbol : code
+  },
+
+  formatCurrency: (amount) => {
+    const symbol = get().getCurrencySymbol()
+    const num = Number(amount) || 0
+    return `${symbol} ${num.toLocaleString()}`
+  },
+
   // --- SLA & Response Speed Actions ---
   markLeadResponded: (leadId) => {
     const now = new Date().toISOString()

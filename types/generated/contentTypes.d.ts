@@ -901,6 +901,7 @@ export interface ApiCarListingCarListing extends Struct.CollectionTypeSchema {
     fuel_type: Schema.Attribute.String;
     images: Schema.Attribute.JSON;
     interior_color: Schema.Attribute.String;
+    isFeatured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     listing_description: Schema.Attribute.Text;
     listing_title: Schema.Attribute.String & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;

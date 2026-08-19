@@ -175,7 +175,7 @@ export default function VehicleInquiryModal({
                     className={`w-full border rounded-xl pl-9 pr-3 py-2.5 text-xs outline-none ${
                       isLight
                         ? 'bg-slate-100 border-slate-300 text-slate-900 font-semibold focus:bg-white focus:border-amber-600'
-                        : 'bg-[#121622] border-[#1e2638] text-white focus:border-[#c9a84c]'
+                        : 'bg-[#121212] border-neutral-800 text-white focus:border-[#c9a84c]'
                     }`}
                   />
                 </div>
@@ -195,7 +195,7 @@ export default function VehicleInquiryModal({
                     className={`w-full border rounded-xl pl-9 pr-3 py-2.5 text-xs outline-none ${
                       isLight
                         ? 'bg-slate-100 border-slate-300 text-slate-900 font-semibold focus:bg-white focus:border-amber-600'
-                        : 'bg-[#121622] border-[#1e2638] text-white focus:border-[#c9a84c]'
+                        : 'bg-[#121212] border-neutral-800 text-white focus:border-[#c9a84c]'
                     }`}
                   />
                 </div>
@@ -216,7 +216,7 @@ export default function VehicleInquiryModal({
                     className={`w-full border rounded-xl pl-9 pr-8 py-2.5 text-xs outline-none ${
                       isLight
                         ? 'bg-slate-100 border-slate-300 text-slate-900 font-semibold focus:bg-white focus:border-amber-600'
-                        : 'bg-[#121622] border-[#1e2638] text-white focus:border-[#c9a84c]'
+                        : 'bg-[#121212] border-neutral-800 text-white focus:border-[#c9a84c]'
                     }`}
                   />
                   <Lock size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-rose-500" />
@@ -233,7 +233,7 @@ export default function VehicleInquiryModal({
                   className={`w-full border rounded-xl px-3 py-2.5 text-xs outline-none appearance-none font-semibold ${
                     isLight
                       ? 'bg-slate-100 border-slate-300 text-slate-900 focus:bg-white focus:border-amber-600'
-                      : 'bg-[#121622] border-[#1e2638] text-white focus:border-[#c9a84c]'
+                      : 'bg-[#121212] border-neutral-800 text-white focus:border-[#c9a84c]'
                   }`}
                 >
                   <option value="Cash Purchase">Cash Purchase</option>
@@ -256,7 +256,7 @@ export default function VehicleInquiryModal({
                 className={`w-full border rounded-xl p-3 text-xs outline-none resize-none ${
                   isLight
                     ? 'bg-slate-100 border-slate-300 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-amber-600 font-medium'
-                    : 'bg-[#121622] border-[#1e2638] text-white focus:border-[#c9a84c]'
+                    : 'bg-[#121212] border-neutral-800 text-white focus:border-[#c9a84c]'
                 }`}
               />
             </div>

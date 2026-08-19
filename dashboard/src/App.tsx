@@ -24,6 +24,8 @@ import NexusSupportCenter from './pages/crm/NexusSupportCenter';
 import SLATracker from './pages/crm/SLATracker';
 import ScoringRulesPage from './pages/crm/ScoringRulesPage';
 import AISettingsPage from './pages/crm/AISettingsPage';
+import LogoSettingsPage from './pages/crm/LogoSettingsPage';
+import CurrencySettingsPage from './pages/crm/CurrencySettingsPage';
 import TeamManager from './pages/crm/TeamManager';
 import TradeInsManager from './pages/crm/TradeInsManager';
 import TradeInDetail from './pages/crm/TradeInDetail';
@@ -101,6 +103,10 @@ export function App() {
           <Route path="sla" element={<SLATracker />} />
           <Route path="scoring-rules" element={<ScoringRulesPage />} />
           <Route path="ai-settings" element={<AISettingsPage />} />
+          <Route path="logo-settings" element={<LogoSettingsPage />} />
+          <Route path="currency-settings" element={<CurrencySettingsPage />} />
+          <Route path="brand-settings" element={<LogoSettingsPage />} />
+          <Route path="brand-logo" element={<LogoSettingsPage />} />
           <Route path="team" element={<TeamManager />} />
           <Route path="trade-ins" element={<TradeInsManager />} />
           <Route path="trade-ins/details/:id" element={<TradeInDetail />} />

@@ -13,7 +13,7 @@ import {
   Bell, BellOff, RefreshCw, LogOut, Sparkles, ChevronLeft, ChevronRight, X, Clock, AlertTriangle,
   Eye, Globe, Package, Sun, Moon, PlusCircle, Share2, QrCode,
   ShoppingCart, Video, PhoneCall, Zap, Layers, FileText, Download, Trophy, Settings,
-  CheckCircle2, ShieldAlert, Car
+  CheckCircle2, ShieldAlert, Car, Image, DollarSign
 } from 'lucide-react'
 
 import ExecutiveExportModal from '../common/ExecutiveExportModal'
@@ -39,11 +39,13 @@ const navItems = [
 ]
 
 const settingsNavItems = [
-  { path: '/crm/team',          label: 'User & Team Hub',     icon: Users },
-  { path: '/crm/lead-sources',  label: 'Lead Sources',        icon: Sliders },
-  { path: '/crm/scoring-rules', label: 'Scoring Rules',      icon: Sparkles },
-  { path: '/crm/sla',           label: 'Service Standards',   icon: ShieldCheck },
-  { path: '/crm/ai-settings',   label: 'AI & API Settings',   icon: Settings }
+  { path: '/crm/logo-settings',     label: 'Logo & Branding',       icon: Image },
+  { path: '/crm/currency-settings', label: 'Multi-Currency & Rates', icon: DollarSign },
+  { path: '/crm/team',              label: 'User & Team Hub',       icon: Users },
+  { path: '/crm/lead-sources',      label: 'Lead Sources',          icon: Sliders },
+  { path: '/crm/scoring-rules',     label: 'Scoring Rules',        icon: Sparkles },
+  { path: '/crm/sla',               label: 'Service Standards',     icon: ShieldCheck },
+  { path: '/crm/ai-settings',       label: 'AI & API Settings',     icon: Settings }
 ]
 
 const analyticsNavItems = [
@@ -109,7 +111,8 @@ export default function CRMLayout({ children = null }) {
                          location.pathname.startsWith('/crm/lead-sources') ||
                          location.pathname.startsWith('/crm/scoring-rules') ||
                          location.pathname.startsWith('/crm/sla') ||
-                         location.pathname.startsWith('/crm/ai-settings')
+                         location.pathname.startsWith('/crm/ai-settings') ||
+                         location.pathname.startsWith('/crm/logo-settings')
 
   const currentNavItems = isVehiclesPage
     ? vehiclesNavItems
@@ -398,14 +401,16 @@ export default function CRMLayout({ children = null }) {
 
 
       {/* Responsive Header */}
-      <header className="sticky top-0 z-40 backdrop-blur-xl bg-[#020617]/95 border-b border-white/10 shadow-2xl">
+      <header className={`sticky top-0 z-40 backdrop-blur-xl border-b transition-colors duration-300 ${
+        adminTheme === 'light' ? 'bg-white/95 border-slate-200 text-slate-900 shadow-sm' : 'bg-[#020617]/95 border-white/10 shadow-2xl'
+      }`}>
         <div className="w-full px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3.5 flex items-center justify-between gap-2">
           
           {/* Brand & Status Pill (Desktop Logo / Mobile Pill Only) */}
           <div className="flex items-center gap-3">
             {/* Desktop Brand Link (Hidden on Mobile to avoid duplicate logos) */}
             <Link to="/admin/dashboard" className="hidden sm:flex items-center gap-2 group">
-              <BrandLogo variant="admin" size="md" showSubtitle={false} />
+              <BrandLogo location="topnav" size="md" />
               <span className={`text-[9px] sm:text-[10px] tracking-[1.5px] uppercase font-bold px-2 py-0.5 rounded border ${
                     isSettingsPage
                       ? 'text-purple-400 bg-purple-500/10 border-purple-500/30'
@@ -556,16 +561,20 @@ export default function CRMLayout({ children = null }) {
         />
 
         {/* Navigation Ribbon & Mobile Select Box */}
-        <div className="border-t border-white/5 bg-slate-950/60 backdrop-blur-md">
+        <div className={`border-t backdrop-blur-md ${
+          adminTheme === 'light' ? 'border-slate-200 bg-slate-100/90' : 'border-white/5 bg-slate-950/60'
+        }`}>
           <div className="w-full px-3 sm:px-6 lg:px-8 py-1.5 sm:py-2">
             
             {/* Mobile Dropdown Menu Selector (< sm) */}
             <div className="sm:hidden flex items-center gap-2">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 flex-shrink-0">Jump To:</span>
+              <span className={`text-[10px] font-mono uppercase tracking-wider flex-shrink-0 ${adminTheme === 'light' ? 'text-slate-600 font-bold' : 'text-slate-400'}`}>Jump To:</span>
               <select
                 value={currentNavItems.find(i => location.pathname === i.path || (i.path !== '/crm' && i.path !== '/analytics/dashboard' && location.pathname.startsWith(i.path)))?.path || currentNavItems[0]?.path}
                 onChange={e => navigate(e.target.value)}
-                className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-slate-200 font-mono outline-none focus:border-[#c9a84c] transition-all cursor-pointer"
+                className={`w-full border rounded-lg px-3 py-1.5 text-xs font-mono outline-none focus:border-[#c9a84c] transition-all cursor-pointer ${
+                  adminTheme === 'light' ? 'bg-white border-slate-300 text-slate-900 font-semibold' : 'bg-slate-900 border-white/10 text-slate-200'
+                }`}
               >
                 {currentNavItems.map(item => (
                   <option key={item.path} value={item.path}>
@@ -595,7 +604,9 @@ export default function CRMLayout({ children = null }) {
                           : isAnalyticsPage
                             ? 'bg-gradient-to-r from-[#6366f1] to-indigo-400 text-white border border-indigo-300 shadow-indigo-500/25 font-black scale-[1.02]'
                             : 'bg-gradient-to-r from-[#c9a84c] to-[#eab308] text-slate-950 border border-[#fef08a] shadow-[#c9a84c]/25 font-black scale-[1.02]'
-                        : 'bg-slate-900/90 border border-slate-700/80 text-slate-100 hover:text-white hover:bg-slate-800 hover:border-[#c9a84c]/50 hover:shadow-[#c9a84c]/10'
+                        : adminTheme === 'light'
+                          ? 'bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 hover:text-slate-950 shadow-sm'
+                          : 'bg-slate-900/90 border border-slate-700/80 text-slate-100 hover:text-white hover:bg-slate-800 hover:border-[#c9a84c]/50 hover:shadow-[#c9a84c]/10'
                     }`}
                   >
                     <Icon size={14} className={isActive ? (isCampaignMonitorPage ? 'text-slate-950' : isAnalyticsPage ? 'text-white' : 'text-slate-950') : 'text-amber-400/80 group-hover:text-amber-300 transition-colors'} />
@@ -610,8 +621,8 @@ export default function CRMLayout({ children = null }) {
       </header>
 
 
-      {/* Main Page Area - Responsive Theme Surface */}
-      <main className={`w-full px-4 sm:px-6 lg:px-8 py-8 relative min-h-[calc(100vh-120px)] transition-colors duration-300 ${
+      {/* Main Page Area - Responsive Edge-to-Edge Theme Surface */}
+      <main className={`w-full px-2 sm:px-4 lg:px-6 py-6 relative min-h-[calc(100vh-120px)] transition-colors duration-300 ${
         adminTheme === 'light' ? 'bg-slate-100 text-slate-900' : 'bg-[#020617] text-slate-100'
       }`}>
         {children ? children : <Outlet context={{ adminTheme, isLight: adminTheme === 'light' }} />}

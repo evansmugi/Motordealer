@@ -1,0 +1,45 @@
+{
+    "kind": "collectionType",
+    "collectionName": "campaigns",
+    "info": {
+        "singularName": "campaign",
+        "pluralName": "campaigns",
+        "displayName": "Campaign",
+        "description": "Marketing Campaigns & Promo Codes"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "name": {
+            "type": "string",
+            "required": true
+        },
+        "code": {
+            "type": "string",
+            "required": true,
+            "unique": true
+        },
+        "discountType": {
+            "type": "enumeration",
+            "enum": ["PERCENTAGE", "FIXED"],
+            "default": "PERCENTAGE"
+        },
+        "discountValue": {
+            "type": "decimal",
+            "required": true
+        },
+        "active": {
+            "type": "boolean",
+            "default": true
+        },
+        "usageCount": {
+            "type": "integer",
+            "default": 0
+        },
+        "budget": {
+            "type": "decimal"
+        }
+    }
+}

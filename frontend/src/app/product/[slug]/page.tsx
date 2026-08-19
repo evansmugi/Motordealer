@@ -224,7 +224,7 @@ export default function VehicleDetailPage() {
               {/* Action 1: Request Test Drive */}
               <button
                 onClick={() => openTestDriveModal(vehicle.id)}
-                className="p-3.5 bg-[#0e1320] border border-[#1e2638] hover:border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28 cursor-pointer"
+                className="p-3.5 bg-[#0a0a0a] border border-neutral-800 hover:border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28 cursor-pointer"
               >
                 <div>
                   <div className="flex items-center justify-between text-[9px] font-extrabold text-[#c9a84c] uppercase tracking-wider mb-1">
@@ -241,7 +241,7 @@ export default function VehicleDetailPage() {
               {/* Action 2: Get Best Quote */}
               <button
                 onClick={() => setIsInquiryOpen(true)}
-                className="p-3.5 bg-[#0e1320] border-2 border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28 shadow-lg shadow-[#c9a84c]/10 cursor-pointer"
+                className="p-3.5 bg-[#0a0a0a] border-2 border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28 shadow-lg shadow-[#c9a84c]/10 cursor-pointer"
               >
                 <div>
                   <div className="flex items-center justify-between text-[9px] font-extrabold text-[#c9a84c] uppercase tracking-wider mb-1">
@@ -258,7 +258,7 @@ export default function VehicleDetailPage() {
               {/* Action 3: Import / Reserve */}
               <button
                 onClick={() => openReservationModal(vehicle.id)}
-                className="p-3.5 bg-[#0e1320] border border-[#1e2638] hover:border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28 cursor-pointer"
+                className="p-3.5 bg-[#0a0a0a] border border-neutral-800 hover:border-[#c9a84c] rounded-2xl text-left transition-all group flex flex-col justify-between h-28 cursor-pointer"
               >
                 <div>
                   <div className="flex items-center justify-between text-[9px] font-extrabold text-[#c9a84c] uppercase tracking-wider mb-1">
@@ -294,19 +294,16 @@ export default function VehicleDetailPage() {
           </div>
 
           {/* 150-Point Certified Inspection Badge */}
-          <div className="glass-panel" style={{ borderRadius: '16px', padding: '20px', marginBottom: '24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '900', color: '#10B981' }}>
+          <div className="bg-[#0a0a0a] border border-neutral-800 rounded-2xl p-5 mb-6 shadow-xl">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2 text-sm font-black text-emerald-400">
                 <ShieldCheck size={18} />
                 <span>150-Point Certified Inspection Score</span>
               </div>
-              <span style={{ fontSize: '18px', fontWeight: '900', color: '#10B981' }}>
+              <span className="text-lg font-black text-emerald-400">
                 {vehicle.inspection.score}/100
               </span>
             </div>
-            <p style={{ fontSize: '12px', color: 'var(--nexus-text-muted)', margin: 0 }}>
-              {vehicle.inspection.notes} Inspected by <strong>{vehicle.inspection.inspectorName}</strong> on {vehicle.inspection.inspectionDate}.
-            </p>
           </div>
         </div>
       </div>
@@ -314,7 +311,7 @@ export default function VehicleDetailPage() {
       {/* MEDIA 1 EXACT REPLICA: 4 HIGH-CONTRAST PERFORMANCE TELEMETRY CARDS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
         {/* Telemetry Card 1: Engine Output */}
-        <div className="p-5 bg-[#0e121e] border border-[#1b2336] rounded-2xl flex flex-col justify-between h-32 shadow-xl hover:border-[#c9a84c]/50 transition-all">
+        <div className="p-5 bg-[#0a0a0a] border border-neutral-800 rounded-2xl flex flex-col justify-between h-32 shadow-xl hover:border-[#c9a84c] transition-all">
           <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">ENGINE OUTPUT</span>
           <div>
             <div className="text-2xl font-black text-white">{(vehicle as any).horsepower || `${vehicle.engine?.powerHp || 204} HP`}</div>
@@ -323,7 +320,7 @@ export default function VehicleDetailPage() {
         </div>
 
         {/* Telemetry Card 2: 0-100 KM/H Acceleration */}
-        <div className="p-5 bg-[#0e121e] border border-[#1b2336] rounded-2xl flex flex-col justify-between h-32 shadow-xl hover:border-[#c9a84c]/50 transition-all">
+        <div className="p-5 bg-[#0a0a0a] border border-neutral-800 rounded-2xl flex flex-col justify-between h-32 shadow-xl hover:border-[#c9a84c] transition-all">
           <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">0–100 KM/H</span>
           <div>
             <div className="text-2xl font-black text-white">{(vehicle as any).acceleration || `${vehicle.engine?.zeroToHundredKm || 9.2}s`}</div>
@@ -332,7 +329,7 @@ export default function VehicleDetailPage() {
         </div>
 
         {/* Telemetry Card 3: Transmission */}
-        <div className="p-5 bg-[#0e121e] border border-[#1b2336] rounded-2xl flex flex-col justify-between h-32 shadow-xl hover:border-[#c9a84c]/50 transition-all">
+        <div className="p-5 bg-[#0a0a0a] border border-neutral-800 rounded-2xl flex flex-col justify-between h-32 shadow-xl hover:border-[#c9a84c] transition-all">
           <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">TRANSMISSION</span>
           <div>
             <div className="text-2xl font-black text-white">
@@ -349,7 +346,7 @@ export default function VehicleDetailPage() {
         </div>
 
         {/* Telemetry Card 4: Fuel & Range */}
-        <div className="p-5 bg-[#0e121e] border border-[#1b2336] rounded-2xl flex flex-col justify-between h-32 shadow-xl hover:border-[#c9a84c]/50 transition-all">
+        <div className="p-5 bg-[#0a0a0a] border border-neutral-800 rounded-2xl flex flex-col justify-between h-32 shadow-xl hover:border-[#c9a84c] transition-all">
           <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">FUEL & RANGE</span>
           <div>
             <div className="text-2xl font-black text-white">{(vehicle as any).fuel_range || `${vehicle.fuelEnergy?.rangeKm || 1390} km`}</div>

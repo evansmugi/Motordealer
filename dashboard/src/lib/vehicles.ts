@@ -1,4 +1,4 @@
-import { VEHICLES as MOCK_VEHICLES } from '../data/mock-dataset.ts';
+import { VEHICLES as MOCK_VEHICLES } from '../data/mock-dataset';
 
 export interface VehicleListing {
   id: string;
