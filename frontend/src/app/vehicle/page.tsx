@@ -46,7 +46,7 @@ export default function VehicleInventoryPage() {
   const [fuel, setFuel] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const { vehicles: storeVehicles } = useStore();
+  const { vehicles: storeVehicles, formatPrice } = useStore();
   const rawList = (storeVehicles && storeVehicles.length > 0) ? storeVehicles : VEHICLES;
 
   const vehicles = rawList.map((v: any) => ({
@@ -54,7 +54,7 @@ export default function VehicleInventoryPage() {
     title: v.trim || v.listing_title ? (v.trim || v.listing_title) : `${v.year || 2024} ${v.make || ''} ${v.model || ''}`.trim(),
     make: v.make || 'Mercedes-Benz',
     model: v.model || 'Luxury Model',
-    price: `KES ${Number(v.pricing?.cashPrice || v.price || 24500000).toLocaleString()}`,
+    price: formatPrice(v.pricing?.cashPrice || v.price || 24500000),
     image: v.heroImage || (Array.isArray(v.images) && v.images[0] && (v.images[0].url || v.images[0])) || 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop',
     year: String(v.year || '2024'),
     condition: v.condition === 'NEW' ? 'Brand New' : v.condition === 'CERTIFIED_PRE_OWNED' ? 'Certified Pre-Owned' : (v.condition || 'Foreign Used'),

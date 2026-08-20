@@ -88,6 +88,25 @@ interface StoreContextType {
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
+function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return decodeURIComponent(parts.pop()?.split(';').shift() || '');
+  return null;
+}
+
+function getStoredSettings(): any {
+  if (typeof window === 'undefined') return null;
+  try {
+    const cookieVal = getCookie('knk_site_settings') || getCookie('fuse_site_settings');
+    if (cookieVal) return JSON.parse(cookieVal);
+    const localVal = localStorage.getItem('fuse_site_settings') || localStorage.getItem('knk_site_settings');
+    if (localVal) return JSON.parse(localVal);
+  } catch {}
+  return null;
+}
+
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<string[]>(['veh-001']);
@@ -102,12 +121,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Site Settings & Multi-Currency State
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const stored = localStorage.getItem('fuse_site_settings') || localStorage.getItem('knk_site_settings');
-        if (stored) return JSON.parse(stored);
-      } catch {}
-    }
+    const stored = getStoredSettings();
+    if (stored) return stored;
     return { logoUrl: '/images/knk-logo-horizontal.png', currencies: DEFAULT_CURRENCIES, baseCurrencyCode: 'KES' };
   });
 
@@ -118,6 +133,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (saved) return saved;
       } catch {}
     }
+    const stored = getStoredSettings();
+    if (stored && stored.baseCurrencyCode) return stored.baseCurrencyCode;
     return 'KES';
   });
 
@@ -126,36 +143,26 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     : DEFAULT_CURRENCIES;
 
   const refreshSiteSettings = async () => {
-    let current: any = {};
-    if (typeof window !== 'undefined') {
-      try {
-        const stored = localStorage.getItem('fuse_site_settings') || localStorage.getItem('knk_site_settings');
-        if (stored) {
-          current = JSON.parse(stored);
-          setSiteSettings(current);
-        }
-      } catch {}
+    let current: any = getStoredSettings() || {};
+    if (current && Object.keys(current).length > 0) {
+      setSiteSettings(prev => ({ ...prev, ...current }));
     }
 
+    // Query local PostgreSQL database via Strapi backend API on port 1338
     try {
       const res = await fetch('http://localhost:1338/api/crm-site-settings');
       if (res.ok) {
         const json = await res.json();
         if (json && json.data) {
-          const attr = json.data.attributes || json.data;
-          if (attr) {
-            const merged = {
-              ...attr,
-              ...current,
-              storefrontHeaderLogoUrl: current.storefrontHeaderLogoUrl || attr.storefrontHeaderLogoUrl || current.logoUrl || attr.logoUrl,
-              adminSidebarLogoUrl: current.adminSidebarLogoUrl || attr.adminSidebarLogoUrl,
-              adminTopNavLogoUrl: current.adminTopNavLogoUrl || attr.adminTopNavLogoUrl,
-              logoUrl: current.logoUrl || attr.logoUrl
-            };
+          const remoteObj = json.data;
+          if (Object.keys(remoteObj).length > 0) {
+            const merged = { ...remoteObj, ...current };
             setSiteSettings(merged);
             if (typeof window !== 'undefined') {
-              localStorage.setItem('knk_site_settings', JSON.stringify(merged));
-              localStorage.setItem('fuse_site_settings', JSON.stringify(merged));
+              const jsonStr = JSON.stringify(merged);
+              localStorage.setItem('knk_site_settings', jsonStr);
+              localStorage.setItem('fuse_site_settings', jsonStr);
+              document.cookie = `knk_site_settings=${encodeURIComponent(jsonStr)}; path=/; max-age=31536000; SameSite=Lax`;
             }
           }
         }

@@ -7,7 +7,7 @@ import { useStore } from '../../context/StoreContext';
 import { ShieldCheck, Fuel, Gauge, Sliders, Calendar, ArrowRight, Layers, CheckCircle2, Bookmark } from 'lucide-react';
 
 export const VehicleCard: React.FC<{ vehicle: VehicleItem }> = ({ vehicle }) => {
-  const { wishlist, toggleWishlist, compareList, toggleCompare, openTestDriveModal, openReservationModal } = useStore();
+  const { wishlist, toggleWishlist, compareList, toggleCompare, openTestDriveModal, openReservationModal, formatPrice } = useStore();
 
   const isWishlisted = wishlist.includes(vehicle.id);
   const isCompared = compareList.includes(vehicle.id);
@@ -113,13 +113,13 @@ export const VehicleCard: React.FC<{ vehicle: VehicleItem }> = ({ vehicle }) => 
             <div>
               <div style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '700', textTransform: 'uppercase' }}>CASH PRICE</div>
               <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--nexus-text)' }}>
-                ${vehicle.pricing.cashPrice.toLocaleString()}
+                {formatPrice(vehicle.pricing.cashPrice)}
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: '11px', color: '#10B981', fontWeight: '800' }}>EST. FINANCE</div>
               <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--nexus-text-muted)' }}>
-                ${vehicle.pricing.estimatedMonthlyPayment}/mo
+                {formatPrice(vehicle.pricing.estimatedMonthlyPayment)}/mo
               </div>
             </div>
           </div>
@@ -156,7 +156,7 @@ export const VehicleCard: React.FC<{ vehicle: VehicleItem }> = ({ vehicle }) => 
                 boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)'
               }}
             >
-              Reserve ($500)
+              Reserve ({formatPrice(500)})
             </button>
           </div>
         </div>

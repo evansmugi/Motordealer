@@ -494,8 +494,14 @@ export const useCRMStore = create((set, get) => ({
     set(state => {
       const next = { ...state.siteSettings, ...updates }
       if (typeof window !== 'undefined') {
-        localStorage.setItem('fuse_site_settings', JSON.stringify(next))
-        localStorage.setItem('knk_site_settings', JSON.stringify(next))
+        const jsonStr = JSON.stringify(next)
+        localStorage.setItem('fuse_site_settings', jsonStr)
+        localStorage.setItem('knk_site_settings', jsonStr)
+        try {
+          document.cookie = `knk_site_settings=${encodeURIComponent(jsonStr)}; path=/; max-age=31536000; SameSite=Lax`
+          document.cookie = `fuse_site_settings=${encodeURIComponent(jsonStr)}; path=/; max-age=31536000; SameSite=Lax`
+        } catch {}
+
         window.dispatchEvent(new CustomEvent('knk_settings_updated', { detail: next }))
         if ('BroadcastChannel' in window) {
           try {
@@ -505,7 +511,16 @@ export const useCRMStore = create((set, get) => ({
           } catch {}
         }
       }
-      api.put('/crm/site-settings', next).catch(() => {})
+
+      // Sync directly to local PostgreSQL database via Strapi backend API on port 1338
+      try {
+        fetch('http://localhost:1338/api/crm-site-settings', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: next })
+        }).catch(() => {})
+      } catch {}
+
       return { siteSettings: next }
     })
   },

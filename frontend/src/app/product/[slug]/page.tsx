@@ -18,7 +18,7 @@ import { getEmbedVideoUrl } from '../../../lib/vehicles';
 export default function VehicleDetailPage() {
   const params = useParams();
   const slug = params?.slug as string;
-  const { vehicles, wishlist, toggleWishlist, compareList, toggleCompare, openTestDriveModal, openReservationModal } = useStore();
+  const { vehicles, wishlist, toggleWishlist, compareList, toggleCompare, openTestDriveModal, openReservationModal, formatPrice } = useStore();
 
   const vehicle = vehicles.find(v => v.id === slug || v.stockNumber.toLowerCase() === slug?.toLowerCase()) || vehicles[0] || VEHICLES[0];
 
@@ -203,13 +203,13 @@ export default function VehicleDetailPage() {
               <div>
                 <div style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '800', textTransform: 'uppercase' }}>CASH PRICE (DUTY PAID)</div>
                 <div style={{ fontSize: '32px', fontWeight: '900', color: 'var(--nexus-text)', margin: '2px 0' }}>
-                  ${vehicle.pricing.cashPrice.toLocaleString()}
+                  {formatPrice(vehicle.pricing.cashPrice)}
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontSize: '11px', color: '#10B981', fontWeight: '900', textTransform: 'uppercase' }}>ESTIMATED FINANCE</div>
                 <div style={{ fontSize: '20px', fontWeight: '900', color: '#10B981' }}>
-                  ${vehicle.pricing.estimatedMonthlyPayment}<span style={{ fontSize: '12px', color: 'var(--nexus-text-muted)' }}>/mo</span>
+                  {formatPrice(vehicle.pricing.estimatedMonthlyPayment)}<span style={{ fontSize: '12px', color: 'var(--nexus-text-muted)' }}>/mo</span>
                 </div>
               </div>
             </div>
@@ -407,14 +407,14 @@ export default function VehicleDetailPage() {
         isOpen={isInquiryOpen}
         onClose={() => setIsInquiryOpen(false)}
         vehicleTitle={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
-        vehiclePrice={vehicle.pricing?.cashPrice ? `KES ${Number(vehicle.pricing.cashPrice).toLocaleString()}` : 'KES 24,500,000'}
+        vehiclePrice={vehicle.pricing?.cashPrice ? formatPrice(vehicle.pricing.cashPrice) : formatPrice(24500000)}
         vehicleImage={vehicle.images?.[0]}
       />
       <VehicleTradeInModal
         isOpen={isTradeInOpen}
         onClose={() => setIsTradeInOpen(false)}
         targetVehicleName={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
-        targetVehiclePrice={vehicle.pricing?.cashPrice ? `KES ${Number(vehicle.pricing.cashPrice).toLocaleString()}` : 'KES 24,500,000'}
+        targetVehiclePrice={vehicle.pricing?.cashPrice ? formatPrice(vehicle.pricing.cashPrice) : formatPrice(24500000)}
         targetVehicleImage={vehicle.images?.[0]}
       />
     </div>

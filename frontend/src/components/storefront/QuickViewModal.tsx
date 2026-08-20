@@ -5,7 +5,7 @@ import { useStore } from '../../context/StoreContext';
 import { X, ShoppingBag, Star, Check } from 'lucide-react';
 
 export const QuickViewModal: React.FC = () => {
-  const { quickViewProduct, setQuickViewProduct, addToCart } = useStore();
+  const { quickViewProduct, setQuickViewProduct, addToCart, formatPrice } = useStore();
 
   if (!quickViewProduct) return null;
 
@@ -27,7 +27,7 @@ export const QuickViewModal: React.FC = () => {
           <div>
             <span style={{ fontSize: '11px', color: '#3B82F6', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px' }}>{quickViewProduct.brand}</span>
             <h2 style={{ fontSize: '22px', fontWeight: '900', color: '#F8FAFC', margin: '4px 0 12px' }}>{quickViewProduct.name}</h2>
-            <div style={{ fontSize: '24px', fontWeight: '900', color: '#34d399', marginBottom: '16px' }}>${quickViewProduct.price.toLocaleString()}</div>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: '#34d399', marginBottom: '16px' }}>{formatPrice(quickViewProduct.price)}</div>
             <p style={{ fontSize: '13px', color: '#94A3B8', lineHeight: '1.6', marginBottom: '20px' }}>{quickViewProduct.description}</p>
           </div>
 

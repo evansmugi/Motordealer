@@ -10,7 +10,7 @@ import { SearchModal } from '../../components/storefront/SearchModal';
 import { Filter, SlidersHorizontal, Car, Search } from 'lucide-react';
 
 export default function ProductsPage() {
-  const { vehicles: storeVehicles } = useStore();
+  const { vehicles: storeVehicles, formatPrice } = useStore();
   const [selectedMake, setSelectedMake] = useState('ALL');
   const [selectedBody, setSelectedBody] = useState('ALL');
   const [selectedCondition, setSelectedCondition] = useState('ALL');
@@ -111,7 +111,7 @@ export default function ProductsPage() {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--nexus-text-dim)', fontWeight: '800', textTransform: 'uppercase', marginBottom: '8px' }}>
                 <span>Max Cash Price</span>
-                <span style={{ color: '#3B82F6' }}>${maxPrice.toLocaleString()}</span>
+                <span style={{ color: '#3B82F6' }}>{formatPrice(maxPrice)}</span>
               </div>
               <input
                 type="range"

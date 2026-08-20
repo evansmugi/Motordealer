@@ -7,7 +7,7 @@ import { VEHICLES, VehicleItem } from '../../lib/vehicle-dataset';
 import { Layers, ArrowLeft, X, Check, ShieldCheck, Zap } from 'lucide-react';
 
 export default function VehicleComparePage() {
-  const { vehicles, compareList, toggleCompare, openTestDriveModal, openReservationModal } = useStore();
+  const { vehicles, compareList, toggleCompare, openTestDriveModal, openReservationModal, formatPrice } = useStore();
 
   const comparedVehicles = (vehicles.length > 0 ? vehicles : VEHICLES).filter((v) => compareList.includes(v.id));
 
@@ -74,10 +74,10 @@ export default function VehicleComparePage() {
 
                 {/* Specs Data Cells */}
                 <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--nexus-text)', padding: '12px 0', borderBottom: '1px solid var(--nexus-border)' }}>
-                  ${v.pricing.cashPrice.toLocaleString()}
+                  {formatPrice(v.pricing.cashPrice)}
                 </div>
                 <div style={{ fontSize: '13px', fontWeight: '800', color: '#10B981', padding: '12px 0', borderBottom: '1px solid var(--nexus-border)' }}>
-                  ${v.pricing.estimatedMonthlyPayment}/mo
+                  {formatPrice(v.pricing.estimatedMonthlyPayment)}/mo
                 </div>
                 <div style={{ fontSize: '12px', color: 'var(--nexus-text-muted)', padding: '12px 0', borderBottom: '1px solid var(--nexus-border)' }}>
                   {v.engine.type}

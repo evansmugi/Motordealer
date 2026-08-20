@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Calculator, CheckCircle2, ArrowRight, ShieldCheck, DollarSign } from 'lucide-react';
+import { Calculator, CheckCircle2, ArrowRight } from 'lucide-react';
+import { useStore } from '../../context/StoreContext';
 
 interface FinanceCalculatorProps {
   vehiclePrice: number;
@@ -9,6 +10,7 @@ interface FinanceCalculatorProps {
 }
 
 export const FinanceCalculatorWidget: React.FC<FinanceCalculatorProps> = ({ vehiclePrice, vehicleTitle = 'Vehicle' }) => {
+  const { formatPrice } = useStore();
   const [depositPercent, setDepositPercent] = useState<number>(15);
   const [loanTermMonths, setLoanTermMonths] = useState<number>(60);
   const [interestRate, setInterestRate] = useState<number>(11.5);
@@ -30,7 +32,7 @@ export const FinanceCalculatorWidget: React.FC<FinanceCalculatorProps> = ({ vehi
 
   const handleApplyPreApproval = (e: React.FormEvent) => {
     e.preventDefault();
-    setAppliedNotice(`Pre-approval request submitted for ${vehicleTitle}! Estimated Monthly: $${Math.round(totalMonthly).toLocaleString()}/mo.`);
+    setAppliedNotice(`Pre-approval request submitted for ${vehicleTitle}! Estimated Monthly: ${formatPrice(totalMonthly)}/mo.`);
     setTimeout(() => setAppliedNotice(null), 5000);
   };
 
@@ -63,7 +65,7 @@ export const FinanceCalculatorWidget: React.FC<FinanceCalculatorProps> = ({ vehi
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs font-bold text-neutral-300">
             <span>Deposit Downpayment ({depositPercent}%)</span>
-            <span className="text-[#c9a84c] font-mono text-sm">${Math.round(depositAmount).toLocaleString()}</span>
+            <span className="text-[#c9a84c] font-mono text-sm">{formatPrice(depositAmount)}</span>
           </div>
           <input
             type="range"
@@ -120,7 +122,7 @@ export const FinanceCalculatorWidget: React.FC<FinanceCalculatorProps> = ({ vehi
                 onChange={(e) => setIncludeInsurance(e.target.checked)}
                 className="w-4 h-4 accent-[#c9a84c] rounded cursor-pointer"
               />
-              Include GAP Insurance ($120/mo)
+              Include GAP Insurance ({formatPrice(120)}/mo)
             </label>
           </div>
         </div>
@@ -132,11 +134,11 @@ export const FinanceCalculatorWidget: React.FC<FinanceCalculatorProps> = ({ vehi
               ESTIMATED MONTHLY PAYMENT
             </span>
             <div className="text-2xl font-black text-[#c9a84c] mt-0.5">
-              ${Math.round(totalMonthly).toLocaleString()}
+              {formatPrice(totalMonthly)}
               <span className="text-xs text-neutral-400 font-semibold">/mo</span>
             </div>
             <div className="text-[10px] text-neutral-400 mt-1 font-mono">
-              Principal: ${Math.round(loanPrincipal).toLocaleString()} • Total: ${Math.round(totalPayable).toLocaleString()}
+              Principal: {formatPrice(loanPrincipal)} • Total: {formatPrice(totalPayable)}
             </div>
           </div>
 

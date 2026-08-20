@@ -8,7 +8,7 @@ import { sendCrmLead } from '../../lib/crmLeadHelper';
 import { LuxuryDatePicker } from '../common/LuxuryDatePicker';
 
 export const TestDriveModal: React.FC = () => {
-  const { vehicles, testDriveVehicleId, openTestDriveModal, bookTestDrive } = useStore();
+  const { vehicles, testDriveVehicleId, openTestDriveModal, bookTestDrive, formatPrice } = useStore();
 
   const [modalTheme, setModalTheme] = useState<'dark' | 'light'>('dark');
   const isLight = modalTheme === 'light';
@@ -27,8 +27,8 @@ export const TestDriveModal: React.FC = () => {
   const vehicle = (vehicles.length > 0 ? vehicles : VEHICLES).find((v) => v.id === testDriveVehicleId) || vehicles[0] || VEHICLES[0];
   const vehicleTitle = `${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.trim || ''}`.trim();
   const vehiclePriceFormatted = vehicle.pricing?.cashPrice
-    ? `KES ${Number(vehicle.pricing.cashPrice).toLocaleString()}`
-    : ((vehicle as any).price || 'KES 24,500,000');
+    ? formatPrice(vehicle.pricing.cashPrice)
+    : (formatPrice(Number((vehicle as any).price) || 24500000));
   const vehicleImage = vehicle.heroImage || (vehicle.images && vehicle.images[0]) || 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop';
 
   const handleSubmit = async (e: React.FormEvent) => {

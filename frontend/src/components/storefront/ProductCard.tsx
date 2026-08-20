@@ -7,7 +7,7 @@ import { type ProductItem } from '../../lib/mock-dataset';
 import { Heart, ShoppingBag, Eye, Star, Check } from 'lucide-react';
 
 export const ProductCard: React.FC<{ product: ProductItem }> = ({ product }) => {
-  const { addToCart, wishlist, toggleWishlist, setQuickViewProduct } = useStore();
+  const { addToCart, wishlist, toggleWishlist, setQuickViewProduct, formatPrice } = useStore();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(product.variants[0]?.color || '');
   const [isAdded, setIsAdded] = useState(false);
@@ -136,11 +136,11 @@ export const ProductCard: React.FC<{ product: ProductItem }> = ({ product }) => 
         <div style={{ paddingTop: '12px', borderTop: '1px solid var(--nexus-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ fontSize: '18px', fontWeight: '900', color: 'var(--nexus-text)' }}>
-              ${product.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              {formatPrice(product.price)}
             </div>
             {product.compareAtPrice && (
               <div style={{ fontSize: '11px', color: 'var(--nexus-text-dim)', textDecoration: 'line-through' }}>
-                ${product.compareAtPrice.toLocaleString()}
+                {formatPrice(product.compareAtPrice)}
               </div>
             )}
           </div>

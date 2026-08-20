@@ -13,7 +13,7 @@ import { getStoredVehicles, getEmbedVideoUrl } from '../../../lib/vehicles';
 
 export default function VehicleDossierPage() {
   const { id } = useParams();
-  const { openTestDriveModal } = useStore();
+  const { openTestDriveModal, formatPrice } = useStore();
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
   const [isTradeInOpen, setIsTradeInOpen] = useState(false);
   const [isReservationOpen, setIsReservationOpen] = useState(false);
@@ -22,29 +22,22 @@ export default function VehicleDossierPage() {
     id: String(id || '1'),
     title: '2024 Mercedes-Benz S 580 4MATIC Luxury Sedan',
     tagline: 'V8 Biturbo, Rear Executive Seating Package, Burmester 3D Surround',
-    price: 'KES 24,500,000',
+    price: formatPrice(24500000),
     make: 'Mercedes-Benz',
     model: 'S 580 4MATIC',
     year: '2024',
     condition: 'Foreign Used',
     transmission: '8-Spd Automatic',
-    engine: '4.0L V8 Biturbo with EQ Boost (496 HP)',
+    engine: '4.0L V8 Biturbo (496 HP)',
     fuel: 'Petrol',
-    mileage: '8,400 KM',
+    mileage: '45 KM',
     color: 'Obsidian Black Metallic',
-    interior: 'Exclusive Nappa Leather Black',
+    interior: 'Exclusive Nappa Leather Sienna Brown',
     youtubeUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-    horsepower: '496 HP',
-    torque: '700 Nm Torque',
-    acceleration: '4.4s',
-    top_speed: '250 km/h',
-    drivetrain: '4MATIC AWD',
-    fuel_range: '850 km',
-    fuel_type: 'PETROL',
     images: [
-      'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1000&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1000&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1563720223185-11003d516935?w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&auto=format&fit=crop'
     ],
     features: [
       'Burmester High-End 3D Surround System',
@@ -64,9 +57,8 @@ export default function VehicleDossierPage() {
     const stored = getStoredVehicles();
     const match = stored.find(v => String(v.id) === String(id));
     if (match) {
-      const formattedPrice = match.price && !match.price.includes('KES')
-        ? `KES ${Number(match.price).toLocaleString()}`
-        : (match.price || 'KES 24,500,000');
+      const rawNum = Number(String(match.price).replace(/[^0-9.]/g, '')) || 24500000;
+      const formattedPrice = formatPrice(rawNum);
 
       const imgs = Array.isArray(match.images) && match.images.length > 0
         ? match.images.map(i => typeof i === 'string' ? i : (i.url || ''))

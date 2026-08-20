@@ -26,7 +26,7 @@ const CONDITION_OPTIONS = [
 ];
 
 export const TradeInEstimatorWidget: React.FC<{ targetVehicleId?: string }> = ({ targetVehicleId = 'veh-001' }) => {
-  const { submitTradeIn } = useStore();
+  const { submitTradeIn, formatPrice } = useStore();
 
   const [make, setMake] = useState('BMW');
   const [model, setModel] = useState('3 Series / M3');
@@ -64,7 +64,7 @@ export const TradeInEstimatorWidget: React.FC<{ targetVehicleId?: string }> = ({
       status: 'SUBMITTED'
     });
 
-    setSubmittedNotice(`Trade-in valuation request submitted! Instant estimated credit: $${estimatedCredit.toLocaleString()}.`);
+    setSubmittedNotice(`Trade-in valuation request submitted! Instant estimated credit: ${formatPrice(estimatedCredit)}.`);
     setTimeout(() => setSubmittedNotice(null), 6000);
   };
 
@@ -159,7 +159,7 @@ export const TradeInEstimatorWidget: React.FC<{ targetVehicleId?: string }> = ({
               ESTIMATED TRADE-IN CREDIT VALUE
             </span>
             <div className="text-2xl font-black text-[#c9a84c] mt-0.5">
-              ${estimatedCredit.toLocaleString()}
+              {formatPrice(estimatedCredit)}
             </div>
           </div>
           <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-medium">
