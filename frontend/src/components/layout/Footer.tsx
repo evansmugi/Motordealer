@@ -2,91 +2,111 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Zap, ArrowRight } from 'lucide-react';
+import StorefrontBrandLogo from '../common/StorefrontBrandLogo';
+import { ShieldCheck, PhoneCall, Mail, MapPin } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
-    <footer style={{
-      background: 'var(--nexus-surface)',
-      borderTop: '1px solid var(--nexus-border)',
-      padding: '60px 40px 30px',
-      marginTop: '80px',
-      transition: 'background 0.3s ease, border-color 0.3s ease'
-    }}>
-      <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '40px' }}>
-        {/* Brand Column */}
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#3B82F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Zap size={18} color="#fff" />
-            </div>
-            <div style={{ fontSize: '18px', fontWeight: '900', color: 'var(--nexus-text)' }}>
-              NEXUS<span style={{ color: '#3B82F6' }}>.PRIME</span>
-            </div>
-          </div>
-          <p style={{ color: 'var(--nexus-text-muted)', fontSize: '13px', lineHeight: '1.6', maxWidth: '320px' }}>
-            Next-generation digital commerce ecosystem. Engineered for high-velocity hardware discovery, quantum computing optics, and neural haptic technology.
+    <footer className="bg-[#05070c] border-t border-neutral-800 text-neutral-300 pt-16 pb-8 transition-all">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-12 gap-10">
+        
+        {/* Column 1: Brand & Identity */}
+        <div className="md:col-span-5 space-y-4">
+          <StorefrontBrandLogo />
+          <p className="text-xs text-neutral-400 leading-relaxed max-w-md mt-2">
+            KnK Automotive Enterprise is East Africa&apos;s premier vehicle showroom and concierge fleet. We deliver verified 150+ point inspected luxury vehicles, bespoke import solutions, and instant credit trade-in valuations.
           </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '20px', fontSize: '12px', color: '#10B981', fontWeight: '700' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', boxShadow: '0 0 8px #10B981' }}></span>
-            Platform Telemetry Systems Operational
+          <div className="flex items-center gap-2 pt-2 text-xs font-semibold text-emerald-400">
+            <ShieldCheck size={16} className="text-emerald-400 shrink-0" />
+            <span>Inspection Verified & Approved Luxury Fleet</span>
           </div>
         </div>
 
-        {/* Categories Column */}
-        <div>
-          <h4 style={{ fontSize: '13px', color: 'var(--nexus-text)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px' }}>
-            Discovery
+        {/* Column 2: Quick Directory */}
+        <div className="md:col-span-3 space-y-3">
+          <h4 className="text-xs font-mono font-bold uppercase tracking-widest text-[#c9a84c]">
+            Showroom Directory
           </h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px' }}>
-            <Link href="/products?category=neural-interface" style={{ color: 'var(--nexus-text-muted)', textDecoration: 'none' }}>Neural & Haptics</Link>
-            <Link href="/products?category=quantum-computing" style={{ color: 'var(--nexus-text-muted)', textDecoration: 'none' }}>Quantum Compute</Link>
-            <Link href="/products?category=kinetic-workstations" style={{ color: 'var(--nexus-text-muted)', textDecoration: 'none' }}>Kinetic Stations</Link>
-            <Link href="/products?category=autonomous-drones" style={{ color: 'var(--nexus-text-muted)', textDecoration: 'none' }}>Autonomous Drones</Link>
+          <ul className="space-y-2 text-xs font-semibold text-neutral-300">
+            <li>
+              <Link href="/vehicle" className="hover:text-white transition-colors flex items-center gap-2">
+                <span>Showroom Catalog</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/products" className="hover:text-white transition-colors flex items-center gap-2">
+                <span>All Cars Inventory</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/trade-in" className="hover:text-white transition-colors flex items-center gap-2">
+                <span>Trade-In Valuation</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/finance" className="hover:text-white transition-colors flex items-center gap-2">
+                <span>Finance Calculator</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/book-test-drive" className="hover:text-white transition-colors flex items-center gap-2">
+                <span>Book Test Drive</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/compare" className="hover:text-white transition-colors flex items-center gap-2">
+                <span>Compare Cars</span>
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Column 3: Showroom Concierge */}
+        <div className="md:col-span-4 space-y-3">
+          <h4 className="text-xs font-mono font-bold uppercase tracking-widest text-[#c9a84c]">
+            Concierge Viewing
+          </h4>
+          <div className="space-y-2.5 text-xs text-neutral-400">
+            <div className="flex items-start gap-2.5">
+              <MapPin size={16} className="text-[#c9a84c] shrink-0 mt-0.5" />
+              <span>Nairobi Showroom, Kenya</span>
+            </div>
+            <div className="flex items-center gap-2.5">
+              <PhoneCall size={16} className="text-[#c9a84c] shrink-0" />
+              <span>+254 700 000 000</span>
+            </div>
+            <div className="flex items-center gap-2.5">
+              <Mail size={16} className="text-[#c9a84c] shrink-0" />
+              <span>concierge@knkautomotive.com</span>
+            </div>
           </div>
         </div>
 
-        {/* Portal Column */}
-        <div>
-          <h4 style={{ fontSize: '13px', color: 'var(--nexus-text)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px' }}>
-            Ecosystem
-          </h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px' }}>
-            <Link href="/account" style={{ color: 'var(--nexus-text-muted)', textDecoration: 'none' }}>Order Tracking</Link>
-            <a href="http://localhost:5181" target="_blank" rel="noreferrer" style={{ color: '#3B82F6', textDecoration: 'none', fontWeight: '700' }}>AETHEL ERP OS →</a>
-            <a href="http://localhost:1338/admin" target="_blank" rel="noreferrer" style={{ color: '#8B5CF6', textDecoration: 'none', fontWeight: '700' }}>Strapi 5 CMS →</a>
-          </div>
-        </div>
-
-        {/* Newsletter Column */}
-        <div>
-          <h4 style={{ fontSize: '13px', color: 'var(--nexus-text)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px' }}>
-            Telemetry Dispatch
-          </h4>
-          <p style={{ color: 'var(--nexus-text-muted)', fontSize: '12px', marginBottom: '12px' }}>
-            Receive technical spec releases and early access allocations.
-          </p>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <input
-              type="email"
-              placeholder="operator@domain.com"
-              style={{ background: 'var(--nexus-bg)', border: '1px solid var(--nexus-border)', borderRadius: '8px', padding: '8px 12px', color: 'var(--nexus-text)', fontSize: '12px', width: '100%', outline: 'none' }}
-            />
-            <button style={{ background: '#3B82F6', border: 'none', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', cursor: 'pointer' }}>
-              <ArrowRight size={16} />
-            </button>
-          </div>
-        </div>
       </div>
 
-      <div style={{ maxWidth: '1280px', margin: '40px auto 0', paddingTop: '20px', borderTop: '1px solid var(--nexus-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', color: 'var(--nexus-text-dim)' }}>
-        <div>© 2026 NEXUS PRIME Inc. All rights reserved. Target WCAG 2.2 AA.</div>
-        <div style={{ display: 'flex', gap: '20px' }}>
-          <span>Privacy Policy</span>
-          <span>Security Audit</span>
-          <span>Terms of Dispatch</span>
+      {/* Footer Bottom Bar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-neutral-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500">
+        <div>
+          © {new Date().getFullYear()} KnK Automotive Enterprise. All rights reserved.
+        </div>
+
+        <div className="flex items-center gap-6">
+          <span className="text-[11px] text-neutral-500">System Telemetry Operational</span>
+          
+          {/* Subtle, discreet Admin Portal link */}
+          <a 
+            href="http://localhost:5181" 
+            target="_blank" 
+            rel="noreferrer noopener" 
+            className="text-[11px] text-neutral-600 hover:text-neutral-400 transition-colors font-mono tracking-wider underline decoration-neutral-700/60"
+            title="System Gateway"
+          >
+            Admin Portal
+          </a>
         </div>
       </div>
     </footer>
   );
 };
+
+export default Footer;

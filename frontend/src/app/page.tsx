@@ -4,8 +4,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Search, ShieldCheck, ChevronRight, ArrowRight, Zap } from 'lucide-react';
 import PredictiveSelect from '../components/common/PredictiveSelect';
-import StorefrontBrandLogo from '../components/common/StorefrontBrandLogo';
-import CurrencySelector from '../components/common/CurrencySelector';
 
 import { useStore } from '../context/StoreContext';
 import { VEHICLES } from '../lib/vehicle-dataset';
@@ -62,32 +60,6 @@ export default function HomePage() {
 
   return (
     <div className="bg-[#080808] text-white min-h-screen">
-      {/* Header Bar */}
-      <header className="border-b border-neutral-900 bg-[#0a0a0a]/90 backdrop-blur-xl sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <StorefrontBrandLogo />
-
-          <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-neutral-300 uppercase tracking-wider">
-            <Link href="/vehicle" className="hover:text-[#c9a84c] transition-colors">Inventory</Link>
-            <Link href="/accessories" className="hover:text-[#c9a84c] transition-colors">Accessories</Link>
-            <Link href="/import-with-us" className="hover:text-[#c9a84c] transition-colors">Import With Us</Link>
-            <Link href="/helpmechoose" className="hover:text-[#c9a84c] transition-colors">Car Assistant</Link>
-            <Link href="/book-test-drive" className="hover:text-[#c9a84c] transition-colors">Book Test Drive</Link>
-            <Link href="/about" className="hover:text-[#c9a84c] transition-colors">About Us</Link>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <CurrencySelector />
-            <Link
-              href="/book-test-drive"
-              className="px-5 py-2.5 bg-gradient-to-r from-[#e5c158] to-[#c9a84c] text-black font-bold text-xs rounded-xl uppercase tracking-wider hover:opacity-90 transition-all shadow-lg shadow-[#c9a84c]/20"
-            >
-              Book Viewing
-            </Link>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Section */}
       <section className="relative pt-16 pb-24 px-6 overflow-hidden">
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#c9a84c]/10 rounded-full filter blur-[120px] pointer-events-none" />

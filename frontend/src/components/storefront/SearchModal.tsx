@@ -3,17 +3,22 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useStore } from '../../context/StoreContext';
-import { PRODUCTS, type ProductItem } from '../../lib/mock-dataset';
-import { Search, X, TrendingUp, ArrowRight, Zap } from 'lucide-react';
+import { VEHICLES } from '../../lib/vehicle-dataset';
+import { Search, X, Sparkles, ArrowRight, Car, Fuel, Gauge } from 'lucide-react';
 
 export const SearchModal: React.FC = () => {
-  const { isSearchOpen, setIsSearchOpen } = useStore();
+  const { isSearchOpen, setIsSearchOpen, vehicles, formatPrice } = useStore();
   const [query, setQuery] = useState('');
 
-  // Keyboard shortcut Listener '/'
+  // Combined dataset: Store vehicles with fallback to VEHICLES
+  const allVehicles = (vehicles && vehicles.length > 0) ? vehicles : VEHICLES;
+
+  // Keyboard shortcut Listener ('/' to open, 'ESC' to close)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === '/' && !isSearchOpen) {
+        // Prevent typing slash in inputs
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) return;
         e.preventDefault();
         setIsSearchOpen(true);
       }
@@ -27,87 +32,168 @@ export const SearchModal: React.FC = () => {
 
   if (!isSearchOpen) return null;
 
-  const results = query.trim() === '' ? [] : PRODUCTS.filter(p =>
-    p.name.toLowerCase().includes(query.toLowerCase()) ||
-    p.sku.toLowerCase().includes(query.toLowerCase()) ||
-    p.category.toLowerCase().includes(query.toLowerCase())
-  );
+  const cleanQuery = query.trim().toLowerCase();
 
-  const trendingSearches = ['Neural Visor', 'Quantum Core', 'Zero-G Ergonomic Pod', 'Autonomous Drone'];
+  // Real-time Predictive Matching
+  const searchResults = cleanQuery === '' ? [] : allVehicles.filter((v: any) => {
+    const title = `${v.year || ''} ${v.make || ''} ${v.model || ''} ${v.trim || ''}`.toLowerCase();
+    const category = (v.category || v.bodyStyle || '').toLowerCase();
+    const fuel = (v.fuel_type || v.fuelEnergy?.fuelType || '').toLowerCase();
+    const condition = (v.condition || v.offer_type || '').toLowerCase();
+    const tags = Array.isArray(v.features) ? v.features.join(' ').toLowerCase() : '';
+
+    return title.includes(cleanQuery) || 
+           category.includes(cleanQuery) || 
+           fuel.includes(cleanQuery) || 
+           condition.includes(cleanQuery) || 
+           tags.includes(cleanQuery);
+  });
+
+  const popularSearches = [
+    'Mercedes-Benz G63',
+    'BMW M5 Competition',
+    'Porsche 911',
+    'Range Rover',
+    'Land Cruiser 300',
+    'Brand New'
+  ];
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(8, 9, 12, 0.85)', backdropFilter: 'blur(16px)', zIndex: 1000, display: 'flex', justifyContent: 'center', paddingTop: '100px' }}>
-      <div style={{ width: '680px', maxWidth: '90%', background: '#0E1017', border: '1px solid rgba(255, 255, 255, 0.12)', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)', maxHeight: '70vh', display: 'flex', flexDirection: 'column' }}>
+    <div 
+      className="fixed inset-0 z-[100] bg-[#030509]/85 backdrop-blur-2xl flex justify-center pt-16 sm:pt-24 px-4 sm:px-6 animate-in fade-in duration-200"
+      onClick={() => setIsSearchOpen(false)}
+    >
+      <div 
+        className="w-full max-w-3xl bg-[#090d16] border-2 border-[#c9a84c]/60 shadow-[0_25px_80px_rgba(0,0,0,0.95)] rounded-3xl overflow-hidden flex flex-col max-h-[82vh] text-white animate-in slide-in-from-top-4 duration-300"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Search Input Bar */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <Search size={22} color="#3B82F6" />
+        <div className="p-4 sm:p-6 border-b border-neutral-800 bg-[#050811] flex items-center gap-4">
+          <Search size={22} className="text-[#c9a84c] shrink-0 stroke-[2.5]" />
           <input
             type="text"
             autoFocus
-            placeholder="Search by hardware name, SKU, or category..."
+            placeholder="Search by Make, Model, Year, SUV, Petrol, V8..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            style={{ flex: 1, background: 'transparent', border: 'none', color: '#F8FAFC', fontSize: '18px', fontWeight: '600', outline: 'none' }}
+            className="flex-1 bg-transparent border-none text-white text-base sm:text-lg font-bold outline-none placeholder:text-neutral-500"
           />
+          {query && (
+            <button
+              onClick={() => setQuery('')}
+              className="text-neutral-400 hover:text-white p-1"
+            >
+              <X size={18} />
+            </button>
+          )}
           <button
             onClick={() => setIsSearchOpen(false)}
-            style={{ background: 'rgba(255, 255, 255, 0.05)', border: 'none', borderRadius: '8px', padding: '6px', color: '#94A3B8', cursor: 'pointer' }}
+            className="p-2 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white hover:border-[#c9a84c]/40 transition-all text-xs font-bold"
           >
-            <X size={20} />
+            ESC
           </button>
         </div>
 
-        {/* Search Results / Trending Suggestions */}
-        <div style={{ padding: '24px', overflowY: 'auto', flex: 1 }}>
-          {query.trim() === '' ? (
+        {/* Modal Body / Results Container */}
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-6">
+          {cleanQuery === '' ? (
             <div>
-              <div style={{ fontSize: '12px', color: '#64748B', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <TrendingUp size={14} color="#3B82F6" /> TRENDING SEARCHES
+              <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-widest text-[#c9a84c] mb-4">
+                <Sparkles size={14} className="text-white" /> Popular Showroom Searches
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                {trendingSearches.map((term, i) => (
+              <div className="flex flex-wrap gap-2.5">
+                {popularSearches.map((term, i) => (
                   <button
                     key={i}
                     onClick={() => setQuery(term)}
-                    style={{ background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '20px', padding: '6px 14px', color: '#94A3B8', fontSize: '13px', cursor: 'pointer' }}
+                    className="px-4 py-2 rounded-xl bg-neutral-900/90 border border-neutral-800 hover:border-[#c9a84c]/60 text-xs font-bold text-neutral-200 hover:text-white transition-all flex items-center gap-2 group cursor-pointer"
                   >
-                    {term}
+                    <span>{term}</span>
+                    <ArrowRight size={13} className="text-neutral-400 group-hover:text-[#c9a84c] group-hover:translate-x-0.5 transition-all" />
                   </button>
                 ))}
               </div>
             </div>
           ) : (
             <div>
-              <div style={{ fontSize: '12px', color: '#64748B', fontWeight: '800', marginBottom: '16px' }}>
-                {results.length} MATCHING HARDWARE ITEMS FOUND
+              <div className="flex items-center justify-between text-xs font-mono font-bold text-neutral-400 mb-4 pb-2 border-b border-neutral-800">
+                <span className="uppercase text-[#c9a84c]">
+                  {searchResults.length} Match{searchResults.length === 1 ? '' : 'es'} Found
+                </span>
+                <span>Type to refine search</span>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {results.map((product: ProductItem) => (
-                  <Link
-                    key={product.id}
-                    href={`/product/${product.slug}`}
-                    onClick={() => setIsSearchOpen(false)}
-                    style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '12px', transition: 'all 0.2s ease' }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                      <img src={product.images[0]} alt={product.name} style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover' }} />
-                      <div>
-                        <div style={{ fontSize: '15px', fontWeight: '800', color: '#F8FAFC' }}>{product.name}</div>
-                        <div style={{ fontSize: '12px', color: '#64748B' }}>SKU: {product.sku} • {product.brand}</div>
-                      </div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: '16px', fontWeight: '900', color: '#3B82F6' }}>${product.price.toLocaleString()}</div>
-                      <div style={{ fontSize: '11px', color: '#10B981' }}>In Stock ({product.stock})</div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              {searchResults.length === 0 ? (
+                <div className="py-12 text-center text-neutral-400 space-y-3">
+                  <Car size={40} className="mx-auto text-neutral-600 stroke-[1.5]" />
+                  <p className="text-sm font-semibold">No vehicles found matching "{query}"</p>
+                  <p className="text-xs text-neutral-500">Try searching for "Mercedes", "BMW", "G63", or "Used"</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {searchResults.map((car: any) => {
+                    const carTitle = `${car.year || 2024} ${car.make || ''} ${car.model || ''} ${car.trim || ''}`.trim();
+                    const carImage = car.heroImage || (Array.isArray(car.images) && car.images[0]?.url) || (Array.isArray(car.images) && car.images[0]) || '/images/g63-hero.png';
+                    const carPrice = car.pricing?.cashPrice || car.price || 24500000;
+                    const formattedPrice = formatPrice ? formatPrice(carPrice) : `KES ${Number(carPrice).toLocaleString()}`;
+                    const targetUrl = car.slug ? `/product/${car.slug}` : `/vehicle`;
+
+                    return (
+                      <Link
+                        key={car.id || car._id}
+                        href={targetUrl}
+                        onClick={() => setIsSearchOpen(false)}
+                        className="group flex items-center justify-between p-3.5 rounded-2xl bg-neutral-900/80 hover:bg-neutral-800/90 border border-neutral-800 hover:border-[#c9a84c]/60 transition-all"
+                      >
+                        <div className="flex items-center gap-4">
+                          <img 
+                            src={carImage} 
+                            alt={carTitle}
+                            className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border border-neutral-800 group-hover:scale-105 transition-transform" 
+                          />
+                          <div>
+                            <h4 className="text-sm sm:text-base font-extrabold text-white group-hover:text-[#c9a84c] transition-colors">
+                              {carTitle}
+                            </h4>
+                            <div className="flex items-center gap-3 text-xs text-neutral-400 mt-1">
+                              <span className="flex items-center gap-1">
+                                <Gauge size={13} className="text-white" />
+                                {car.history?.odometerKm ? `${Number(car.history.odometerKm).toLocaleString()} KM` : '45 KM'}
+                              </span>
+                              <span>•</span>
+                              <span className="flex items-center gap-1">
+                                <Fuel size={13} className="text-white" />
+                                {typeof car.fuelEnergy === 'object' ? car.fuelEnergy?.fuelType : (car.fuel_type || 'Petrol')}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="text-right shrink-0">
+                          <div className="text-sm sm:text-base font-black text-[#c9a84c] font-mono">
+                            {formattedPrice}
+                          </div>
+                          <span className="inline-block mt-1 text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-md bg-[#c9a84c]/10 border border-[#c9a84c]/30 text-[#c9a84c]">
+                            {car.condition || car.offer_type || 'Showroom'}
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
+        </div>
+
+        {/* Modal Footer */}
+        <div className="p-3 bg-[#04060c] border-t border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400 font-mono">
+          <span>Press ESC to exit search</span>
+          <span className="text-[#c9a84c]">KnK Automotive Inventory</span>
         </div>
       </div>
     </div>
   );
 };
+
+export default SearchModal;

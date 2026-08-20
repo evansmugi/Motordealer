@@ -108,15 +108,6 @@ export default function VehicleDossierPage() {
 
   return (
     <div className="bg-[#080808] text-white min-h-screen font-sans">
-      <header className="border-b border-neutral-900 bg-[#0a0a0a]/90 backdrop-blur-xl sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/vehicle" className="flex items-center gap-2 text-xs font-bold text-neutral-400 hover:text-white uppercase">
-            <ArrowLeft size={16} /> Back to Showroom
-          </Link>
-          <span className="text-sm font-bold text-[#c9a84c] uppercase">KnK Dossier #{id || '1'}</span>
-        </div>
-      </header>
-
       <div className="max-w-7xl mx-auto py-10 px-6 space-y-10">
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">

@@ -7,16 +7,6 @@ import { ArrowRight, CheckCircle2, ShieldCheck, Car } from 'lucide-react';
 export default function FunnelPage() {
   return (
     <div className="bg-[#080808] text-white min-h-screen font-sans">
-      <header className="border-b border-neutral-900 bg-[#0a0a0a]/90 backdrop-blur-xl sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#e5c158] to-[#c9a84c] text-black font-extrabold flex items-center justify-center text-base">
-              KnK
-            </div>
-            <span className="text-lg font-black text-white uppercase tracking-wider">KnK <span className="text-[#c9a84c]">Journey</span></span>
-          </Link>
-        </div>
-      </header>
 
       <div className="max-w-4xl mx-auto py-16 px-6 space-y-12">
         <div className="text-center space-y-3">

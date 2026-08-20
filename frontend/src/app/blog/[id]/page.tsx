@@ -10,14 +10,6 @@ export default function BlogDetailPage() {
 
   return (
     <div className="bg-[#080808] text-white min-h-screen font-sans">
-      <header className="border-b border-neutral-900 bg-[#0a0a0a]/90 backdrop-blur-xl sticky top-0 z-40">
-        <div className="max-w-4xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/blog" className="flex items-center gap-2 text-xs font-bold text-neutral-400 hover:text-white uppercase">
-            <ArrowLeft size={16} /> Back to Articles
-          </Link>
-          <span className="text-xs font-bold text-[#c9a84c] uppercase">KnK Insights</span>
-        </div>
-      </header>
 
       <article className="max-w-3xl mx-auto py-12 px-6 space-y-8">
         <div className="space-y-4">

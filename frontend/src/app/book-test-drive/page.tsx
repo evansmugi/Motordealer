@@ -40,15 +40,6 @@ export default function BookTestDrivePage() {
 
   return (
     <div className="bg-[#080808] text-white min-h-screen font-sans">
-      <header className="border-b border-neutral-900 bg-[#0a0a0a]/90 backdrop-blur-xl sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/vehicle" className="flex items-center gap-2 text-xs font-bold text-neutral-400 hover:text-white uppercase">
-            <ArrowLeft size={16} /> Back to Showroom
-          </Link>
-          <span className="text-sm font-bold text-[#c9a84c] uppercase">Showroom Appointment Scheduler</span>
-        </div>
-      </header>
-
       <div className="max-w-3xl mx-auto py-12 px-6 space-y-8">
         <div className="text-center space-y-3">
           <span className="text-xs font-bold text-[#c9a84c] uppercase tracking-widest">VIP Showroom Viewing</span>
