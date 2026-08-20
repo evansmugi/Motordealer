@@ -28,13 +28,13 @@ export default function LogoSettingsPage() {
 
   // Logo States
   const [adminSidebarLogoUrl, setAdminSidebarLogoUrl] = useState(
-    siteSettings.adminSidebarLogoUrl || siteSettings.logoUrl || DEFAULT_SIDEBAR_LOGO
+    siteSettings.adminSidebarLogoUrl !== undefined ? siteSettings.adminSidebarLogoUrl : (siteSettings.logoUrl !== undefined ? siteSettings.logoUrl : DEFAULT_SIDEBAR_LOGO)
   );
   const [adminTopNavLogoUrl, setAdminTopNavLogoUrl] = useState(
-    siteSettings.adminTopNavLogoUrl || siteSettings.logoUrl || DEFAULT_TOPNAV_LOGO
+    siteSettings.adminTopNavLogoUrl !== undefined ? siteSettings.adminTopNavLogoUrl : (siteSettings.logoUrl !== undefined ? siteSettings.logoUrl : DEFAULT_TOPNAV_LOGO)
   );
   const [storefrontHeaderLogoUrl, setStorefrontHeaderLogoUrl] = useState(
-    siteSettings.storefrontHeaderLogoUrl || siteSettings.logoUrl || DEFAULT_STORE_LOGO
+    siteSettings.storefrontHeaderLogoUrl !== undefined ? siteSettings.storefrontHeaderLogoUrl : (siteSettings.logoUrl !== undefined ? siteSettings.logoUrl : DEFAULT_STORE_LOGO)
   );
 
   // Currency States
@@ -61,9 +61,15 @@ export default function LogoSettingsPage() {
 
   // Synchronize state on update
   useEffect(() => {
-    setAdminSidebarLogoUrl(siteSettings.adminSidebarLogoUrl || siteSettings.logoUrl || DEFAULT_SIDEBAR_LOGO);
-    setAdminTopNavLogoUrl(siteSettings.adminTopNavLogoUrl || siteSettings.logoUrl || DEFAULT_TOPNAV_LOGO);
-    setStorefrontHeaderLogoUrl(siteSettings.storefrontHeaderLogoUrl || siteSettings.logoUrl || DEFAULT_STORE_LOGO);
+    if (siteSettings.adminSidebarLogoUrl !== undefined) {
+      setAdminSidebarLogoUrl(siteSettings.adminSidebarLogoUrl);
+    }
+    if (siteSettings.adminTopNavLogoUrl !== undefined) {
+      setAdminTopNavLogoUrl(siteSettings.adminTopNavLogoUrl);
+    }
+    if (siteSettings.storefrontHeaderLogoUrl !== undefined) {
+      setStorefrontHeaderLogoUrl(siteSettings.storefrontHeaderLogoUrl);
+    }
 
     if (siteSettings.currencies && Array.isArray(siteSettings.currencies)) {
       setCurrencies(siteSettings.currencies);
@@ -184,7 +190,7 @@ export default function LogoSettingsPage() {
         adminSidebarLogoUrl,
         adminTopNavLogoUrl,
         storefrontHeaderLogoUrl,
-        logoUrl: adminSidebarLogoUrl || DEFAULT_SIDEBAR_LOGO,
+        logoUrl: adminSidebarLogoUrl,
         currencies,
         baseCurrencyCode
       };

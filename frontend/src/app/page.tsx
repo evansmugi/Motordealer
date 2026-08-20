@@ -221,20 +221,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-neutral-900 bg-[#080808] py-12 px-6 text-neutral-500 text-xs">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-neutral-300 font-bold">
-            <ShieldCheck className="text-[#c9a84c]" size={18} /> KnK Automotive Enterprise Systems © 2026
-          </div>
-          <div className="flex gap-6 text-neutral-400">
-            <Link href="/about" className="hover:text-white">About</Link>
-            <Link href="/contact" className="hover:text-white">Contact</Link>
-            <Link href="/brand-identity" className="hover:text-white">Brand Guidelines</Link>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

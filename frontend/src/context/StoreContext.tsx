@@ -125,16 +125,42 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     ? siteSettings.currencies
     : DEFAULT_CURRENCIES;
 
-  const refreshSiteSettings = () => {
+  const refreshSiteSettings = async () => {
+    let current: any = {};
     if (typeof window !== 'undefined') {
       try {
         const stored = localStorage.getItem('fuse_site_settings') || localStorage.getItem('knk_site_settings');
         if (stored) {
-          const parsed = JSON.parse(stored);
-          setSiteSettings(parsed);
+          current = JSON.parse(stored);
+          setSiteSettings(current);
         }
       } catch {}
     }
+
+    try {
+      const res = await fetch('http://localhost:1338/api/crm-site-settings');
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.data) {
+          const attr = json.data.attributes || json.data;
+          if (attr) {
+            const merged = {
+              ...attr,
+              ...current,
+              storefrontHeaderLogoUrl: current.storefrontHeaderLogoUrl || attr.storefrontHeaderLogoUrl || current.logoUrl || attr.logoUrl,
+              adminSidebarLogoUrl: current.adminSidebarLogoUrl || attr.adminSidebarLogoUrl,
+              adminTopNavLogoUrl: current.adminTopNavLogoUrl || attr.adminTopNavLogoUrl,
+              logoUrl: current.logoUrl || attr.logoUrl
+            };
+            setSiteSettings(merged);
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('knk_site_settings', JSON.stringify(merged));
+              localStorage.setItem('fuse_site_settings', JSON.stringify(merged));
+            }
+          }
+        }
+      }
+    } catch {}
   };
 
   useEffect(() => {
@@ -149,9 +175,23 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     window.addEventListener('knk_settings_updated', handleSettingsUpdate);
     window.addEventListener('storage', handleSettingsUpdate);
+
+    let bc: BroadcastChannel | null = null;
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      try {
+        bc = new BroadcastChannel('knk_enterprise_sync_channel');
+        bc.onmessage = (event) => {
+          if (event.data && event.data.type === 'SITE_SETTINGS_UPDATED' && event.data.payload) {
+            setSiteSettings(event.data.payload);
+          }
+        };
+      } catch {}
+    }
+
     return () => {
       window.removeEventListener('knk_settings_updated', handleSettingsUpdate);
       window.removeEventListener('storage', handleSettingsUpdate);
+      if (bc) bc.close();
     };
   }, []);
 

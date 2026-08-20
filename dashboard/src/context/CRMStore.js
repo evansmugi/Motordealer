@@ -495,8 +495,17 @@ export const useCRMStore = create((set, get) => ({
       const next = { ...state.siteSettings, ...updates }
       if (typeof window !== 'undefined') {
         localStorage.setItem('fuse_site_settings', JSON.stringify(next))
+        localStorage.setItem('knk_site_settings', JSON.stringify(next))
+        window.dispatchEvent(new CustomEvent('knk_settings_updated', { detail: next }))
+        if ('BroadcastChannel' in window) {
+          try {
+            const bc = new BroadcastChannel('knk_enterprise_sync_channel')
+            bc.postMessage({ type: 'SITE_SETTINGS_UPDATED', payload: next })
+            bc.close()
+          } catch {}
+        }
       }
-      api.put('/crm/site-settings', next).catch(console.error)
+      api.put('/crm/site-settings', next).catch(() => {})
       return { siteSettings: next }
     })
   },
@@ -1935,9 +1944,9 @@ export const useCRMStore = create((set, get) => ({
       if (stored) return JSON.parse(stored)
     } catch {}
     return {
-      adminSidebarLogoUrl: '/logo.svg',
-      adminTopNavLogoUrl: '/logo.svg',
-      storefrontHeaderLogoUrl: '/logo.svg',
+      adminSidebarLogoUrl: '/images/knk-logo-horizontal.png',
+      adminTopNavLogoUrl: '/images/knk-logo-horizontal.png',
+      storefrontHeaderLogoUrl: '/images/knk-logo-horizontal.png',
       baseCurrencyCode: 'KES',
       currencies: [
         { code: 'KES', symbol: 'KES', name: 'Kenyan Shilling', rate: 1.0, isBase: true, active: true },

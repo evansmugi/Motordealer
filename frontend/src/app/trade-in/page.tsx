@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useStore } from '../../context/StoreContext';
 import { sendCrmLead } from '../../lib/crmLeadHelper';
 import {
   Car, ArrowLeft, Sparkles, User, Phone, Mail, Camera, Eye, EyeOff,
   Upload, Check, Send, CheckCircle2, ShieldCheck, ArrowRightLeft,
-  ChevronDown, DollarSign, Calculator, HelpCircle
+  ChevronDown, Search, X, Calculator, Filter
 } from 'lucide-react';
 
 const RECOMMENDED_ANGLES = [
@@ -19,6 +19,8 @@ const RECOMMENDED_ANGLES = [
   { label: 'Wheels', icon: '🛞' }
 ];
 
+const DEFAULT_CAR_FALLBACK = 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=400&auto=format&fit=crop';
+
 export default function TradeInPage() {
   const { vehicles } = useStore();
 
@@ -28,15 +30,67 @@ export default function TradeInPage() {
 
   // Available showroom vehicles list for Target Vehicle selection
   const availableVehicles = vehicles && vehicles.length > 0 ? vehicles : [
-    { id: '1', year: 2024, make: 'Mercedes-Benz', model: 'S 580 4MATIC', price: 24500000 },
-    { id: '2', year: 2024, make: 'Porsche', model: 'Cayenne Turbo E-Hybrid', price: 28000000 },
-    { id: '3', year: 2023, make: 'Range Rover', model: 'Autobiography LWB', price: 32500000 },
-    { id: '4', year: 2023, make: 'BMW', model: 'X7 M60i V8', price: 22000000 }
+    {
+      id: '1',
+      year: 2025,
+      make: 'Toyota',
+      model: 'Land Cruiser Prado',
+      listing_title: '2025 TOYOTA LAND CRUISER PRADO',
+      price: 8850000,
+      images: ['https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=400&auto=format&fit=crop'],
+      fuel: 'Diesel',
+      transmission: 'Automatic'
+    },
+    {
+      id: '2',
+      year: 2024,
+      make: 'Mercedes-Benz',
+      model: 'AMG G 63',
+      listing_title: '2024 MERCEDES-BENZ AMG G 63',
+      price: 34500000,
+      images: ['https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=400&auto=format&fit=crop'],
+      fuel: 'Petrol',
+      transmission: 'Automatic'
+    },
+    {
+      id: '3',
+      year: 2024,
+      make: 'Porsche',
+      model: 'Cayenne Turbo E-Hybrid',
+      listing_title: '2024 PORSCHE CAYENNE TURBO E-HYBRID',
+      price: 28000000,
+      images: ['https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&auto=format&fit=crop'],
+      fuel: 'Hybrid',
+      transmission: 'PDK'
+    }
   ];
 
-  const [selectedTargetVehicle, setSelectedTargetVehicle] = useState(
-    availableVehicles[0] ? `${availableVehicles[0].year} ${availableVehicles[0].make} ${availableVehicles[0].model}` : '2024 Mercedes-Benz S 580 4MATIC'
+  // Predictive Target Vehicle State
+  const [selectedVehicleObj, setSelectedVehicleObj] = useState<any>(availableVehicles[0]);
+  const [selectedTargetVehicle, setSelectedTargetVehicle] = useState<string>(
+    (availableVehicles[0] as any)?.listing_title || `${availableVehicles[0]?.year || 2024} ${availableVehicles[0]?.make || ''} ${availableVehicles[0]?.model || ''}`.trim()
   );
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [predictiveQuery, setPredictiveQuery] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Filter vehicles predictively based on user query
+  const filteredTargetVehicles = availableVehicles.filter((v: any) => {
+    const title = (v.listing_title || `${v.year || ''} ${v.make || ''} ${v.model || ''}`).toLowerCase();
+    const query = predictiveQuery.toLowerCase().trim();
+    return !query || title.includes(query) || (v.make && v.make.toLowerCase().includes(query)) || (v.model && v.model.toLowerCase().includes(query));
+  });
 
   const [form, setForm] = useState({
     clientName: 'John Kamau',
@@ -199,36 +253,147 @@ export default function TradeInPage() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
 
-                {/* SECTION 1: SELECT SHOWROOM TARGET VEHICLE */}
-                <div className="bg-[#0c1220] border border-white/10 rounded-3xl p-6 space-y-4 shadow-xl">
+                {/* SECTION 1: PREDICTIVE CUSTOM VEHICLE SELECTOR WITH COVER THUMBNAILS */}
+                <div className="bg-[#0c1220] border border-white/10 rounded-3xl p-6 space-y-4 shadow-xl relative" ref={dropdownRef}>
                   <div className="flex items-center justify-between">
                     <div className="text-xs font-mono font-extrabold text-[#c9a84c] uppercase tracking-wider flex items-center gap-2">
                       <Sparkles size={16} />
-                      <span>1. SELECT SHOWROOM TARGET VEHICLE (STOCK INVENTORY)</span>
+                      <span>1. SELECT SHOWROOM TARGET VEHICLE (PREDICTIVE SEARCH)</span>
                     </div>
                     <span className="px-3 py-1 rounded-full text-[10px] font-mono font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                       {availableVehicles.length} Vehicles In Stock
                     </span>
                   </div>
 
-                  <div className="relative">
-                    <select
-                      value={selectedTargetVehicle}
-                      onChange={(e) => setSelectedTargetVehicle(e.target.value)}
-                      className="w-full bg-[#050810] border border-white/15 text-white rounded-2xl px-4 py-3.5 text-xs font-mono font-bold outline-none appearance-none cursor-pointer focus:border-[#c9a84c] transition-all"
-                    >
-                      {availableVehicles.map((v: any, i: number) => {
-                        const title = v.listing_title || `${v.year || 2024} ${v.make || ''} ${v.model || ''}`.trim();
-                        const priceStr = v.pricing?.cashPrice ? `KES ${Number(v.pricing.cashPrice).toLocaleString()}` : (v.price ? `KES ${Number(v.price).toLocaleString()}` : 'AVAILABLE FOR SALE');
-                        return (
-                          <option key={v.id || i} value={title}>
-                            {title.toUpperCase()} — {priceStr}
-                          </option>
-                        );
-                      })}
-                    </select>
-                    <ChevronDown size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#c9a84c] pointer-events-none" />
+                  {/* Trigger Card: Displays currently selected vehicle with Thumbnail */}
+                  <div
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="w-full bg-[#050810] border-2 border-white/15 hover:border-[#c9a84c] rounded-2xl p-3.5 flex items-center justify-between cursor-pointer transition-all shadow-inner group"
+                  >
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      {/* Vehicle Cover Picture Thumbnail on Left */}
+                      <img
+                        src={selectedVehicleObj?.images?.[0] || selectedVehicleObj?.cover_image || DEFAULT_CAR_FALLBACK}
+                        alt={selectedTargetVehicle}
+                        className="w-16 h-12 rounded-xl object-cover border border-white/10 shrink-0 shadow-md group-hover:scale-105 transition-transform"
+                      />
+                      <div className="min-w-0">
+                        <div className="text-xs font-extrabold uppercase text-white truncate group-hover:text-[#c9a84c] transition-colors">
+                          {selectedTargetVehicle}
+                        </div>
+                        <div className="text-[11px] font-mono font-bold text-[#c9a84c] mt-0.5">
+                          {selectedVehicleObj?.pricing?.cashPrice
+                            ? `KES ${Number(selectedVehicleObj.pricing.cashPrice).toLocaleString()}`
+                            : (selectedVehicleObj?.price ? `KES ${Number(selectedVehicleObj.price).toLocaleString()}` : 'SHOWROOM STOCK')}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[10px] font-mono font-bold uppercase text-neutral-400 group-hover:text-white transition-colors hidden sm:inline">
+                        {isDropdownOpen ? 'CLOSE SEARCH' : 'CHANGE CAR'}
+                      </span>
+                      <div className="p-2 rounded-xl bg-white/5 border border-white/10 group-hover:border-[#c9a84c] text-[#c9a84c]">
+                        <ChevronDown size={16} className={`transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                      </div>
+                    </div>
                   </div>
+
+                  {/* Floating Predictive Dropdown Panel */}
+                  {isDropdownOpen && (
+                    <div className="absolute left-6 right-6 top-full mt-2 bg-[#070b16] border-2 border-[#c9a84c]/60 rounded-3xl p-4 shadow-[0_25px_60px_rgba(0,0,0,0.95)] backdrop-blur-2xl z-50 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                      
+                      {/* Predictive Search Input Field */}
+                      <div className="relative">
+                        <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#c9a84c]" />
+                        <input
+                          type="text"
+                          autoFocus
+                          placeholder="Type make or model... (e.g. Prado, AMG, Porsche, Mercedes, BMW)"
+                          value={predictiveQuery}
+                          onChange={(e) => setPredictiveQuery(e.target.value)}
+                          className="w-full bg-[#03050a] border border-[#c9a84c]/40 text-white placeholder:text-neutral-500 text-xs font-mono font-bold rounded-2xl pl-10 pr-9 py-3 outline-none focus:border-[#c9a84c] focus:ring-1 focus:ring-[#c9a84c] transition-all"
+                        />
+                        {predictiveQuery && (
+                          <button
+                            type="button"
+                            onClick={() => setPredictiveQuery('')}
+                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
+                          >
+                            <X size={14} />
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between text-[10px] font-mono font-bold text-neutral-400 px-1">
+                        <span>MATCHING VEHICLES ({filteredTargetVehicles.length})</span>
+                        <span className="text-[#c9a84c]">SELECT ANY VEHICLE FOR APPRAISAL</span>
+                      </div>
+
+                      {/* Scrollable Vehicle List with Thumbnails */}
+                      <div className="max-h-72 overflow-y-auto space-y-2 pr-1 crm-scroll">
+                        {filteredTargetVehicles.length === 0 ? (
+                          <div className="p-8 text-center text-xs font-mono text-neutral-400">
+                            No vehicles matching "<span className="text-white">{predictiveQuery}</span>" found in stock.
+                          </div>
+                        ) : (
+                          filteredTargetVehicles.map((v: any, index: number) => {
+                            const title = v.listing_title || `${v.year || 2024} ${v.make || ''} ${v.model || ''}`.trim();
+                            const priceStr = v.pricing?.cashPrice
+                              ? `KES ${Number(v.pricing.cashPrice).toLocaleString()}`
+                              : (v.price ? `KES ${Number(v.price).toLocaleString()}` : 'AVAILABLE FOR SALE');
+                            const isSelected = selectedTargetVehicle === title;
+                            const coverImg = v.images?.[0] || v.cover_image || DEFAULT_CAR_FALLBACK;
+
+                            return (
+                              <div
+                                key={v.id || index}
+                                onClick={() => {
+                                  setSelectedVehicleObj(v);
+                                  setSelectedTargetVehicle(title);
+                                  setIsDropdownOpen(false);
+                                  setPredictiveQuery('');
+                                }}
+                                className={`p-2.5 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
+                                  isSelected
+                                    ? 'bg-gradient-to-r from-[#c9a84c]/25 via-[#e5c158]/15 to-[#c9a84c]/10 border-[#c9a84c] shadow-lg shadow-[#c9a84c]/10'
+                                    : 'bg-[#050810] border-white/10 hover:border-[#c9a84c]/50 hover:bg-white/5'
+                                }`}
+                              >
+                                <div className="flex items-center gap-3.5 min-w-0">
+                                  {/* COVER PIC THUMBNAIL ON THE LEFT */}
+                                  <img
+                                    src={coverImg}
+                                    alt={title}
+                                    className="w-16 h-12 rounded-xl object-cover border border-white/10 shrink-0 shadow-sm"
+                                  />
+                                  <div className="min-w-0">
+                                    <div className={`text-xs font-extrabold uppercase truncate ${isSelected ? 'text-[#c9a84c]' : 'text-white'}`}>
+                                      {title}
+                                    </div>
+                                    <div className="flex items-center gap-2 mt-0.5">
+                                      <span className="text-[11px] font-mono font-bold text-[#c9a84c]">{priceStr}</span>
+                                      {v.fuel && (
+                                        <span className="text-[9px] font-mono uppercase bg-white/10 text-neutral-300 px-1.5 py-0.5 rounded-md">
+                                          {v.fuel}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {isSelected && (
+                                  <div className="w-7 h-7 rounded-full bg-[#c9a84c] text-black flex items-center justify-center font-bold shrink-0 shadow-md">
+                                    <Check size={14} />
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* SECTION 2: YOUR CONTACT INFORMATION */}

@@ -1,0 +1,72 @@
+{
+    "kind": "collectionType",
+    "collectionName": "crm_chat_leads",
+    "info": {
+        "singularName": "crm-chat-lead",
+        "pluralName": "crm-chat-leads",
+        "displayName": "CRM Chat Lead",
+        "description": "Managed CRM Chat Lead entity"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "name": {
+            "type": "string"
+        },
+        "phone": {
+            "type": "string"
+        },
+        "email": {
+            "type": "string"
+        },
+        "source": {
+            "type": "string",
+            "default": "Live Chat"
+        },
+        "notes": {
+            "type": "text"
+        },
+        "currentStatus": {
+            "type": "string",
+            "default": "new"
+        },
+        "conversion_probability": {
+            "type": "integer",
+            "default": 30
+        },
+        "intent_score": {
+            "type": "integer",
+            "default": 50
+        },
+        "intent_tier": {
+            "type": "string",
+            "default": "MEDIUM"
+        },
+        "ip_address": {
+            "type": "string"
+        },
+        "location_name": {
+            "type": "string"
+        },
+        "browser": {
+            "type": "string"
+        },
+        "device": {
+            "type": "string"
+        },
+        "os": {
+            "type": "string"
+        },
+        "user_agent": {
+            "type": "string"
+        },
+        "page_url": {
+            "type": "string"
+        },
+        "captured_at": {
+            "type": "datetime"
+        }
+    }
+}

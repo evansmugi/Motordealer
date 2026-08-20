@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { StoreProvider } from '../context/StoreContext';
 import { Navbar } from '../components/layout/Navbar';
+import Footer from '../components/layout/Footer';
 import ClientChatWidget from '../components/automotive/ClientChatWidget';
 import { TailwindScript } from '../components/layout/TailwindScript';
 
@@ -31,6 +32,7 @@ export default function RootLayout({
           <main className="flex-1">
             {children}
           </main>
+          <Footer />
           <ClientChatWidget />
         </StoreProvider>
       </body>

@@ -1,0 +1,43 @@
+{
+    "kind": "collectionType",
+    "collectionName": "crm_rep_velocities",
+    "info": {
+        "singularName": "crm-rep-velocity",
+        "pluralName": "crm-rep-velocities",
+        "displayName": "CRM Rep Velocity",
+        "description": "Managed CRM Rep Velocity entity"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "name": {
+            "type": "string",
+            "required": true
+        },
+        "role": {
+            "type": "string"
+        },
+        "leads_assigned": {
+            "type": "integer",
+            "default": 0
+        },
+        "avg_response_min": {
+            "type": "float",
+            "default": 0
+        },
+        "compliance_percent": {
+            "type": "float",
+            "default": 100
+        },
+        "breaches": {
+            "type": "integer",
+            "default": 0
+        },
+        "currentStatus": {
+            "type": "string",
+            "default": "Optimal"
+        }
+    }
+}

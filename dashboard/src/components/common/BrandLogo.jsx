@@ -34,19 +34,19 @@ export default function BrandLogo({
   const currentSettings = { ...siteSettings, ...localSettings }
 
   let targetLogoUrl = customLogoUrl
-  if (!targetLogoUrl) {
+  if (targetLogoUrl === undefined) {
     if (location === 'sidebar') {
-      targetLogoUrl = currentSettings.adminSidebarLogoUrl || currentSettings.logoUrl
+      targetLogoUrl = currentSettings.adminSidebarLogoUrl !== undefined ? currentSettings.adminSidebarLogoUrl : currentSettings.logoUrl
     } else if (location === 'topnav') {
-      targetLogoUrl = currentSettings.adminTopNavLogoUrl || currentSettings.logoUrl
+      targetLogoUrl = currentSettings.adminTopNavLogoUrl !== undefined ? currentSettings.adminTopNavLogoUrl : currentSettings.logoUrl
     } else if (location === 'storefront') {
-      targetLogoUrl = currentSettings.storefrontHeaderLogoUrl || currentSettings.logoUrl
+      targetLogoUrl = currentSettings.storefrontHeaderLogoUrl !== undefined ? currentSettings.storefrontHeaderLogoUrl : currentSettings.logoUrl
     } else {
       targetLogoUrl = currentSettings.logoUrl
     }
   }
 
-  if (!targetLogoUrl || targetLogoUrl === '/logo.svg') {
+  if (targetLogoUrl === undefined) {
     targetLogoUrl = '/images/knk-logo-horizontal.png'
   }
 
@@ -58,11 +58,17 @@ export default function BrandLogo({
 
   return (
     <div className={cn("inline-flex items-center select-none group", className)}>
-      <img 
-        src={targetLogoUrl} 
-        alt="KnK Automotive Enterprise Logo" 
-        className={cn("w-auto object-contain transition-all duration-300 group-hover:scale-105", imgHeights[size])} 
-      />
+      {targetLogoUrl && targetLogoUrl.trim() !== '' ? (
+        <img 
+          src={targetLogoUrl} 
+          alt="KnK Automotive Enterprise Logo" 
+          className={cn("w-auto object-contain transition-all duration-300 group-hover:scale-105", imgHeights[size])} 
+        />
+      ) : (
+        <span className="text-lg font-black tracking-tight text-white uppercase font-sans">
+          KnK <span className="text-[#c9a84c]">AUTOMOTIVE</span>
+        </span>
+      )}
     </div>
   )
 }

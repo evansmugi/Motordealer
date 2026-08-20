@@ -11,6 +11,7 @@ import {
 import { useStore } from '../../context/StoreContext';
 import StorefrontBrandLogo from '../common/StorefrontBrandLogo';
 import CurrencySelector from '../common/CurrencySelector';
+import SearchModal from '../storefront/SearchModal';
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
@@ -514,6 +515,9 @@ export const Navbar: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* Predictive Translucent Search Modal */}
+        <SearchModal />
       </header>
     </>
   );

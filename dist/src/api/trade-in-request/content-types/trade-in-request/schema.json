@@ -1,0 +1,82 @@
+{
+    "kind": "collectionType",
+    "collectionName": "trade_in_requests",
+    "info": {
+        "singularName": "trade-in-request",
+        "pluralName": "trade-in-requests",
+        "displayName": "Trade In Request",
+        "description": "Managed Trade In Request entity"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "client_name": {
+            "type": "string",
+            "required": true
+        },
+        "client_email": {
+            "type": "string"
+        },
+        "client_phone": {
+            "type": "string",
+            "required": true
+        },
+        "target_vehicle_id": {
+            "type": "string"
+        },
+        "target_vehicle_name": {
+            "type": "string"
+        },
+        "target_vehicle_price": {
+            "type": "string"
+        },
+        "trade_vehicle_make": {
+            "type": "string",
+            "required": true
+        },
+        "trade_vehicle_model": {
+            "type": "string",
+            "required": true
+        },
+        "trade_vehicle_year": {
+            "type": "string"
+        },
+        "trade_vehicle_mileage": {
+            "type": "string"
+        },
+        "trade_vehicle_condition": {
+            "type": "string"
+        },
+        "trade_vehicle_registration": {
+            "type": "string"
+        },
+        "expected_trade_value": {
+            "type": "biginteger"
+        },
+        "offered_valuation": {
+            "type": "biginteger"
+        },
+        "client_notes": {
+            "type": "text"
+        },
+        "images": {
+            "type": "json"
+        },
+        "currentStatus": {
+            "type": "enumeration",
+            "enum": [
+                "Pending",
+                "In Review",
+                "Valued",
+                "Approved",
+                "Rejected"
+            ],
+            "default": "Pending"
+        },
+        "admin_notes": {
+            "type": "text"
+        }
+    }
+}

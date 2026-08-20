@@ -1,0 +1,28 @@
+{
+    "kind": "collectionType",
+    "collectionName": "crm_sla_metrics",
+    "info": {
+        "singularName": "crm-sla-metric",
+        "pluralName": "crm-sla-metrics",
+        "displayName": "CRM SLA Metric",
+        "description": "Managed CRM SLA Metric entity"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "target_minutes": {
+            "type": "integer",
+            "default": 15
+        },
+        "warning_threshold": {
+            "type": "integer",
+            "default": 10
+        },
+        "breach_count": {
+            "type": "integer",
+            "default": 0
+        }
+    }
+}
