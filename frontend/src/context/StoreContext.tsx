@@ -99,10 +99,21 @@ function getCookie(name: string): string | null {
 function getStoredSettings(): any {
   if (typeof window === 'undefined') return null;
   try {
+    let settingsObj: any = null;
     const cookieVal = getCookie('knk_site_settings') || getCookie('fuse_site_settings');
-    if (cookieVal) return JSON.parse(cookieVal);
-    const localVal = localStorage.getItem('fuse_site_settings') || localStorage.getItem('knk_site_settings');
-    if (localVal) return JSON.parse(localVal);
+    if (cookieVal) settingsObj = JSON.parse(cookieVal);
+    if (!settingsObj) {
+      const localVal = localStorage.getItem('fuse_site_settings') || localStorage.getItem('knk_site_settings');
+      if (localVal) settingsObj = JSON.parse(localVal);
+    }
+    if (settingsObj) {
+      ['storefrontHeaderLogoUrl', 'adminSidebarLogoUrl', 'adminTopNavLogoUrl', 'logoUrl'].forEach(key => {
+        if (typeof settingsObj[key] === 'string' && settingsObj[key].length > 1000 && settingsObj[key].startsWith('data:image')) {
+          delete settingsObj[key];
+        }
+      });
+      return settingsObj;
+    }
   } catch {}
   return null;
 }
@@ -150,13 +161,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     // Query local PostgreSQL database via Strapi backend API on port 1338
     try {
-      const res = await fetch('http://localhost:1338/api/crm-site-settings');
-      if (res.ok) {
-        const json = await res.json();
+      const res = await fetch('http://localhost:1338/api/crm-site-settings').catch(() => null);
+      if (res && res.ok) {
+        const json = await res.json().catch(() => null);
         if (json && json.data) {
           const remoteObj = json.data;
           if (Object.keys(remoteObj).length > 0) {
-            const merged = { ...remoteObj, ...current };
+            // Remote database settings take priority over initial local cache
+            const merged = { ...current, ...remoteObj };
             setSiteSettings(merged);
             if (typeof window !== 'undefined') {
               const jsonStr = JSON.stringify(merged);
@@ -182,6 +194,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     window.addEventListener('knk_settings_updated', handleSettingsUpdate);
     window.addEventListener('storage', handleSettingsUpdate);
+    window.addEventListener('focus', refreshSiteSettings);
+    document.addEventListener('visibilitychange', refreshSiteSettings);
 
     let bc: BroadcastChannel | null = null;
     if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
@@ -198,6 +212,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return () => {
       window.removeEventListener('knk_settings_updated', handleSettingsUpdate);
       window.removeEventListener('storage', handleSettingsUpdate);
+      window.removeEventListener('focus', refreshSiteSettings);
+      document.removeEventListener('visibilitychange', refreshSiteSettings);
       if (bc) bc.close();
     };
   }, []);
@@ -251,12 +267,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const refreshVehicles = async () => {
     let loaded: VehicleItem[] = [];
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1200);
-      const res = await fetch('http://localhost:1338/api/car-listings', { signal: controller.signal });
-      clearTimeout(timeoutId);
-      if (res.ok) {
-        const json = await res.json();
+      const res = await fetch('http://localhost:1338/api/car-listings').catch(() => null);
+      if (res && res.ok) {
+        const json = await res.json().catch(() => null);
         if (json && Array.isArray(json.data) && json.data.length > 0) {
           loaded = json.data.map((item: any, idx: number) => {
             const attr = item.attributes || item;

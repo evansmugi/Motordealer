@@ -13,6 +13,11 @@ module.exports = createCoreController('api::crm-site-setting.crm-site-setting', 
           if (item.key) settingsObj[item.key] = item.value;
         });
       }
+      ['storefrontHeaderLogoUrl', 'adminSidebarLogoUrl', 'adminTopNavLogoUrl', 'logoUrl'].forEach(key => {
+        if (!settingsObj[key] || (typeof settingsObj[key] === 'string' && settingsObj[key].length > 1000 && settingsObj[key].startsWith('data:image'))) {
+          settingsObj[key] = '/images/knk-logo-horizontal.png';
+        }
+      });
       return { data: settingsObj };
     } catch (e) {
       return { data: memorySettingsCache };

@@ -4,7 +4,6 @@ import { StoreProvider } from '../context/StoreContext';
 import { Navbar } from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import ClientChatWidget from '../components/automotive/ClientChatWidget';
-import { TailwindScript } from '../components/layout/TailwindScript';
 
 export const metadata: Metadata = {
   title: 'KnK Automotive Enterprise | Luxury Vehicles & Marketplace',
@@ -26,7 +25,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-[#080808] text-white min-h-screen flex flex-col font-sans antialiased selection:bg-[#c9a84c] selection:text-black">
-        <TailwindScript />
         <StoreProvider>
           <Navbar />
           <main className="flex-1">
