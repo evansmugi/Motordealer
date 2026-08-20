@@ -48,5 +48,43 @@ module.exports = createCoreController('api::crm-site-setting.crm-site-setting', 
     }
 
     return { data: memorySettingsCache };
+  },
+
+  async uploadLogo(ctx) {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+
+      const body = ctx.request.body || {};
+      let fileName = body.fileName || 'knk-logo-horizontal.png';
+      let fileData = body.fileData;
+
+      const ext = path.extname(fileName) || '.png';
+      const baseName = path.basename(fileName, ext).replace(/[^a-zA-Z0-9_-]/g, '-');
+      const cleanFileName = `${baseName}${ext}`;
+
+      if (fileData) {
+        const base64Data = fileData.replace(/^data:image\/\w+;base64,/, '');
+        const buffer = Buffer.from(base64Data, 'base64');
+
+        const appRoot = strapi.dirs?.app?.root || process.cwd();
+
+        // Save to frontend/public/images/
+        const frontendDir = path.resolve(appRoot, 'frontend/public/images');
+        if (!fs.existsSync(frontendDir)) fs.mkdirSync(frontendDir, { recursive: true });
+        fs.writeFileSync(path.join(frontendDir, cleanFileName), buffer);
+
+        // Save to dashboard/public/images/
+        const dashboardDir = path.resolve(appRoot, 'dashboard/public/images');
+        if (!fs.existsSync(dashboardDir)) fs.mkdirSync(dashboardDir, { recursive: true });
+        fs.writeFileSync(path.join(dashboardDir, cleanFileName), buffer);
+      }
+
+      const relativeUrl = `/images/${cleanFileName}`;
+      return { ok: true, url: relativeUrl, fileName: cleanFileName };
+    } catch (e) {
+      console.error('Failed to upload logo:', e);
+      return ctx.badRequest('Failed to save logo file: ' + e.message);
+    }
   }
 }));

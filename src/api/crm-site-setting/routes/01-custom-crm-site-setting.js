@@ -24,5 +24,13 @@ module.exports = {
         auth: false,
       },
     },
+    {
+      method: 'POST',
+      path: '/crm-site-settings/upload-logo',
+      handler: 'crm-site-setting.uploadLogo',
+      config: {
+        auth: false,
+      },
+    },
   ],
 };

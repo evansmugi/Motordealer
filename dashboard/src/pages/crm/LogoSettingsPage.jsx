@@ -79,14 +79,36 @@ export default function LogoSettingsPage() {
     }
   }, [siteSettings]);
 
-  // Handle File Upload Simulator
+  // Handle File Upload - Saves original filename to public/images and returns /images/filename.ext
   const handleFileUpload = (e, setUrlFn) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
         if (typeof reader.result === 'string') {
-          setUrlFn(reader.result);
+          const base64Data = reader.result;
+          try {
+            const res = await fetch('http://localhost:1338/api/crm-site-settings/upload-logo', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                fileName: file.name,
+                fileData: base64Data
+              })
+            }).catch(() => null);
+
+            if (res && res.ok) {
+              const json = await res.json().catch(() => null);
+              if (json && json.url) {
+                setUrlFn(json.url);
+                return;
+              }
+            }
+          } catch (err) {
+            console.warn('Backend logo upload failed:', err);
+          }
+          const cleanName = file.name.replace(/[^a-zA-Z0-9_.-]/g, '-');
+          setUrlFn(`/images/${cleanName}`);
         }
       };
       reader.readAsDataURL(file);
