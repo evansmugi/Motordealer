@@ -58,86 +58,103 @@ export default function VisitorMap() {
 
   // Initialize Globe.gl WebGL Instance
   useEffect(() => {
-    const Globe = window.Globe
-    if (!Globe) {
-      console.warn("Globe.gl script is loading...")
-      return
-    }
+    let checkTimer;
+    let resizeObserver;
+    let timer;
 
-    const container = containerRef.current
-    if (!container) return
+    const initGlobe = () => {
+      const Globe = window.Globe
+      if (!Globe) {
+        return false
+      }
 
-    // Instantiate Globe.gl on container with exact container dimensions
-    const initialWidth = container.clientWidth || 750
-    const initialHeight = container.clientHeight || 680
+      const container = containerRef.current
+      if (!container || globeInstanceRef.current) return true
 
-    const globe = Globe()(container)
-      .width(initialWidth)
-      .height(initialHeight)
-    globeInstanceRef.current = globe
+      // Instantiate Globe.gl on container with exact container dimensions
+      const initialWidth = container.clientWidth || 750
+      const initialHeight = container.clientHeight || 680
 
-    // 1. Globe Base Styling matching fuse-erp-co
-    globe
-      .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
-      .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
-      .backgroundColor('rgba(0,0,0,0)')
-      .showAtmosphere(true)
-      .atmosphereColor('#6366f1')
-      .polygonCapColor(() => 'rgba(0,0,0,0)')
-      .polygonSideColor(() => 'rgba(0,0,0,0)')
-      .polygonStrokeColor(() => 'rgba(255,255,255,0.3)')
+      const globe = Globe()(container)
+        .width(initialWidth)
+        .height(initialHeight)
+      globeInstanceRef.current = globe
 
-    // 2. Fetch Natural Earth GeoJSON Country Boundaries Overlay
-    fetch('https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson')
-      .then(res => res.json())
-      .then(countries => {
-        if (countries && countries.features) {
-          globe.polygonsData(countries.features)
-        }
+      // 1. Globe Base Styling matching fuse-erp-co
+      globe
+        .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
+        .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+        .backgroundColor('rgba(0,0,0,0)')
+        .showAtmosphere(true)
+        .atmosphereColor('#6366f1')
+        .polygonCapColor(() => 'rgba(0,0,0,0)')
+        .polygonSideColor(() => 'rgba(0,0,0,0)')
+        .polygonStrokeColor(() => 'rgba(255,255,255,0.3)')
+
+      // 2. Fetch Natural Earth GeoJSON Country Boundaries Overlay
+      fetch('https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson')
+        .then(res => res.json())
+        .then(countries => {
+          if (countries && countries.features) {
+            globe.polygonsData(countries.features)
+          }
+        })
+        .catch(err => console.error("GeoJSON countries load error:", err))
+
+      // Initial View Position focused on Africa / Europe
+      globe.pointOfView({ lat: 10, lng: 20, alt: 2.2 }, 0)
+      if (globe.controls()) {
+        globe.controls().autoRotate = true
+        globe.controls().autoRotateSpeed = 1.0
+      }
+
+      // Hover tooltip interaction
+      globe.onPointHover(node => {
+        setHoveredNode(node)
       })
-      .catch(err => console.error("GeoJSON countries load error:", err))
 
-    // Initial View Position focused on Africa / Europe
-    globe.pointOfView({ lat: 10, lng: 20, alt: 2.2 }, 0)
-    globe.controls().autoRotate = true
-    globe.controls().autoRotateSpeed = 1.0
-
-    // Hover tooltip interaction
-    globe.onPointHover(node => {
-      setHoveredNode(node)
-    })
-
-    setTimeout(() => {
       setIsGlobeReady(true)
-    }, 0)
 
-    // Handle Container & Window Resize using ResizeObserver for perfect centering
-    const updateDimensions = () => {
-      if (container && globe) {
-        const w = container.clientWidth
-        const h = container.clientHeight || 680
-        if (w > 0 && h > 0) {
-          globe.width(w)
-          globe.height(h)
+      // Handle Container & Window Resize using ResizeObserver for perfect centering
+      const updateDimensions = () => {
+        if (container && globe) {
+          const w = container.clientWidth
+          const h = container.clientHeight || 680
+          if (w > 0 && h > 0) {
+            globe.width(w)
+            globe.height(h)
+          }
         }
       }
+
+      timer = setTimeout(updateDimensions, 100)
+
+      resizeObserver = new ResizeObserver(() => {
+        updateDimensions()
+      })
+      resizeObserver.observe(container)
+
+      window.addEventListener('resize', updateDimensions)
+      return true
     }
 
-    // Force an immediate dimension check after layout paint
-    const timer = setTimeout(updateDimensions, 100)
-
-    const resizeObserver = new ResizeObserver(() => {
-      updateDimensions()
-    })
-    resizeObserver.observe(container)
-
-    window.addEventListener('resize', updateDimensions)
+    if (!initGlobe()) {
+      checkTimer = setInterval(() => {
+        if (initGlobe()) {
+          clearInterval(checkTimer)
+        }
+      }, 200)
+    }
 
     return () => {
-      clearTimeout(timer)
-      window.removeEventListener('resize', updateDimensions)
-      resizeObserver.disconnect()
-      container.innerHTML = ''
+      if (checkTimer) clearInterval(checkTimer)
+      if (timer) clearTimeout(timer)
+      window.removeEventListener('resize', () => {})
+      if (resizeObserver) resizeObserver.disconnect()
+      if (containerRef.current) {
+        containerRef.current.innerHTML = ''
+      }
+      globeInstanceRef.current = null
     }
   }, [])
 

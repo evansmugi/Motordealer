@@ -32,9 +32,16 @@ export default function VehicleTradeInModal({
   targetVehiclePrice = 'KES 24,500,000',
   targetVehicleImage = 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop'
 }: VehicleTradeInModalProps) {
-  const { vehicles } = useStore();
+  const { vehicles, theme: globalTheme } = useStore();
 
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [theme, setTheme] = useState<'dark' | 'light'>(globalTheme === 'light' ? 'light' : 'dark');
+  const [prevGlobalTheme, setPrevGlobalTheme] = useState(globalTheme);
+
+  if (prevGlobalTheme !== globalTheme) {
+    setPrevGlobalTheme(globalTheme);
+    setTheme(globalTheme === 'light' ? 'light' : 'dark');
+  }
+
   const isLight = theme === 'light';
 
   const [submitted, setSubmitted] = useState(false);

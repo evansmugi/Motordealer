@@ -8,9 +8,16 @@ import { sendCrmLead } from '../../lib/crmLeadHelper';
 import { LuxuryDatePicker } from '../common/LuxuryDatePicker';
 
 export const TestDriveModal: React.FC = () => {
-  const { vehicles, testDriveVehicleId, openTestDriveModal, bookTestDrive, formatPrice } = useStore();
+  const { vehicles, testDriveVehicleId, openTestDriveModal, bookTestDrive, formatPrice, theme } = useStore();
 
-  const [modalTheme, setModalTheme] = useState<'dark' | 'light'>('dark');
+  const [modalTheme, setModalTheme] = useState<'dark' | 'light'>(theme === 'light' ? 'light' : 'dark');
+  const [prevGlobalTheme, setPrevGlobalTheme] = useState(theme);
+
+  if (prevGlobalTheme !== theme) {
+    setPrevGlobalTheme(theme);
+    setModalTheme(theme === 'light' ? 'light' : 'dark');
+  }
+
   const isLight = modalTheme === 'light';
 
   const [customerName, setCustomerName] = useState('James Mwangi');

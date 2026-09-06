@@ -4,6 +4,7 @@ import { StoreProvider } from '../context/StoreContext';
 import { Navbar } from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import ClientChatWidget from '../components/automotive/ClientChatWidget';
+import ThemeSwitcherWidget from '../components/common/ThemeSwitcherWidget';
 
 export const metadata: Metadata = {
   title: 'KnK Automotive Enterprise | Luxury Vehicles & Marketplace',
@@ -32,6 +33,7 @@ export default function RootLayout({
           </main>
           <Footer />
           <ClientChatWidget />
+          <ThemeSwitcherWidget />
         </StoreProvider>
       </body>
     </html>

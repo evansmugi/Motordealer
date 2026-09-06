@@ -1,6 +1,5 @@
-'use client';
-
 import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
 import { X, CheckCircle2, User, Phone, Mail, Sparkles, Send, Sun, Moon, Lock } from 'lucide-react';
 import { sendCrmLead } from '../../lib/crmLeadHelper';
 
@@ -19,7 +18,15 @@ export default function VehicleInquiryModal({
   vehiclePrice = 'KES 24,500,000',
   vehicleImage = 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop'
 }: VehicleInquiryModalProps) {
-  const [modalTheme, setModalTheme] = useState<'dark' | 'light'>('dark');
+  const { theme } = useStore();
+  const [modalTheme, setModalTheme] = useState<'dark' | 'light'>(theme === 'light' ? 'light' : 'dark');
+  const [prevGlobalTheme, setPrevGlobalTheme] = useState(theme);
+
+  if (prevGlobalTheme !== theme) {
+    setPrevGlobalTheme(theme);
+    setModalTheme(theme === 'light' ? 'light' : 'dark');
+  }
+
   const isLight = modalTheme === 'light';
 
   const [submitted, setSubmitted] = useState(false);

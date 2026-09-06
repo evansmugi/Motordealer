@@ -6,10 +6,12 @@ import { useStore } from '../../context/StoreContext';
 import { X, Trash2, Plus, Minus, ArrowRight, ShieldCheck, Tag } from 'lucide-react';
 
 export const CartDrawer: React.FC = () => {
-  const { cart, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, cartTotal } = useStore();
+  const { cart, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, cartTotal, theme } = useStore();
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [promoNotice, setPromoNotice] = useState<string | null>(null);
+
+  const isLight = theme === 'light';
 
   if (!isCartOpen) return null;
 
@@ -30,58 +32,75 @@ export const CartDrawer: React.FC = () => {
   const finalTotal = cartTotal - discount;
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', justifyContent: 'flex-end' }}>
-      <div style={{ width: '460px', maxWidth: '100%', background: '#0E1017', borderLeft: '1px solid rgba(255, 255, 255, 0.1)', height: '100%', display: 'flex', flexDirection: 'column', padding: '28px', boxShadow: '-15px 0 40px rgba(0,0,0,0.8)' }}>
+    <div className={`fixed inset-0 z-[1000] flex justify-end backdrop-blur-md transition-all ${
+      isLight ? 'bg-slate-900/60' : 'bg-black/70'
+    }`}>
+      <div className={`w-[460px] max-w-full h-full flex flex-col p-6 sm:p-7 shadow-2xl border-l transition-all ${
+        isLight
+          ? 'bg-slate-50 border-amber-500/60 text-slate-900 shadow-slate-900/30'
+          : 'bg-[#0E1017] border-white/10 text-white shadow-[-15px_0_40px_rgba(0,0,0,0.8)]'
+      }`}>
         {/* Drawer Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div className="flex justify-between items-center mb-5">
           <div>
-            <h2 style={{ fontSize: '20px', fontWeight: '900', color: '#F8FAFC', margin: 0 }}>Shopping Cart</h2>
-            <div style={{ fontSize: '12px', color: '#64748B' }}>{cart.length} unique hardware items</div>
+            <h2 className={`text-xl font-black ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>Shopping Cart</h2>
+            <div className={`text-xs font-mono font-medium ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>{cart.length} unique items</div>
           </div>
-          <button onClick={() => setIsCartOpen(false)} style={{ background: 'rgba(255, 255, 255, 0.05)', border: 'none', borderRadius: '8px', padding: '8px', color: '#94A3B8', cursor: 'pointer' }}>
+          <button
+            onClick={() => setIsCartOpen(false)}
+            className={`p-2 rounded-xl border transition-all cursor-pointer ${
+              isLight ? 'bg-slate-200 border-slate-300 text-slate-700 hover:text-slate-900' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'
+            }`}
+          >
             <X size={20} />
           </button>
         </div>
 
         {/* Free Shipping Progress Indicator */}
-        <div style={{ padding: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)', marginBottom: '20px' }}>
-          <div style={{ fontSize: '12px', color: '#94A3B8', display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+        <div className={`p-3.5 rounded-2xl border mb-5 ${
+          isLight ? 'bg-white border-slate-200 shadow-sm' : 'bg-white/5 border-white/10'
+        }`}>
+          <div className={`text-xs flex justify-between mb-1.5 font-medium ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
             <span>{cartTotal >= freeShippingThreshold ? '🎉 Free Express Delivery Unlocked!' : `Add $${(freeShippingThreshold - cartTotal).toLocaleString()} for Free Delivery`}</span>
-            <span style={{ fontWeight: '700', color: '#3B82F6' }}>{Math.round(progressPercent)}%</span>
+            <span className={`font-bold ${isLight ? 'text-amber-700' : 'text-blue-400'}`}>{Math.round(progressPercent)}%</span>
           </div>
-          <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.08)', borderRadius: '3px', overflow: 'hidden' }}>
-            <div style={{ width: `${progressPercent}%`, height: '100%', background: 'linear-gradient(90deg, #3B82F6, #10B981)', transition: 'width 0.3s ease' }}></div>
+          <div className={`w-full h-1.5 rounded-full overflow-hidden ${isLight ? 'bg-slate-200' : 'bg-white/10'}`}>
+            <div className="h-full bg-gradient-to-r from-amber-500 via-amber-600 to-emerald-500 transition-all duration-300" style={{ width: `${progressPercent}%` }}></div>
           </div>
         </div>
 
         {/* Cart Items Scroll Container */}
-        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div className="flex-1 overflow-y-auto space-y-4">
           {cart.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '60px 0', color: '#64748B' }}>
-              <div style={{ fontSize: '16px', fontWeight: '700', marginBottom: '8px' }}>Your cart is empty</div>
-              <p style={{ fontSize: '13px' }}>Explore the catalog and select hardware items.</p>
+            <div className={`text-center py-16 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+              <div className="text-base font-bold mb-2">Your cart is empty</div>
+              <p className="text-xs">Explore the showroom catalog and select items.</p>
             </div>
           ) : (
             cart.map((item, idx) => (
-              <div key={idx} style={{ display: 'flex', gap: '14px', padding: '14px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '14px' }}>
-                <img src={item.product.images[0]} alt={item.product.name} style={{ width: '70px', height: '70px', borderRadius: '10px', objectFit: 'cover' }} />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '14px', fontWeight: '800', color: '#F8FAFC' }}>{item.product.name}</div>
-                  <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>Variant: {item.variantColor}</div>
-                  <div style={{ fontSize: '14px', fontWeight: '800', color: '#3B82F6', marginTop: '6px' }}>${item.product.price.toLocaleString()}</div>
+              <div key={idx} className={`flex gap-3.5 p-3.5 rounded-2xl border ${
+                isLight ? 'bg-white border-slate-200 shadow-sm' : 'bg-white/5 border-white/10'
+              }`}>
+                <img src={item.product.images[0]} alt={item.product.name} className="w-16 h-16 rounded-xl object-cover" />
+                <div className="flex-1">
+                  <div className={`text-sm font-bold ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>{item.product.name}</div>
+                  <div className={`text-xs mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Variant: {item.variantColor}</div>
+                  <div className={`text-sm font-extrabold mt-1.5 ${isLight ? 'text-amber-800' : 'text-blue-400'}`}>${item.product.price.toLocaleString()}</div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                  <button onClick={() => removeFromCart(item.product.id, item.variantColor)} style={{ background: 'transparent', border: 'none', color: '#f43f5e', cursor: 'pointer' }}>
+                <div className="flex flex-col justify-between items-end">
+                  <button onClick={() => removeFromCart(item.product.id, item.variantColor)} className="text-rose-500 hover:text-rose-600 cursor-pointer">
                     <Trash2 size={16} />
                   </button>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', padding: '2px 6px' }}>
-                    <button onClick={() => updateQuantity(item.product.id, item.variantColor, item.quantity - 1)} style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer' }}>
+                  <div className={`flex items-center gap-2 p-1 rounded-lg border ${
+                    isLight ? 'bg-slate-100 border-slate-300 text-slate-900' : 'bg-white/10 border-white/10 text-white'
+                  }`}>
+                    <button onClick={() => updateQuantity(item.product.id, item.variantColor, item.quantity - 1)} className="cursor-pointer text-slate-400 hover:text-slate-900">
                       <Minus size={12} />
                     </button>
-                    <span style={{ fontSize: '12px', fontWeight: '800', color: '#fff' }}>{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.product.id, item.variantColor, item.quantity + 1)} style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer' }}>
+                    <span className="text-xs font-bold px-1">{item.quantity}</span>
+                    <button onClick={() => updateQuantity(item.product.id, item.variantColor, item.quantity + 1)} className="cursor-pointer text-slate-400 hover:text-slate-900">
                       <Plus size={12} />
                     </button>
                   </div>
@@ -93,30 +112,36 @@ export const CartDrawer: React.FC = () => {
 
         {/* Promo Code Form & Summary Footer */}
         {cart.length > 0 && (
-          <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-            <form onSubmit={handleApplyPromo} style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
+          <div className={`mt-5 pt-4 border-t ${isLight ? 'border-slate-200' : 'border-white/10'}`}>
+            <form onSubmit={handleApplyPromo} className="flex gap-2 mb-3.5">
               <input
                 type="text"
                 placeholder="Promo Code (NEXUS2026)"
                 value={promoCode}
                 onChange={(e) => setPromoCode(e.target.value)}
-                style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '8px 12px', color: '#fff', fontSize: '12px', outline: 'none' }}
+                className={`flex-1 border rounded-xl px-3 py-2 text-xs outline-none ${
+                  isLight
+                    ? 'bg-white border-slate-300 text-slate-900 focus:border-amber-600'
+                    : 'bg-white/5 border-white/10 text-white focus:border-[#c9a84c]'
+                }`}
               />
-              <button type="submit" style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', padding: '0 14px', color: '#fff', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>Apply</button>
+              <button type="submit" className={`px-4 rounded-xl text-xs font-extrabold uppercase border cursor-pointer ${
+                isLight ? 'bg-slate-200 border-slate-300 text-slate-800 hover:bg-slate-300' : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+              }`}>Apply</button>
             </form>
-            {promoNotice && <div style={{ fontSize: '11px', color: '#10B981', marginBottom: '12px' }}>{promoNotice}</div>}
+            {promoNotice && <div className="text-xs font-bold text-emerald-500 mb-3">{promoNotice}</div>}
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#94A3B8', marginBottom: '6px' }}>
+            <div className={`flex justify-between text-xs mb-1.5 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
               <span>Subtotal</span>
               <span>${cartTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
             </div>
             {discount > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#10B981', marginBottom: '6px' }}>
+              <div className="flex justify-between text-xs text-emerald-500 font-bold mb-1.5">
                 <span>Discount (15%)</span>
                 <span>-${discount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
               </div>
             )}
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', fontWeight: '900', color: '#F8FAFC', margin: '12px 0 20px' }}>
+            <div className={`flex justify-between text-lg font-black my-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>
               <span>Total</span>
               <span>${finalTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
             </div>
@@ -124,8 +149,11 @@ export const CartDrawer: React.FC = () => {
             <Link
               href="/checkout"
               onClick={() => setIsCartOpen(false)}
-              className="nexus-btn-primary"
-              style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+              className={`w-full py-3.5 px-6 font-extrabold rounded-full text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer ${
+                isLight
+                  ? 'bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-white hover:opacity-95 shadow-amber-500/30'
+                  : 'bg-gradient-to-r from-[#e5c158] to-[#c9a84c] text-black hover:opacity-90 shadow-[#c9a84c]/20'
+              }`}
             >
               PROCEED TO EXPRESS CHECKOUT <ArrowRight size={18} />
             </Link>

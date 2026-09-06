@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, CheckCircle2, User, Phone, Mail, Sparkles, Send, Sun, Moon, Lock } from 'lucide-react';
+import { useStore } from '../../context/StoreContext';
+import { X, CheckCircle2, User, Phone, Sparkles, Send, Sun, Moon } from 'lucide-react';
 import { sendCrmLead } from '../../lib/crmLeadHelper';
 
 interface ReservationModalProps {
@@ -19,7 +20,15 @@ export default function ReservationModal({
   vehiclePrice = 'KES 24,500,000',
   vehicleImage = 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&auto=format&fit=crop'
 }: ReservationModalProps) {
-  const [modalTheme, setModalTheme] = useState<'dark' | 'light'>('dark');
+  const { theme, reservationVehicleId, openReservationModal, vehicles, formatPrice } = useStore();
+  const [modalTheme, setModalTheme] = useState<'dark' | 'light'>(theme === 'light' ? 'light' : 'dark');
+  const [prevGlobalTheme, setPrevGlobalTheme] = useState(theme);
+
+  if (prevGlobalTheme !== theme) {
+    setPrevGlobalTheme(theme);
+    setModalTheme(theme === 'light' ? 'light' : 'dark');
+  }
+
   const isLight = modalTheme === 'light';
 
   const [submitted, setSubmitted] = useState(false);
@@ -34,7 +43,34 @@ export default function ReservationModal({
     notes: ''
   });
 
-  if (!isOpen) return null;
+  const isModalOpen = isOpen !== undefined ? isOpen : Boolean(reservationVehicleId);
+
+  const activeVehicleRecord = reservationVehicleId 
+    ? (vehicles.find(v => v.id === reservationVehicleId) as Record<string, unknown> | undefined)
+    : undefined;
+
+  const activeVehicleTitle = activeVehicleRecord 
+    ? (typeof activeVehicleRecord.title === 'string' ? activeVehicleRecord.title : `${activeVehicleRecord.year || ''} ${activeVehicleRecord.make || ''} ${activeVehicleRecord.model || ''}`.trim())
+    : vehicleTitle;
+
+  const activeVehiclePrice = activeVehicleRecord 
+    ? (activeVehicleRecord.pricing && typeof (activeVehicleRecord.pricing as Record<string, unknown>).cashPrice === 'number'
+        ? formatPrice((activeVehicleRecord.pricing as Record<string, unknown>).cashPrice as number)
+        : (typeof activeVehicleRecord.price === 'number' ? formatPrice(activeVehicleRecord.price as number) : (typeof activeVehicleRecord.price === 'string' ? activeVehicleRecord.price : vehiclePrice)))
+    : vehiclePrice;
+
+  const activeVehicleImage = (Array.isArray(activeVehicleRecord?.images) && typeof activeVehicleRecord.images[0] === 'string' ? activeVehicleRecord.images[0] : (typeof activeVehicleRecord?.image === 'string' ? activeVehicleRecord.image : vehicleImage));
+
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    }
+    if (openReservationModal) {
+      openReservationModal(null);
+    }
+  };
+
+  if (!isModalOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,11 +81,11 @@ export default function ReservationModal({
           client_name: form.name,
           client_phone: form.phone,
           client_email: form.email || `${form.phone.replace(/[^0-9]/g, '')}@motordealer.co.ke`,
-          vehicle_title: vehicleTitle,
+          vehicle_title: activeVehicleTitle,
           deposit_amount: String(form.depositAmount),
           payment_method: form.paymentMethod,
           appointment_type: 'Import / Reserve',
-          notes: form.notes || `Vehicle Deposit Holding of KES ${Number(form.depositAmount).toLocaleString()} via ${form.paymentMethod} for ${vehicleTitle}`,
+          notes: form.notes || `Vehicle Deposit Holding of KES ${Number(form.depositAmount).toLocaleString()} via ${form.paymentMethod} for ${activeVehicleTitle}`,
           publishedAt: new Date().toISOString()
         }
       };
@@ -65,10 +101,10 @@ export default function ReservationModal({
         phone: form.phone,
         email: form.email,
         source: 'Import / Reserve Deposit Modal',
-        notes: `Deposit reservation of KES ${Number(form.depositAmount).toLocaleString()} via ${form.paymentMethod} for ${vehicleTitle}`,
+        notes: `Deposit reservation of KES ${Number(form.depositAmount).toLocaleString()} via ${form.paymentMethod} for ${activeVehicleTitle}`,
         intentScore: 95,
         intentTier: 'HOT',
-        targetVehicle: vehicleTitle
+        targetVehicle: activeVehicleTitle
       });
     } catch (err) {
       console.error('Failed to post reservation:', err);
@@ -77,7 +113,7 @@ export default function ReservationModal({
       setSubmitted(true);
       setTimeout(() => {
         setSubmitted(false);
-        onClose?.();
+        handleClose();
       }, 2200);
     }
   };
@@ -119,7 +155,7 @@ export default function ReservationModal({
             <button
               type="button"
               title="Close Modal"
-              onClick={onClose}
+              onClick={handleClose}
               className={`p-1.5 rounded-full transition-colors cursor-pointer ${
                 isLight ? 'text-slate-500 hover:text-slate-900 hover:bg-slate-200' : 'text-neutral-400 hover:text-white hover:bg-[#121622]'
               }`}
@@ -138,7 +174,7 @@ export default function ReservationModal({
               Deposit Reservation Logged
             </h3>
             <p className={`text-xs max-w-sm mx-auto ${isLight ? 'text-slate-600' : 'text-neutral-400'}`}>
-              Your deposit holding for <strong className={isLight ? 'text-slate-900' : 'text-white'}>{vehicleTitle}</strong> has been received by KnK Finance Desk.
+              Your deposit holding for <strong className={isLight ? 'text-slate-900' : 'text-white'}>{activeVehicleTitle}</strong> has been received by KnK Finance Desk.
             </p>
           </div>
         ) : (
@@ -147,16 +183,16 @@ export default function ReservationModal({
             <div className={`border rounded-2xl p-3 flex items-center gap-3 ${
               isLight ? 'bg-white border-slate-200 shadow-sm' : 'bg-[#121622] border-[#1e2638]'
             }`}>
-              <img src={vehicleImage} alt={vehicleTitle} className={`w-16 h-12 rounded-xl object-cover border ${
+              <img src={activeVehicleImage} alt={activeVehicleTitle} className={`w-16 h-12 rounded-xl object-cover border ${
                 isLight ? 'border-slate-200' : 'border-[#1e2638]'
               }`} />
               <div className="flex-1 min-w-0">
                 <h4 className={`text-xs font-black uppercase tracking-wide truncate ${
                   isLight ? 'text-slate-900' : 'text-white'
-                }`}>{vehicleTitle}</h4>
+                }`}>{activeVehicleTitle}</h4>
                 <div className={`text-[11px] font-extrabold mt-0.5 ${
                   isLight ? 'text-amber-800' : 'text-[#c9a84c]'
-                }`}>{vehiclePrice}</div>
+                }`}>{activeVehiclePrice}</div>
               </div>
             </div>
 

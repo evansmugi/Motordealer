@@ -4,14 +4,14 @@ export default {
   config: {
     // Custom Logos & Favicon from public assets
     auth: {
-      logo: '/auth-logo.svg',
+      logo: '/auth-logo.png?v=4',
     },
     menu: {
-      logo: '/menu-logo.svg',
+      logo: '/menu-logo.png?v=4',
     },
     head: {
       favicon: '/favicon.svg',
-      title: 'NEXUS PRIME | CMS Operational Control',
+      title: 'Fuse System | CMS Operational Control',
     },
     // Disable Strapi onboarding tutorial and release notifications
     tutorials: false,
@@ -21,14 +21,14 @@ export default {
     // Custom Admin Translations & Branding Text
     translations: {
       en: {
-        'app.components.LeftMenu.navbrand.title': 'NEXUS PRIME',
-        'app.components.LeftMenu.navbrand.workplace': 'Bio-Neural & Quantum CMS',
-        'Auth.form.welcome.title': 'NEXUS PRIME Control Center',
-        'Auth.form.welcome.subtitle': 'Log in to manage bio-hardware telemetry & catalog',
+        'app.components.LeftMenu.navbrand.title': 'Fuse System',
+        'app.components.LeftMenu.navbrand.workplace': 'KnK Automotive ERP & CMS',
+        'Auth.form.welcome.title': 'Fuse System Control Center',
+        'Auth.form.welcome.subtitle': 'Log in to manage enterprise vehicle fleet & catalog',
       },
     },
   },
   bootstrap(app: StrapiApp) {
-    console.log('NEXUS PRIME Strapi Admin Engine initialized successfully.');
+    console.log('Fuse System Strapi Admin Engine initialized successfully.');
   },
 };

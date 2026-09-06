@@ -217,6 +217,152 @@ async function seedInitialData(strapi) {
                 await strapi.entityService.create('api::crm-scoring-rule.crm-scoring-rule', { data: { ...r, publishedAt: new Date().toISOString() } });
             }
         }
+        // 5. CRM Leads
+        const leads = await strapi.entityService.findMany('api::crm-lead.crm-lead');
+        if (!leads || leads.length === 0) {
+            console.log('[Seed] Populating initial CRM Leads...');
+            const initialLeads = [
+                {
+                    name: 'Dr. Mwangi Kiptoo',
+                    email: 'mwangi.kiptoo@healthgroup.co.ke',
+                    phone: '+254 722 104 902',
+                    company: 'Kiptoo Medical Group',
+                    source: 'Storefront Direct Inquiry',
+                    current_status: 'Qualified',
+                    notes: 'Interested in purchasing 2024 Mercedes-Benz S 580 4MATIC for executive chauffeur transport.',
+                    conversion_probability: 85,
+                    intent_score: 92,
+                    intent_tier: 'HOT',
+                    buying_timeline: '7-14 Days',
+                    location_name: 'Nairobi, Kenya',
+                    device: 'Desktop',
+                    os: 'Windows'
+                },
+                {
+                    name: 'Sarah Jenkins',
+                    email: 's.jenkins@diplomatic.org',
+                    phone: '+254 700 882 119',
+                    company: 'UN Environment Program',
+                    source: 'Live Chat Concierge',
+                    current_status: 'Contacted',
+                    notes: 'Inquired about duty-free diplomatic clearance on 2024 Porsche Cayenne Turbo E-Hybrid.',
+                    conversion_probability: 70,
+                    intent_score: 78,
+                    intent_tier: 'WARM',
+                    buying_timeline: 'Immediate',
+                    location_name: 'Gigiri, Nairobi',
+                    device: 'Mobile',
+                    os: 'iOS'
+                },
+                {
+                    name: 'Hon. Al-Mansoor',
+                    email: 'almansoor@gulfholdings.ae',
+                    phone: '+254 711 405 600',
+                    company: 'Gulf Holdings East Africa',
+                    source: 'WhatsApp VIP Channel',
+                    current_status: 'Negotiation',
+                    notes: 'Requesting custom specs for 2023 Range Rover Autobiography LWB with bespoke interior.',
+                    conversion_probability: 90,
+                    intent_score: 96,
+                    intent_tier: 'HOT',
+                    buying_timeline: '1-3 Days',
+                    location_name: 'Karen, Nairobi',
+                    device: 'Mobile',
+                    os: 'iOS'
+                }
+            ];
+            for (const l of initialLeads) {
+                await strapi.entityService.create('api::crm-lead.crm-lead', { data: { ...l, publishedAt: new Date().toISOString() } });
+            }
+        }
+        // 6. Appointments & Test Drives
+        const appointments = await strapi.entityService.findMany('api::appointment.appointment');
+        if (!appointments || appointments.length === 0) {
+            console.log('[Seed] Populating initial Showroom Appointments...');
+            const initialAppointments = [
+                {
+                    client_name: 'Dr. Mwangi Kiptoo',
+                    client_email: 'mwangi.kiptoo@healthgroup.co.ke',
+                    client_phone: '+254 722 104 902',
+                    date: '2026-08-25',
+                    time: '11:00 AM',
+                    budget: '25,000,000 KES',
+                    vehicle_type: 'Mercedes-Benz S 580 4MATIC',
+                    use_case: 'Executive Driving',
+                    fuel: 'Petrol / Hybrid',
+                    current_status: 'Confirmed'
+                },
+                {
+                    client_name: 'David Ochieng',
+                    client_email: 'dochieng@capitalcorp.co.ke',
+                    client_phone: '+254 733 456 789',
+                    date: '2026-08-26',
+                    time: '02:30 PM',
+                    budget: '28,000,000 KES',
+                    vehicle_type: 'Porsche Cayenne Turbo E-Hybrid',
+                    use_case: 'Weekend Luxury SUV',
+                    fuel: 'Hybrid (PHEV)',
+                    current_status: 'Scheduled'
+                }
+            ];
+            for (const app of initialAppointments) {
+                await strapi.entityService.create('api::appointment.appointment', { data: { ...app, publishedAt: new Date().toISOString() } });
+            }
+        }
+        // 7. Trade-In Requests
+        const tradeIns = await strapi.entityService.findMany('api::trade-in-request.trade-in-request');
+        if (!tradeIns || tradeIns.length === 0) {
+            console.log('[Seed] Populating initial Trade-In Requests...');
+            const initialTradeIns = [
+                {
+                    client_name: 'Hon. Al-Mansoor',
+                    client_email: 'almansoor@gulfholdings.ae',
+                    client_phone: '+254 711 405 600',
+                    trade_vehicle_make: 'Land Rover',
+                    trade_vehicle_model: 'Range Rover Vogue V8',
+                    trade_vehicle_year: '2020',
+                    trade_vehicle_mileage: '42000',
+                    trade_vehicle_condition: 'Excellent',
+                    target_vehicle_name: '2023 Range Rover Autobiography LWB',
+                    expected_trade_value: '18500000',
+                    offered_valuation: '18000000',
+                    currentStatus: 'Valued'
+                }
+            ];
+            for (const t of initialTradeIns) {
+                await strapi.entityService.create('api::trade-in-request.trade-in-request', { data: { ...t, publishedAt: new Date().toISOString() } });
+            }
+        }
+        // 8. Blogs & News Guides
+        const blogs = await strapi.entityService.findMany('api::blog.blog');
+        if (!blogs || blogs.length === 0) {
+            console.log('[Seed] Populating initial Luxury Blogs...');
+            const initialBlogs = [
+                {
+                    title: '2026 East Africa Luxury Import Guide: Duty & Clearance Insights',
+                    slug: '2026-east-africa-luxury-import-guide',
+                    author: 'KnK Advisory Board',
+                    excerpt: 'Everything executive vehicle buyers need to know about KRA valuation bands, duty exemptions, and logbook transfer timelines.',
+                    content: 'Importing high-end luxury vehicles into Kenya requires navigating specific tax structures...',
+                    published_date: '2026-08-15',
+                    read_time: '5 min read',
+                    tags: JSON.stringify(['Import', 'Luxury Fleet', 'Kenya Duty', 'Logbook'])
+                },
+                {
+                    title: 'Hybrid vs Biturbo V8: Choosing the Ultimate Executive Flagship',
+                    slug: 'hybrid-vs-biturbo-v8-flagship-comparison',
+                    author: 'Head of Automotive Intelligence',
+                    excerpt: 'Comparing the Porsche Cayenne E-Hybrid and Mercedes S 580 Biturbo for Nairobi driving dynamics.',
+                    content: 'As modern automotive technology evolves, luxury buyers face a compelling choice...',
+                    published_date: '2026-08-18',
+                    read_time: '7 min read',
+                    tags: JSON.stringify(['Porsche', 'Mercedes-Benz', 'Hybrid', 'Performance'])
+                }
+            ];
+            for (const b of initialBlogs) {
+                await strapi.entityService.create('api::blog.blog', { data: { ...b, publishedAt: new Date().toISOString() } });
+            }
+        }
         console.log('[Seed] Initial seed data verification complete.');
     }
     catch (err) {

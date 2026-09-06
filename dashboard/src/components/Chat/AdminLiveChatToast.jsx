@@ -117,6 +117,8 @@ export default function AdminLiveChatToast() {
   }, [nexusThreads, liveChatNotificationsEnabled, location.pathname])
 
   // Multi-Tab & LocalStorage Listeners for Live Chat Threads, Trade-Ins & Lead Notifications
+  const isInitialPoll = useRef(true)
+
   useEffect(() => {
     if (typeof window === 'undefined') return
 
@@ -152,8 +154,7 @@ export default function AdminLiveChatToast() {
       if (e.key === 'knk_latest_trade_in_event' && e.newValue) {
         try {
           const data = JSON.parse(e.newValue)
-          if (data.tradeIn && !seenTradeInIds.current.has(data.tradeIn.id)) {
-            seenTradeInIds.current.add(data.tradeIn.id)
+          if (data.tradeIn) {
             playAdminChime()
             setToastTradeIn(data.tradeIn)
           }
@@ -171,58 +172,87 @@ export default function AdminLiveChatToast() {
 
     window.addEventListener('storage', handleStorageChange)
 
-    // 3. Fast 8-Second Polling for Recent Strapi Inbound Trade-Ins & Leads
+    // 3. Fast 3-Second Polling for Recent Inbound Submissions
     const pollInterval = setInterval(async () => {
       try {
         // Poll Trade-Ins
         const tRes = await fetch('http://localhost:1338/api/trade-in-requests').then(r => r.ok ? r.json() : null)
-        if (tRes && Array.isArray(tRes.data) && tRes.data.length > 0) {
-          const newestItem = tRes.data[tRes.data.length - 1] || tRes.data[0]
-          const attr = newestItem.attributes || newestItem
-          const tradeId = `strapi-trade-${newestItem.id}`
-          const createdTime = new Date(attr.publishedAt || attr.createdAt || new Date()).getTime()
-          const isRecent = (Date.now() - createdTime) < 3 * 60 * 1000 // Last 3 minutes
-
-          if (isRecent && !seenTradeInIds.current.has(tradeId)) {
-            seenTradeInIds.current.add(tradeId)
-            playAdminChime()
-            setToastTradeIn({
-              id: newestItem.id,
-              client_name: attr.client_name || attr.clientName || 'VIP Prospect',
-              client_phone: attr.client_phone || attr.clientPhone || '',
-              trade_vehicle: `${attr.trade_year || ''} ${attr.trade_make || ''} ${attr.trade_model || ''}`.trim() || 'Trade Vehicle',
-              target_vehicle: attr.target_vehicle || 'Target Vehicle',
-              expected_value: attr.expected_value || attr.expectedValue || '0',
-              image_count: 1
-            })
+        if (tRes && Array.isArray(tRes.data)) {
+          if (isInitialPoll.current) {
+            tRes.data.forEach(item => seenTradeInIds.current.add(`strapi-trade-${item.id}`))
+          } else if (tRes.data.length > 0) {
+            const newestItem = tRes.data[tRes.data.length - 1]
+            const tradeId = `strapi-trade-${newestItem.id}`
+            if (!seenTradeInIds.current.has(tradeId)) {
+              seenTradeInIds.current.add(tradeId)
+              const attr = newestItem.attributes || newestItem
+              playAdminChime()
+              setToastTradeIn({
+                id: newestItem.id,
+                client_name: attr.client_name || attr.clientName || 'VIP Prospect',
+                client_phone: attr.client_phone || attr.clientPhone || '',
+                trade_vehicle: `${attr.trade_year || ''} ${attr.trade_make || ''} ${attr.trade_model || ''}`.trim() || 'Trade Vehicle',
+                target_vehicle: attr.target_vehicle || 'Target Vehicle',
+                expected_value: attr.expected_value || attr.expectedValue || '0',
+                image_count: 1
+              })
+            }
           }
         }
 
         // Poll Leads
         const lRes = await fetch('http://localhost:1338/api/crm-leads').then(r => r.ok ? r.json() : null)
-        if (lRes && Array.isArray(lRes.data) && lRes.data.length > 0) {
-          const newestLead = lRes.data[lRes.data.length - 1] || lRes.data[0]
-          const attr = newestLead.attributes || newestLead
-          const leadId = `strapi-lead-${newestLead.id}`
-          const createdTime = new Date(attr.publishedAt || attr.createdAt || new Date()).getTime()
-          const isRecent = (Date.now() - createdTime) < 3 * 60 * 1000
+        if (lRes && Array.isArray(lRes.data)) {
+          if (isInitialPoll.current) {
+            lRes.data.forEach(item => seenLeadIds.current.add(`strapi-lead-${item.id}`))
+          } else if (lRes.data.length > 0) {
+            const newestLead = lRes.data[lRes.data.length - 1]
+            const leadId = `strapi-lead-${newestLead.id}`
+            if (!seenLeadIds.current.has(leadId)) {
+              seenLeadIds.current.add(leadId)
+              const attr = newestLead.attributes || newestLead
+              if (!attr.source?.includes('Trade-In')) {
+                playAdminChime()
+                setToastLead({
+                  name: attr.name || 'Storefront Prospect',
+                  phone: attr.phone || '',
+                  source: attr.source || 'Storefront Digital Matrix',
+                  notes: attr.notes || '',
+                  intentScore: attr.intent_score || 85
+                })
+              }
+            }
+          }
+        }
 
-          if (isRecent && !seenLeadIds.current.has(leadId)) {
-            seenLeadIds.current.add(leadId)
-            if (!attr.source?.includes('Trade-In')) {
+        // Poll Appointments (Test Drive, Get Best Quote, Import / Reserve)
+        const aRes = await fetch('http://localhost:1338/api/appointments').then(r => r.ok ? r.json() : null)
+        if (aRes && Array.isArray(aRes.data)) {
+          if (isInitialPoll.current) {
+            aRes.data.forEach(item => seenLeadIds.current.add(`strapi-appt-${item.id}`))
+          } else if (aRes.data.length > 0) {
+            const newestAppt = aRes.data[aRes.data.length - 1]
+            const apptId = `strapi-appt-${newestAppt.id}`
+            if (!seenLeadIds.current.has(apptId)) {
+              seenLeadIds.current.add(apptId)
+              const attr = newestAppt.attributes || newestAppt
               playAdminChime()
               setToastLead({
-                name: attr.name || 'Storefront Prospect',
-                phone: attr.phone || '',
-                source: attr.source || 'Storefront Digital Matrix',
-                notes: attr.notes || '',
-                intentScore: attr.intent_score || 85
+                name: attr.client_name || attr.clientName || 'Storefront Prospect',
+                phone: attr.client_phone || attr.clientPhone || '',
+                source: attr.appointment_type || 'Storefront Appointment',
+                notes: attr.notes || `Appointment requested for ${attr.vehicle_title || 'Vehicle'}`,
+                intentScore: 95
               })
             }
           }
         }
+
+        if (isInitialPoll.current) {
+          isInitialPoll.current = false
+        }
       } catch { /* ignore poll errors */ }
-    }, 8000)
+    }, 3000)
 
     return () => {
       if (bcChat) bcChat.close()

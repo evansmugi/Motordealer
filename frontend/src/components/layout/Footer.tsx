@@ -79,7 +79,7 @@ export const Footer: React.FC = () => {
           
           {/* Column 1: Brand & Heritage (4 Cols) */}
           <div className="lg:col-span-4 space-y-4">
-            <StorefrontBrandLogo />
+            <StorefrontBrandLogo size="xl" />
             <p className="text-xs text-neutral-400 leading-relaxed mt-3">
               KnK Automotive Enterprise is East Africa&apos;s premier luxury vehicle showroom and executive fleet marketplace. We deliver verified 150+ point inspected luxury cars, bespoke importations, and instant trade-in appraisals.
             </p>

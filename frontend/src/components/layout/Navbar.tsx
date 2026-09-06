@@ -40,7 +40,7 @@ export const Navbar: React.FC = () => {
     <>
       <header 
         ref={navRef}
-        className={`sticky top-0 z-50 transition-all duration-300 ${
+        className={`sticky top-0 z-50 text-white transition-all duration-300 ${
           scrolled 
             ? 'bg-[#030509]/98 backdrop-blur-2xl border-b border-[#c9a84c]/40 shadow-2xl shadow-black/95 py-4' 
             : 'bg-[#05070c] border-b border-neutral-800/90 py-5 sm:py-6'
@@ -50,7 +50,7 @@ export const Navbar: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-6">
           
           {/* Dynamic Brand Logo (Loads from Admin Settings or High-Contrast Brand Mark) */}
-          <StorefrontBrandLogo />
+          <StorefrontBrandLogo size="xl" />
 
           {/* Desktop Categorized Navigation Tabs with BIG BRIGHT WHITE ICONS */}
           <nav className="hidden lg:flex items-center gap-2 xl:gap-3">
